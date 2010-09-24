@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OPCClientToolKit", "OPCClientToolkit\OPCClientToolKit.vcproj", "{169E1B60-878B-4237-95FF-065DD5F36180}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OPCClientToolkitWrapper", "OPCClientToolkitWrapper\OPCClientToolkitWrapper.vcproj", "{E5AB4637-FD24-44A8-B750-1BB94C447A13}"
+	ProjectSection(ProjectDependencies) = postProject
+		{169E1B60-878B-4237-95FF-065DD5F36180} = {169E1B60-878B-4237-95FF-065DD5F36180}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{169E1B60-878B-4237-95FF-065DD5F36180}.Debug|Win32.ActiveCfg = Debug|Win32
+		{169E1B60-878B-4237-95FF-065DD5F36180}.Debug|Win32.Build.0 = Debug|Win32
+		{169E1B60-878B-4237-95FF-065DD5F36180}.Release|Win32.ActiveCfg = Release|Win32
+		{169E1B60-878B-4237-95FF-065DD5F36180}.Release|Win32.Build.0 = Release|Win32
+		{E5AB4637-FD24-44A8-B750-1BB94C447A13}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E5AB4637-FD24-44A8-B750-1BB94C447A13}.Debug|Win32.Build.0 = Debug|Win32
+		{E5AB4637-FD24-44A8-B750-1BB94C447A13}.Release|Win32.ActiveCfg = Release|Win32
+		{E5AB4637-FD24-44A8-B750-1BB94C447A13}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
