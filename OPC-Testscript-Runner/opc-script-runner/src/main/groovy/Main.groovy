@@ -9,7 +9,7 @@ class Main
 		println 'setting up runner...'
 		
 		def script = {
-			init('pcen33068', 'Matrikon.OPC.Simulation')
+			init('', 'Matrikon.OPC.Simulation')
 			
 			group('group.1').with
 			{
