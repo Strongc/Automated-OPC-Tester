@@ -1,0 +1,26 @@
+init('', 'Matrikon.OPC.Simulation')
+
+for(i in 1..5)
+{
+	group('group.1').with
+	{
+		println ">>starting group [${name}] iteration [${i}]"
+		
+		println item('testGroup.myBigFloat').syncValue
+		println item('testGroup.myBool').syncValue
+		println item('testGroup.myString').syncValue
+		
+		println "<<ending group.1"
+	}
+}
+
+group('group.2').with
+{
+	println '>>starting group.2'
+	
+	println item('testGroup.myLongInt').syncValue
+	println item('testGroup.myShortInt').syncValue
+	println item('testGroup.mySmallFloat').syncValue
+	
+	println '<<ending group.2'
+}
