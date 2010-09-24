@@ -14,3 +14,8 @@ target
 # svn within CERN and can be built from sourceforge outwith CERN
 3rdParty
 OPCClientToolKit
+
+# ignore VC++ intermediate files
+*.ncb
+*.suo
+*.user
