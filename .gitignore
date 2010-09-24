@@ -1,5 +1,16 @@
-*/target/*
+# ignore output directories
+target
+
+# ignore eclipse project and workspace settings
 .classpath
 .project
 .settings
+.metadata
+
+# ignore log output
 *.log
+
+# ignore OPCClientToolkit and 3rdParty directories: these are available from
+# svn within CERN and can be built from sourceforge outwith CERN
+3rdParty
+OPCClientToolkit
