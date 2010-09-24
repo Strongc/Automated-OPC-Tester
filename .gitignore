@@ -19,3 +19,5 @@ OPCClientToolKit
 *.ncb
 *.suo
 *.user
+Debug
+Release
