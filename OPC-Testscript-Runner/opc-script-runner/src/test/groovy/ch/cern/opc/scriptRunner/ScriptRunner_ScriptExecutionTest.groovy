@@ -88,9 +88,9 @@ class ScriptRunner_ScriptExecutionTest
 	@Test
 	void testRunScriptFromStringCreatesGroup()
 	{
-		def script = "{->group('group.1')}"
+		def scriptClosure = Eval.me("{->group('group.1').with{g->g.item('item.1');g.item('item.2');println g.item('item.3').syncValue}}")
 		
-		testee.runScript(Eval.me(script), scriptDelegate)
+		testee.runScript(scriptClosure, scriptDelegate)
 		
 		assertEquals(1, scriptDelegate.groups.size())
 		assertNotNull(scriptDelegate.group('group.1'))

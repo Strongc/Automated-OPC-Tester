@@ -8,6 +8,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OPCClientToolkitWrapper", "
 		{169E1B60-878B-4237-95FF-065DD5F36180} = {169E1B60-878B-4237-95FF-065DD5F36180}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OPCClientToolkitWrapperTests", "OPCClientToolkitWrapperTests\OPCClientToolkitWrapperTests.vcproj", "{9ED22D2B-543C-472F-8942-5879466CD5F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5AB4637-FD24-44A8-B750-1BB94C447A13} = {E5AB4637-FD24-44A8-B750-1BB94C447A13}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AB9CA67D-87FD-4E4C-B53B-24FAA37003E7}"
+	ProjectSection(SolutionItems) = preProject
+		README.txt = README.txt
+		RunUnitTests.bat = RunUnitTests.bat
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -22,6 +33,10 @@ Global
 		{E5AB4637-FD24-44A8-B750-1BB94C447A13}.Debug|Win32.Build.0 = Debug|Win32
 		{E5AB4637-FD24-44A8-B750-1BB94C447A13}.Release|Win32.ActiveCfg = Release|Win32
 		{E5AB4637-FD24-44A8-B750-1BB94C447A13}.Release|Win32.Build.0 = Release|Win32
+		{9ED22D2B-543C-472F-8942-5879466CD5F9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9ED22D2B-543C-472F-8942-5879466CD5F9}.Debug|Win32.Build.0 = Debug|Win32
+		{9ED22D2B-543C-472F-8942-5879466CD5F9}.Release|Win32.ActiveCfg = Release|Win32
+		{9ED22D2B-543C-472F-8942-5879466CD5F9}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

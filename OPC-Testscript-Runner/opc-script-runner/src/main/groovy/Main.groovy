@@ -4,22 +4,23 @@ import ch.cern.opc.client.ClientInstance
 
 class Main 
 {
+	/**
+	 * @param args
+	 */
+	/**
+	 * @param args
+	 */
 	static main(args) 
 	{
-		println 'setting up runner...'
+		final def scriptPath = 'C:\\TEMP\\the_test_script.opc.test' 
+		println 'fetching script file...'
+		println "currently hardcoded to [${scriptPath}]"
 		
-		def script = {
-			init('', 'Matrikon.OPC.Simulation')
-			
-			group('group.1').with
-			{
-				println item('testGroup.myBigFloat').syncValue
-				println item('testGroup.myBool').syncValue
-				println item('testGroup.myString').syncValue
-			}
-		}
-		def scriptDelegate = new ScriptContext()
+		def file = new File(scriptPath)
+		println "opening script [${file}]\nContents..."
+		file.eachLine{ln -> println("\t"+ln)}
 		
-		new ScriptRunner().runScript(script, scriptDelegate)
+		def script = Eval.me("{->\n${file.text}\n}")
+		new ScriptRunner().runScript(script, new ScriptContext())
 	}
 }

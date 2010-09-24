@@ -21,3 +21,6 @@ OPCClientToolKit
 *.user
 Debug
 Release
+
+# ignore VC++ test output
+test_detail.xml
