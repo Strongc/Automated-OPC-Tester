@@ -42,7 +42,7 @@ class ScriptRunner_ScriptExecutionTest
 			},
 			readItemSync: {groupName, path ->
 				println "readItemSync: group [${groupName}] item [${path}]"
-				return 'arse'
+				return 'someValue'
 			}	
 		] as ClientApi
 	
