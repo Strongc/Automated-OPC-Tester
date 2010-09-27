@@ -4,6 +4,7 @@
 #include "Utils.h"
 
 #include <pantheios/pantheios.hpp>
+#include <pantheios/inserters/integer.hpp>
 
 using namespace pantheios;
 
@@ -16,18 +17,35 @@ class GroupManager
 		char* m_pGroupName;
 		COPCGroup* m_pGroup;
 		CAtlMap<CString , COPCItem *> m_items;
+		CAtlMap<CString, CAtlArray<CPropertyDescription>*> m_itemDescriptions;
 
 	public:
 		GroupNode(const char* const pGroupName, COPCGroup* pGroup):m_pGroupName(_strdup(pGroupName)), m_pGroup(pGroup)
 		{
 			m_items.InitHashTable(257);
+			m_itemDescriptions.InitHashTable(257);
 		};
 
 		void AddItem(const char* const pItemName)
 		{
-			log_NOTICE("GroupNode [", m_pGroupName,"] adding item [", pItemName,"]");
+			log_NOTICE("GroupNode [", m_pGroupName,"] adding item [", pItemName,"]...");
 			COPCItem* pItem = m_pGroup->addItem(CString(pItemName), true);
+			log_NOTICE("Added item to group");
+
+			log_NOTICE("AddItem Before");
+			CAtlArray<CPropertyDescription>* pItemProperties = new CAtlArray<CPropertyDescription>();
+			pItem->getSupportedProperties(*pItemProperties);
+			for(unsigned int i = 0; i < pItemProperties->GetCount(); i++)
+			{
+				CPropertyDescription& props = pItemProperties->GetAt(i);
+				
+				log_NOTICE("item [", pItemName,"] property [", props.desc,"] id [", pantheios::integer(props.id),"]");
+			}
+
+			log_NOTICE("AddItem After");
+
 			m_items[CString(pItemName)] = pItem;
+			m_itemDescriptions[CString(pItemName)] = pItemProperties;
 		};
 
 		bool ReadItemSync(const char* const pItemName, char* pBuff, size_t szBuff)

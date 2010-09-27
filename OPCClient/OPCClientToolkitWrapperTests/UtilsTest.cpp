@@ -67,15 +67,3 @@ TEST(VariantTypeConversionTest, testConvertStringToString)
 	VARIANT v = (VARIANT)wrappedVariant;
 	ASSERT_EQ(VT_BSTR, v.vt);
 }
-
-TEST(VariantTypeConversionTest, testConversionStringToShort)
-{
-	const char* pBuff = "123";
-	_variant_t wrappedVariant(pBuff);
-
-	(short)wrappedVariant;
-
-	VARIANT v = (VARIANT)wrappedVariant;
-	ASSERT_EQ(VT_I2, v.vt);
-	ASSERT_EQ(123, v.iVal);
-}
