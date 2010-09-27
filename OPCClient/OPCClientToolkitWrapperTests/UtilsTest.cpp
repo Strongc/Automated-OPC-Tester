@@ -56,3 +56,26 @@ TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForTrueBool)
 	// can only assert that string value is something other than 0
 	ASSERT_NE(0, strcmp("0", buff));
 }
+
+TEST(VariantTypeConversionTest, testConvertStringToString)
+{
+	const char* pBuff = "I am a string";
+	_variant_t wrappedVariant(pBuff);
+
+	(_bstr_t)wrappedVariant;
+
+	VARIANT v = (VARIANT)wrappedVariant;
+	ASSERT_EQ(VT_BSTR, v.vt);
+}
+
+TEST(VariantTypeConversionTest, testConversionStringToShort)
+{
+	const char* pBuff = "123";
+	_variant_t wrappedVariant(pBuff);
+
+	(short)wrappedVariant;
+
+	VARIANT v = (VARIANT)wrappedVariant;
+	ASSERT_EQ(VT_I2, v.vt);
+	ASSERT_EQ(123, v.iVal);
+}
