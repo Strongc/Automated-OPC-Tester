@@ -2,11 +2,13 @@
 
 #include "OPCItem.h"
 #include "Utils.h"
+#include <assert.h>
 
 #include <pantheios/pantheios.hpp>
 #include <pantheios/inserters/integer.hpp>
 
 using namespace pantheios;
+using namespace std;
 
 class GroupManager
 {
@@ -17,35 +19,71 @@ class GroupManager
 		char* m_pGroupName;
 		COPCGroup* m_pGroup;
 		CAtlMap<CString , COPCItem *> m_items;
-		CAtlMap<CString, CAtlArray<CPropertyDescription>*> m_itemDescriptions;
+		CAtlMap<CString, CString> m_itemsDataTypes;
+
+		auto_ptr<CPropertyDescription> GetDataTypePropertyDsc(COPCItem* pItem)
+		{
+			CAtlArray<CPropertyDescription> itemProperties;
+			pItem->getSupportedProperties(itemProperties);
+
+			for(unsigned int i = 0; i < itemProperties.GetCount(); i++)
+			{
+				CPropertyDescription& props = itemProperties.GetAt(i);
+
+				if(string(props.desc).find("DataType") != string::npos)
+				{
+					return auto_ptr<CPropertyDescription>(new CPropertyDescription(props.id, props.desc, props.type));
+				}
+			}
+
+			// uh oh: no datatype property found
+			assert(false);
+			return auto_ptr<CPropertyDescription>(NULL);
+		}
+
+		CString GetItemDataType(COPCItem* pItem)
+		{
+			auto_ptr<CPropertyDescription> propDsc = GetDataTypePropertyDsc(pItem);
+			if(propDsc.get() != NULL)
+			{
+				log_NOTICE("Found DataType property description for item [", pItem->getName(),"]");
+
+				CAtlArray<CPropertyDescription> propsToRead;
+				propsToRead.Add(*propDsc.get());
+
+				ATL::CAutoPtrArray<SPropertyValue> propValues;
+				pItem->getProperties(propsToRead, propValues);
+
+				assert(1 == propValues.GetCount());
+
+				char buff[100];
+				return CString(ConvertVariantToCharArray(propValues[0]->value, buff, 100));
+			}
+			else
+			{
+				// uh oh: no property descriptor found for data type property
+				assert(false);
+				return CString("INVALID");
+			}
+		}
 
 	public:
+
 		GroupNode(const char* const pGroupName, COPCGroup* pGroup):m_pGroupName(_strdup(pGroupName)), m_pGroup(pGroup)
 		{
 			m_items.InitHashTable(257);
-			m_itemDescriptions.InitHashTable(257);
+			m_itemsDataTypes.InitHashTable(257);
 		};
 
 		void AddItem(const char* const pItemName)
 		{
 			log_NOTICE("GroupNode [", m_pGroupName,"] adding item [", pItemName,"]...");
 			COPCItem* pItem = m_pGroup->addItem(CString(pItemName), true);
-			log_NOTICE("Added item to group");
-
-			log_NOTICE("AddItem Before");
-			CAtlArray<CPropertyDescription>* pItemProperties = new CAtlArray<CPropertyDescription>();
-			pItem->getSupportedProperties(*pItemProperties);
-			for(unsigned int i = 0; i < pItemProperties->GetCount(); i++)
-			{
-				CPropertyDescription& props = pItemProperties->GetAt(i);
-				
-				log_NOTICE("item [", pItemName,"] property [", props.desc,"] id [", pantheios::integer(props.id),"]");
-			}
-
-			log_NOTICE("AddItem After");
-
+						
 			m_items[CString(pItemName)] = pItem;
-			m_itemDescriptions[CString(pItemName)] = pItemProperties;
+			m_itemsDataTypes[CString(pItemName)] = GetItemDataType(pItem);
+
+			log_NOTICE("Added item to group - name [", pItemName,"] type [", m_itemsDataTypes[CString(pItemName)],"]");
 		};
 
 		bool ReadItemSync(const char* const pItemName, char* pBuff, size_t szBuff)

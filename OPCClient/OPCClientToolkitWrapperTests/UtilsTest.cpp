@@ -57,6 +57,14 @@ TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForTrueBool)
 	ASSERT_NE(0, strcmp("0", buff));
 }
 
+TEST(UtilsTest, testConvertVariantToCharArrayForInteger)
+{
+	_variant_t wrappedVariant(123);
+	char buff[100];
+
+	ASSERT_EQ(0, strcmp("123", ConvertVariantToCharArray(wrappedVariant.GetVARIANT(), buff, 100)));
+}
+
 TEST(VariantTypeConversionTest, testConvertStringToString)
 {
 	const char* pBuff = "I am a string";
