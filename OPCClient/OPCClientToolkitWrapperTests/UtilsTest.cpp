@@ -65,6 +65,37 @@ TEST(UtilsTest, testConvertVariantToCharArrayForInteger)
 	ASSERT_EQ(0, strcmp("123", ConvertVariantToCharArray(wrappedVariant.GetVARIANT(), buff, 100)));
 }
 
+TEST(UtilsTest, testConvertIntToVarType)
+{
+	VARTYPE vt;
+	ASSERT_FALSE(ConvertIntToVarType(-1, vt));
+	ASSERT_EQ(VT_EMPTY, vt);
+	
+	ASSERT_TRUE(ConvertIntToVarType(11, vt));
+	ASSERT_EQ(VT_BOOL, vt);
+
+	ASSERT_TRUE(ConvertIntToVarType(2, vt));
+	ASSERT_EQ(VT_I2, vt);
+
+	ASSERT_TRUE(ConvertIntToVarType(3, vt));
+	ASSERT_EQ(VT_I4, vt);
+
+	ASSERT_TRUE(ConvertIntToVarType(4, vt));
+	ASSERT_EQ(VT_R4, vt);
+
+	ASSERT_TRUE(ConvertIntToVarType(8, vt));
+	ASSERT_EQ(VT_LPSTR, vt);
+}
+
+TEST(UtilsTest, testConvertStringAndTypeToCorrectVariant)
+{
+	VARIANT variant;
+	ASSERT_TRUE(ConvertToVariant("true", 11, variant));
+	ASSERT_EQ(VT_BOOL, variant.vt);
+
+	//VariantChangeType() use this function from MS.
+}
+
 TEST(VariantTypeConversionTest, testConvertStringToString)
 {
 	const char* pBuff = "I am a string";

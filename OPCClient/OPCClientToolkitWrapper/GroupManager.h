@@ -19,7 +19,7 @@ class GroupManager
 		char* m_pGroupName;
 		COPCGroup* m_pGroup;
 		CAtlMap<CString , COPCItem *> m_items;
-		CAtlMap<CString, CString> m_itemsDataTypes;
+		CAtlMap<CString, int> m_itemsDataTypes;
 
 		auto_ptr<CPropertyDescription> GetDataTypePropertyDsc(COPCItem* pItem)
 		{
@@ -41,7 +41,7 @@ class GroupManager
 			return auto_ptr<CPropertyDescription>(NULL);
 		}
 
-		CString GetItemDataType(COPCItem* pItem)
+		int GetItemDataType(COPCItem* pItem)
 		{
 			auto_ptr<CPropertyDescription> propDsc = GetDataTypePropertyDsc(pItem);
 			if(propDsc.get() != NULL)
@@ -56,14 +56,17 @@ class GroupManager
 
 				assert(1 == propValues.GetCount());
 
-				char buff[100];
-				return CString(ConvertVariantToCharArray(propValues[0]->value, buff, 100));
+				_variant_t value(propValues[0]->value);
+				return (int)value;
+
+				//char buff[100];
+				//return CString(ConvertVariantToCharArray(propValues[0]->value, buff, 100));
 			}
 			else
 			{
 				// uh oh: no property descriptor found for data type property
 				assert(false);
-				return CString("INVALID");
+				return -1;
 			}
 		}
 
@@ -83,7 +86,7 @@ class GroupManager
 			m_items[CString(pItemName)] = pItem;
 			m_itemsDataTypes[CString(pItemName)] = GetItemDataType(pItem);
 
-			log_NOTICE("Added item to group - name [", pItemName,"] type [", m_itemsDataTypes[CString(pItemName)],"]");
+			log_NOTICE("Added item to group - name [", pItemName,"] type [", pantheios::integer(m_itemsDataTypes[CString(pItemName)]),"]");
 		};
 
 		bool ReadItemSync(const char* const pItemName, char* pBuff, size_t szBuff)
@@ -103,6 +106,11 @@ class GroupManager
 				return true;
 			}
 
+			return false;
+		}
+
+		bool WriteItemSync(const char* const pItemName, const char* const pValue)
+		{
 			return false;
 		}
 	};
@@ -137,14 +145,14 @@ public:
 		}
 	};
 
-	bool ReadItemSync(const char* const pGroupName, const char* const pItemAddress, char* pBuff, size_t szBuff)
+	bool ReadItemSync(const char* const pGroupName, const char* const pItemPath, char* pBuff, size_t szBuff)
 	{
 		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
 		if(pGroupNode != NULL)
 		{
-			pGroupNode->ReadItemSync(pItemAddress, pBuff, szBuff);
+			pGroupNode->ReadItemSync(pItemPath, pBuff, szBuff);
 
-			log_NOTICE("readItemSync: group [", pGroupName,"] item [",pItemAddress,"] value [",pBuff,"]");
+			log_NOTICE("readItemSync: group [", pGroupName,"] item [",pItemPath,"] value [",pBuff,"]");
 			return true;
 		}
 		else
@@ -152,4 +160,21 @@ public:
 			return false;
 		}
 	};
+
+
+	bool WriteItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
+	{
+		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
+		if(pGroupNode != NULL)
+		{
+			pGroupNode->WriteItemSync(pItemPath, pValue);
+
+			log_NOTICE("WriteItemSync: group [", pGroupName,"] item [",pItemPath,"] value [",pValue,"]");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 };

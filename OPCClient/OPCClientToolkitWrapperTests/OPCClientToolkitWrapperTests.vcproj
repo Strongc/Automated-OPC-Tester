@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\OPCClientToolKit;..\OPCClientToolkitWrapper;..\gtest\include"
+				AdditionalIncludeDirectories="&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)/include&quot;;..\OPCClientToolKit;..\OPCClientToolkitWrapper;..\gtest\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -64,7 +64,7 @@
 				AdditionalOptions="/verbose:lib"
 				AdditionalDependencies="gtestd.lib comsuppwd.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\gtest"
+				AdditionalLibraryDirectories="..\gtest;&quot;$(PANTHEIOS_ROOT)/lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\OPCClientToolKit;..\OPCClientToolkitWrapper;..\gtest\include"
+				AdditionalIncludeDirectories="&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)/include&quot;;..\OPCClientToolKit;..\OPCClientToolkitWrapper;..\gtest\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -141,7 +141,7 @@
 				AdditionalOptions="/verbose:lib"
 				AdditionalDependencies="gtest.lib comsuppw.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\gtest"
+				AdditionalLibraryDirectories="..\gtest;&quot;$(PANTHEIOS_ROOT)/lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -204,6 +204,10 @@
 			>
 			<File
 				RelativePath="..\OPCClientToolKit\OPCItemData.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OPCClientToolkitWrapper\Pantheios_implicit_link.cpp"
 				>
 			</File>
 			<File

@@ -119,6 +119,14 @@ extern "C"
 		return result;
 	}
 
+	__declspec(dllexport) const bool __cdecl writeItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
+	{
+		log_NOTICE("writeItemSync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
+		bool result = gsoGroupManager.WriteItemSync(pGroupName, pItemPath, pValue);
+		log_NOTICE("writeItemSync complete, group [", pGroupName,"] item [", pItemPath,"] result [", pantheios::integer(result),"]");
+		return false;
+	}
+
 	__declspec(dllexport) void __cdecl getItemNames(void)
 	{
 		log_NOTICE("getItemNames: called");
