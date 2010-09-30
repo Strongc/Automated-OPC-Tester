@@ -57,10 +57,7 @@ class GroupManager
 				assert(1 == propValues.GetCount());
 
 				_variant_t value(propValues[0]->value);
-				return (int)value;
-
-				//char buff[100];
-				//return CString(ConvertVariantToCharArray(propValues[0]->value, buff, 100));
+				return static_cast<int>(value);
 			}
 			else
 			{
@@ -111,6 +108,23 @@ class GroupManager
 
 		bool WriteItemSync(const char* const pItemName, const char* const pValue)
 		{
+			COPCItem* pItem = m_items[CString(pItemName)];
+			if(pItem != NULL)
+			{
+				VARTYPE vt = m_itemsDataTypes[CString(pItemName)];
+				if(VT_EMPTY != vt)
+				{
+					_variant_t varValue(pValue);
+					if(S_OK == VariantChangeType(&varValue.GetVARIANT(), &varValue.GetVARIANT(), VARIANT_ALPHABOOL, vt))
+					{
+						pItem->writeSync(varValue);
+						log_NOTICE("WriteItemSync: successfully wrote item [", pItemName,"] value [", pValue,"]");
+						return true;
+					}
+				}
+			}
+
+			log_ERROR("WriteItemSync: failed to write item [", pItemName,"] value [", pValue,"]");
 			return false;
 		}
 	};

@@ -8,6 +8,20 @@ public class Main
     {
     	createGroup();
     	
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBool");
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myLongInt");
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myShortInt");
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.mySmallFloat");
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
+    	
+    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myString", "pish");
+    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myBool", "true");
+    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myShortInt", "123");
+    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myLongInt", "123456");
+    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.mySmallFloat", "1.23");
+    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myBigFloat", "123.456");
+/*    	
     	readAndDisplayItemValue("testGroup.myBigFloat");
     	readAndDisplayItemValue("testGroup.myBool");
     	readAndDisplayItemValue("testGroup.myLongInt");
@@ -15,6 +29,7 @@ public class Main
     	readAndDisplayItemValue("testGroup.myShortInt");
     	readAndDisplayItemValue("testGroup.mySmallFloat");
     	readAndDisplayItemValue("testGroup.myString");
+*/    	
     }
 
 	private static void createGroup() 

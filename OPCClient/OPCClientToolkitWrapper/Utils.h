@@ -50,14 +50,3 @@ static bool ConvertIntToVarType(const int nVarType, VARTYPE& vt)
 		return false;
 	}
 }
-
-static bool ConvertToVariant(const char* const pValue, const int nType, VARIANT var)
-{
-	switch(nType)
-	{
-	default:
-
-		break;
-	}
-	return false;
-}

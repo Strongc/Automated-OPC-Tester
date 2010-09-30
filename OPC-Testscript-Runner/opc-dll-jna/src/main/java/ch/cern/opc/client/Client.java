@@ -68,4 +68,10 @@ class Client implements ClientApi
 		}
 	}
 
+	@Override
+	public boolean writeItemSync(String groupName, String itemPath, String value) 
+	{
+		return DllInterface.INSTANCE.writeItemSync(groupName, itemPath, value);
+	}
+
 }

@@ -11,7 +11,6 @@
 #include "Utils.h"
 #include "gtest\gtest.h"
 
-
 TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForString)
 {
 	OPCItemData data;
@@ -89,11 +88,30 @@ TEST(UtilsTest, testConvertIntToVarType)
 
 TEST(UtilsTest, testConvertStringAndTypeToCorrectVariant)
 {
-	VARIANT variant;
-	ASSERT_TRUE(ConvertToVariant("true", 11, variant));
-	ASSERT_EQ(VT_BOOL, variant.vt);
+	_variant_t i2Var("100");
+	ASSERT_EQ(S_OK, VariantChangeType(&i2Var.GetVARIANT(), &i2Var.GetVARIANT(), VARIANT_ALPHABOOL, VT_I2));
+	ASSERT_EQ(VT_I2, i2Var.vt);
+	ASSERT_EQ(100, static_cast<int>(i2Var));
 
-	//VariantChangeType() use this function from MS.
+	_variant_t i4Var("1000");
+	ASSERT_EQ(S_OK, VariantChangeType(&i4Var.GetVARIANT(), &i4Var.GetVARIANT(), VARIANT_ALPHABOOL, VT_I4));
+	ASSERT_EQ(VT_I4, i4Var.vt);
+	ASSERT_EQ(1000, static_cast<int>(i4Var));
+
+	_variant_t fltVar("1.23");
+	ASSERT_EQ(S_OK, VariantChangeType(&fltVar.GetVARIANT(), &fltVar.GetVARIANT(), VARIANT_ALPHABOOL, VT_R4));
+	ASSERT_EQ(VT_R4, fltVar.vt);
+	ASSERT_TRUE(fabs(1.23 - static_cast<float>(fltVar)) < 0.0001);
+
+	_variant_t boolVarTrue("true");
+	ASSERT_EQ(S_OK, VariantChangeType(&boolVarTrue.GetVARIANT(), &boolVarTrue.GetVARIANT(), VARIANT_ALPHABOOL, VT_BOOL));
+	ASSERT_EQ(VT_BOOL, boolVarTrue.vt);
+	ASSERT_TRUE(static_cast<bool>(boolVarTrue));
+
+	_variant_t boolVarFalse("false");
+	ASSERT_EQ(S_OK, VariantChangeType(&boolVarFalse.GetVARIANT(), &boolVarFalse.GetVARIANT(), VARIANT_ALPHABOOL, VT_BOOL));
+	ASSERT_EQ(VT_BOOL, boolVarFalse.vt);
+	ASSERT_FALSE(static_cast<bool>(boolVarFalse));
 }
 
 TEST(VariantTypeConversionTest, testConvertStringToString)

@@ -72,4 +72,10 @@ public class ClientInstance implements ClientApi
 	{
 		return client.readItemSync(groupName, itemPath);
 	}
+
+	@Override
+	public boolean writeItemSync(String groupName, String itemPath, String value) 
+	{
+		return client.writeItemSync(groupName, itemPath, value);
+	}
 }
