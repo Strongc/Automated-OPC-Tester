@@ -24,3 +24,4 @@ class Main
 		new ScriptRunner().runScript(script, new ScriptContext())
 	}
 }
+

@@ -18,6 +18,15 @@ class ItemTest
 	def requestedReadItemSyncGroupName
 	def requestedReadItemSyncPath
 	
+	class WriteItemValues
+	{
+		def group
+		def item
+		def theValue
+	}
+
+	def requestedSetSyncValueParameters
+	
 	@Before
 	void setup()
 	{
@@ -30,6 +39,12 @@ class ItemTest
 				requestedReadItemSyncGroupName = groupName
 				requestedReadItemSyncPath = path
 				return TESTEE_ITEM_VALUE
+			},
+			writeItemSync: {groupName, path, value ->
+				println "writeItemSync: group [${groupName}] path [${path}] value [${value}]"
+				requestedSetSyncValueParameters = new WriteItemValues()
+				requestedSetSyncValueParameters.with {group = groupName;item=path;theValue=value}
+				return true
 			}
 		] as ClientApi
 	
@@ -87,5 +102,14 @@ class ItemTest
 	void testSyncValueReturnsValue()
 	{
 		assertEquals(TESTEE_ITEM_VALUE, testee.syncValue)
+	}
+	
+	@Test
+	void testSyncValueWritesValue()
+	{
+		testee.syncValue = "123"
+		assertEquals("123", requestedSetSyncValueParameters.theValue)
+		assertEquals(TESTEE_ITEM_PATH, requestedSetSyncValueParameters.item)
+		assertEquals(TESTEE_GROUP_NAME, requestedSetSyncValueParameters.group)
 	}
 }

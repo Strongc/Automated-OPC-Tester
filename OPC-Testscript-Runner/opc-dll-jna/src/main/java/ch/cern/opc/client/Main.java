@@ -6,6 +6,7 @@ public class Main
 	
     public static void main(String[] args) 
     {
+    	System.out.println("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	createGroup();
     	
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
@@ -16,7 +17,7 @@ public class Main
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
     	
     	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myString", "pish");
-    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myBool", "true");
+    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myBool", "1");
     	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myShortInt", "123");
     	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myLongInt", "123456");
     	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.mySmallFloat", "1.23");

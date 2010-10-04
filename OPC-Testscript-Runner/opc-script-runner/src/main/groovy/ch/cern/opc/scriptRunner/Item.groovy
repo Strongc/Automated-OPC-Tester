@@ -23,4 +23,9 @@ class Item
 	{
 		return ClientInstance.instance.readItemSync(groupName, path)
 	}
+	
+	def setSyncValue(value)
+	{
+		return ClientInstance.instance.writeItemSync(groupName, path, value)
+	}
 }
