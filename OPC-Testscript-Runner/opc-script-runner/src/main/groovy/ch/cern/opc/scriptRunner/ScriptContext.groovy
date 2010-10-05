@@ -2,6 +2,7 @@ package ch.cern.opc.scriptRunner
 
 import ch.cern.opc.client.ClientInstance
 
+@Mixin(Assertions)
 class ScriptContext 
 {
 	def groups = [:]

@@ -93,4 +93,19 @@ class ScriptContextTest
 		assertEquals(host, initialisationParameters['host'])
 		assertEquals(server, initialisationParameters['server'])
 	}
+	
+	@Test
+	void testScriptContextSupportsAssertions()
+	{
+		// note: this is not an exhaustive test of assertions, just to check that assertions
+		// are available to the ScriptContext class.
+		try
+		{
+			testee.assertTrue(true)
+		}
+		catch(MissingMethodException e)
+		{
+			fail('assertTrue should be available from ScriptContext')
+		} 
+	}
 }
