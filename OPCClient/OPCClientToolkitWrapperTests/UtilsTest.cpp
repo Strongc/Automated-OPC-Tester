@@ -124,3 +124,8 @@ TEST(VariantTypeConversionTest, testConvertStringToString)
 	VARIANT v = (VARIANT)wrappedVariant;
 	ASSERT_EQ(VT_BSTR, v.vt);
 }
+
+TEST(FailingTest, testFailFails)
+{
+	ASSERT_EQ(true, false);
+}
