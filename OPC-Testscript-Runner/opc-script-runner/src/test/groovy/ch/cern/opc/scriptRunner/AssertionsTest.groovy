@@ -98,6 +98,8 @@ class AssertionsTest
 	{
 		testee.assertTrue("a pass", true)
 		testee.assertTrue("a fail", false)
+		testee.assertEquals("another pass", 1, 1)
+		testee.assertEquals("another fail", 1, 2)
 /*		
 		def expectedXml = 
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +

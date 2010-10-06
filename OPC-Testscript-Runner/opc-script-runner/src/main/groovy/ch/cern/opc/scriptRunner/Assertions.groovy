@@ -1,6 +1,6 @@
 package ch.cern.opc.scriptRunner
 
-import static org.junit.Assert.*
+import org.junit.Assert
 import groovy.xml.DOMBuilder
 
 class Assertions 
@@ -16,7 +16,7 @@ class Assertions
 		def loggedMessage = formatMessage(message)
 		try
 		{
-			org.junit.Assert.assertTrue(value)
+			Assert.assertTrue(value)
 			passes.add("assertTrue passed - message: ${loggedMessage}")
 		}
 		catch(AssertionError e)
@@ -29,7 +29,7 @@ class Assertions
 	{
 		try
 		{
-			org.junit.Assert.assertEquals(expected, actual)
+			Assert.assertEquals(expected, actual)
 			passes.add("assertEquals passed - message: ${formatMessage(message)}")
 		}
 		catch(AssertionError e)
@@ -41,10 +41,27 @@ class Assertions
 	def getXML()
 	{
 		def xmlBuilder = DOMBuilder.newInstance()
+/*		
 		def output = xmlBuilder.person(x:123,  name:'James', cheese:'edam') 
 		{
 		    project(name:'groovy')
 		    project(name:'geronimo')
+		}
+*/		
+		def output = xmlBuilder.testsuites(name:'OPC Test Script Runner', tests:"${passes.size+failures.size}", failures:"${failures.size}", disabled:'0', errors:'0', time:'0')
+		{
+			testsuite(name:'Tests', tests:"${passes.size+failures.size}", failures:"${failures.size}", disabled:'0', errors:'0', time:'0')
+			{
+				passes.each{pass->
+					testcase(name:"${pass}")
+				}
+				failures.each{fail->
+					testcase(name:"${fail}")
+					{
+						failure(message:'failed')
+					}
+				}
+			}
 		}
 		return output
 	}

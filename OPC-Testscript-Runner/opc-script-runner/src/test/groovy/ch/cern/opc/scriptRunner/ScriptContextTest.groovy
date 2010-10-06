@@ -101,7 +101,7 @@ class ScriptContextTest
 		// are available to the ScriptContext class.
 		try
 		{
-			testee.assertTrue(true)
+			testee.assertTrue("testing a test", true)
 		}
 		catch(MissingMethodException e)
 		{
