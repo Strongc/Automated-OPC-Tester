@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
 
+import groovy.xml.DOMBuilder
+import groovy.xml.dom.DOMCategory
+
 import static ch.cern.opc.scriptRunner.Assertions.NULL_MSG
 import static ch.cern.opc.scriptRunner.Assertions.EMPTY_MSG
 
@@ -100,20 +103,44 @@ class AssertionsTest
 		testee.assertTrue("a fail", false)
 		testee.assertEquals("another pass", 1, 1)
 		testee.assertEquals("another fail", 1, 2)
-/*		
-		def expectedXml = 
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-		"<testsuites tests=\"2\" failures=\"1\" time=\"0.016\" name=\"OPC Test Script\">" +
-			"<testsuite name=\"Script Name\" tests=\"2\" failures=\"1\" time=\"0.016\">" + 
-				"<testcase name=\"assertTrue\" status=\"run\" time=\"0\" classname=\"Script Name\" />" +
-				"<testcase name=\"assertTrue\" status=\"run\" time=\"0\" classname=\"Script Name\">" +
-					"<failure message=\"assertTrue failed - message: a fail\"/>" +
-				"</testcase>" + 
-			"</testsuite>" + 
-		"</testsuites>" 
-*/
+
+		def result =  testee.XML
+		println(result)
 		
-		println testee.XML
+		use(DOMCategory)
+		{
+			assertEquals(1, result.size())
+			
+			// <testsuites> (root element)
+			assertEquals('OPC Test Script Runner', result.'@name')
+			assertEquals(4, result.'@tests'.toInteger())
+			assertEquals(2, result.'@failures'.toInteger())
+			assertEquals(1, result.testsuite.size())
+
+			// <testsuite>
+			def testsuite = result.testsuite[0]
+			assertEquals('Tests', testsuite.'@name')
+			assertEquals(4, testsuite.'@tests'.toInteger())
+			assertEquals(2, testsuite.'@failures'.toInteger())
+			assertEquals(4, testsuite.size())
+			
+			// <testcase>
+			def testcases = testsuite.'testcase'
+			assertEquals(2, testcases.findAll{it.'@name'.contains('assertTrue')}.size())
+			assertEquals(2, testcases.findAll{it.'@name'.contains('assertEquals')}.size())
+			def failedTestcases = testcases.findAll{it.failure.size() > 0} 
+			assertEquals(2, failedTestcases.size())
+			
+			// failedTestCases are <testcase> with <failure> children. How very sad.
+			def assertTrueFailure = failedTestcases.findAll{it.'@name'.contains('assertTrue')}[0]
+			def assertEqualsFailure = failedTestcases.findAll{it.'@name'.contains('assertEquals')}[0]
+			assertEquals('assertTrue failed - message: a fail', assertTrueFailure.'@name')
+			assertEquals('assertEquals failed - message: another fail expected [1] actual [2]', assertEqualsFailure.'@name')
+			failedTestcases.each {
+				assertEquals(1, it.failure.size())
+				assertEquals('failed', it.failure[0].'@message') 
+			}
+		}		
 	}
 	
 	
