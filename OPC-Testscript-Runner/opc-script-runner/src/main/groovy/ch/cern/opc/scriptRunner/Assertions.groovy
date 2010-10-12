@@ -28,12 +28,12 @@ class Assertions
 	
 	def assertEquals(message, expected, actual)
 	{
-		try
+		// ensure expected and actual compared as strings
+		if(expected.toString().equals(actual.toString()))
 		{
-			Assert.assertEquals(expected, actual)
 			passes.add("assertEquals passed - message: ${formatMessage(message)}")
 		}
-		catch(AssertionError e)
+		else
 		{
 			failures.add("assertEquals failed - message: ${formatMessage(message, expected, actual)}")
 		}

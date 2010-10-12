@@ -60,7 +60,7 @@ class Client implements ClientApi
 		byte buff[] = new byte[MAX_BUFF_SZ];
 		if(DllInterface.INSTANCE.readItemSync(groupName, itemPath, buff, MAX_BUFF_SZ))
 		{
-			return new String(buff);
+			return translateCppString(buff);
 		}
 		else
 		{
@@ -79,8 +79,34 @@ class Client implements ClientApi
 	{
 		byte buff[] = new byte[MAX_BUFF_SZ];
 		DllInterface.INSTANCE.getLastError(buff, MAX_BUFF_SZ);
-		
-		return new String(buff);
+		return translateCppString(buff);
 	}
-
+	
+	private String translateCppString(byte cppBuff[])
+	{
+		final int stringTerminatorPosition = findCppStringTerminator(cppBuff);
+		System.out.println("using cpp string from 0 - " + stringTerminatorPosition);
+		
+		String cppString = new String(cppBuff);
+		if(stringTerminatorPosition > 0)
+		{
+			return cppString.substring(0, stringTerminatorPosition);
+		}
+		else
+		{
+			return cppString;
+		}
+	}
+	
+	private int findCppStringTerminator(byte cppBuff[])
+	{
+		for(int i=0; i<cppBuff.length; i++)
+		{
+			if(cppBuff[i] == 0)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
 }
