@@ -2,6 +2,7 @@ package ch.cern.opc.scriptRunner
 
 import org.junit.Assert
 import groovy.xml.DOMBuilder
+import ch.cern.opc.client.ClientInstance
 
 class Assertions 
 {
@@ -52,7 +53,7 @@ class Assertions
 				failures.each{fail->
 					testcase(name:"${fail}")
 					{
-						failure(message:'failed')
+						failure(message:"failed: last error from dll [${ClientInstance.instance.lastError}]")
 					}
 				}
 			}

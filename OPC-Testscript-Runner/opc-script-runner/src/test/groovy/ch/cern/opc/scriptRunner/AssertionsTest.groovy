@@ -6,17 +6,28 @@ import org.junit.Before;
 
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
+import ch.cern.opc.client.ClientApi
+import ch.cern.opc.client.ClientInstance
 
 import static ch.cern.opc.scriptRunner.Assertions.NULL_MSG
 import static ch.cern.opc.scriptRunner.Assertions.EMPTY_MSG
 
 class AssertionsTest 
 {
+	static final def TEST_LAST_ERR = 'this is the last error'
+
 	def testee
 	
 	@Before
 	void setup()
 	{
+		def theClientInstance = [
+			getLastError:{it->
+				return TEST_LAST_ERR
+			}
+		] as ClientApi
+	
+		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
 		testee = new Assertions()
 	}
 	
@@ -138,7 +149,8 @@ class AssertionsTest
 			assertEquals('assertEquals failed - message: another fail expected [1] actual [2]', assertEqualsFailure.'@name')
 			failedTestcases.each {
 				assertEquals(1, it.failure.size())
-				assertEquals('failed', it.failure[0].'@message') 
+				//assertEquals('failed', it.failure[0].'@message')
+				assertTrue(it.failure[0].'@message'.contains(TEST_LAST_ERR)) 
 			}
 		}		
 	}
