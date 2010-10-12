@@ -1,17 +1,23 @@
+assertTrue("intialisation test", true)
+
 init('', 'Matrikon.OPC.Simulation')
+
+println "last error is: ${lastError}"
 
 for(i in 1..30)
 {
 	group('group.1').with
 	{
 		println ">>starting group [${name}] iteration [${i}]"
-		
+		assertTrue("group creation test", true)
+
 		item('testGroup.myBigFloat').with
 		{
 			syncValue = "${i}"
 			println syncValue
+			assertTrue("item read/write test", false)
 		}
-					
+/*					
 		item('testGroup.myBool').with		
 		{
 			syncValue = "${i.mod(2)}"
@@ -50,6 +56,7 @@ for(i in 1..30)
 		
 		sleep(1000)
 		println "<<ending group.1"
+*/		
 	}
 }
 /*

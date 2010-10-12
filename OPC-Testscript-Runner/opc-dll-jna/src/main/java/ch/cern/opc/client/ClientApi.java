@@ -12,6 +12,7 @@ public interface ClientApi
 	public boolean addItem(String groupName, String itemPath);
 	public String readItemSync(String groupName, String itemPath);
 	public boolean writeItemSync(String groupName, String itemPath, String value);
+	public String getLastError();
 	
 	public State getState();
 }

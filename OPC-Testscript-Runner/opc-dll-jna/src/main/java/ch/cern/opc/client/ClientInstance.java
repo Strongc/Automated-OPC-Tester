@@ -78,4 +78,10 @@ public class ClientInstance implements ClientApi
 	{
 		return client.writeItemSync(groupName, itemPath, value);
 	}
+
+	@Override
+	public String getLastError() 
+	{
+		return client.getLastError();
+	}
 }

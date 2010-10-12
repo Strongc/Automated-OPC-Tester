@@ -10,6 +10,8 @@
 using namespace pantheios;
 using namespace std;
 
+extern CString gstrLastError;
+
 class GroupManager
 {
 	struct GroupNode
@@ -42,8 +44,10 @@ class GroupManager
 			}
 
 			// uh oh: no datatype property found
+			gstrLastError = "no datatype property found";
 			assert(false);
 			log_ERROR("GetDataTypePropertyDsc - failed to find OPC item data type property description for [", pItemName,"]");
+
 			return auto_ptr<CPropertyDescription>(NULL);
 		}
 

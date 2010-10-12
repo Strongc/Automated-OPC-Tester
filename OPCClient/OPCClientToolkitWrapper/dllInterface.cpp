@@ -23,6 +23,8 @@ COPCHost *gspHost = NULL;
 COPCServer *gspOpcServer = NULL;
 GroupManager gsoGroupManager;
 
+CString gstrLastError = "No errors reported";
+
 
 const char* const GetLogFilePath()
 {
@@ -142,5 +144,10 @@ extern "C"
 			strcpy_s(itemName, 100, CStringA(opcItemNames[i]).GetString());
 			log_NOTICE("getItemNames: string [", pantheios::integer(i),"] is [", itemName,"]");
 		}
+	}
+
+	__declspec(dllexport) void __cdecl getLastError(char* const pErrorBuffer, const int nBuffSz)
+	{
+		strcpy_s(pErrorBuffer, nBuffSz, gstrLastError);
 	}
 }

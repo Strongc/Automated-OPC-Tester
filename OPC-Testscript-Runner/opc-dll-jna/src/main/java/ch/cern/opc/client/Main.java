@@ -9,6 +9,8 @@ public class Main
     	System.out.println("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	createGroup();
     	
+    	System.out.println(ClientInstance.getInstance().getLastError());
+    	
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBool");
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myLongInt");

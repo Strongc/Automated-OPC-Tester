@@ -74,4 +74,13 @@ class Client implements ClientApi
 		return DllInterface.INSTANCE.writeItemSync(groupName, itemPath, value);
 	}
 
+	@Override
+	public String getLastError() 
+	{
+		byte buff[] = new byte[MAX_BUFF_SZ];
+		DllInterface.INSTANCE.getLastError(buff, MAX_BUFF_SZ);
+		
+		return new String(buff);
+	}
+
 }

@@ -10,6 +10,7 @@ import org.junit.Before;
 class ScriptContextTest 
 {
 	static final def TEST_GROUP_NAME = 'test.group'
+	static final def TEST_LAST_ERR = 'this is the last error'
 	def testee
 	
 	def initialisationParameters
@@ -28,6 +29,9 @@ class ScriptContextTest
 				println 'skdjhskhgksjhgksj'
 				initialisationParameters = ['host': host, 'server':server]
 				return true
+			},
+			getLastError:{it->
+				return TEST_LAST_ERR
 			}
 		] as ClientApi
 	
@@ -108,4 +112,12 @@ class ScriptContextTest
 			fail('assertTrue should be available from ScriptContext')
 		} 
 	}
+	
+	@Test
+	void testGetLastErrorReturnsLastError()
+	{
+		assertEquals(TEST_LAST_ERR, testee.lastError)
+	}
+	
+	
 }

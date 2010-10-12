@@ -31,4 +31,9 @@ class ScriptContext
 	{
 		ClientInstance.instance.init(host, server)
 	}
+	
+	def getLastError()
+	{
+		return ClientInstance.instance.lastError
+	}
 }
