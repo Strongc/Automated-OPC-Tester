@@ -11,16 +11,52 @@ class Assertions
 	def passes = []	
 	def failures = []
 	
-	def assertTrue(message, value)
+	
+	def assertTrue(message, Boolean value)
 	{
-		def loggedMessage = formatMessage(message)
 		if(value)
 		{
-			passes.add("assertTrue passed - message: ${loggedMessage}")
+			addPass('assertTrue', formatMessage(message))
 		}
 		else
 		{
-			failures.add("assertTrue failed - message: ${loggedMessage}") 
+			addFail('assertTrue', formatMessage(message))
+		}
+	}
+	
+	def assertFalse(message, Boolean value)
+	{
+		if(!value)
+		{
+			addPass('assertFalse', formatMessage(message))
+		}
+		else
+		{
+			addFail('assertFalse', formatMessage(message))
+		}
+	}
+	
+	def assertTrue(message, value)
+	{
+		if(value.isNumber())
+		{
+			return assertTrue(message, value.toBigDecimal() != 0)
+		}
+		else
+		{
+			return assertTrue(message, value.toString().toBoolean())
+		}
+	}
+	
+	def assertFalse(message, value)
+	{
+		if(value.isNumber())
+		{
+			return assertFalse(message, value.toBigDecimal() != 0)
+		}
+		else
+		{
+			return assertFalse(message, value.toString().toBoolean())
 		}
 	}
 	
@@ -29,11 +65,11 @@ class Assertions
 		// ensure expected and actual compared as strings
 		if(expected.toString().equals(actual.toString()))
 		{
-			passes.add("assertEquals passed - message: ${formatMessage(message)}")
+			addPass('assertEquals', formatMessage(message))
 		}
 		else
 		{
-			failures.add("assertEquals failed - message: ${formatMessage(message, expected, actual)}")
+			addFail('assertEquals', formatMessage(message, expected, actual))
 		}
 	}
 	
@@ -77,5 +113,15 @@ class Assertions
 	def formatMessage(message, expected, actual)
 	{
 		return formatMessage(message) + " expected [${expected}] actual [${actual}]"
+	}
+	
+	def addPass(testTypeName, message)
+	{
+		passes.add("${testTypeName} passed - message: ${message}")
+	}
+	
+	def addFail(testTypeName, message)
+	{
+		failures.add("${testTypeName} failed - message: ${message}")
 	}
 }

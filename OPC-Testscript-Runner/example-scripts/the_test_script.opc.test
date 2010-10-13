@@ -14,45 +14,47 @@ for(i in 1..3)
 		item('testGroup.myBigFloat').with
 		{
 			syncValue = "${i}"
-			assertEquals("check big float is written correctly", "${i}", syncValue)
-			println syncValue
-			assertTrue("item read/write test", false)
+			assertEquals("check big float is written correctly", i, syncValue)
 		}
-			
+
 		item('testGroup.myBool').with		
 		{
+			def togglingBool = (i.mod(2) == 0)
 			syncValue = "${i.mod(2)}"
-			println syncValue			
+			if(i.mod(2))
+				assertTrue("check boolean is true", syncValue)
+			else
+				assertFalse("check boolean is false", syncValue)
 		}
 		
 		item('testGroup.myString').with
 		{
 			syncValue = "${i}"
-			println syncValue					
+			assertEquals("check string value is written correctly", i, syncValue)
 		}
 		
 		item('testGroup.myShortInt').with
 		{
 			syncValue = "${i}"
-			println syncValue					
+			assertEquals("check short int value is written correctly", i, syncValue)
 		}		
 		
 		item('testGroup.myLongInt').with
 		{
 			syncValue = "${i}"
-			println syncValue					
+			assertEquals("check long int value is written correctly", i, syncValue)
 		}				
 
 		item('testGroup.mySmallFloat').with
 		{
 			syncValue = "${i}"
-			println syncValue					
+			assertEquals("check small float value is written correctly", i, syncValue)
 		}
 		
 		item('testGroup.myBigFloat').with
 		{
 			syncValue = "${i}"
-			println syncValue					
+			assertEquals("check big float value is written correctly", i, syncValue)
 		}		
 		
 		sleep(1000)

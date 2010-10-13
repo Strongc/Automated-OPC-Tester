@@ -15,18 +15,18 @@ import static ch.cern.opc.scriptRunner.Assertions.EMPTY_MSG
 class AssertionsTest 
 {
 	static final def TEST_LAST_ERR = 'this is the last error'
-
+	
 	def testee
 	
 	@Before
 	void setup()
 	{
 		def theClientInstance = [
-			getLastError:{it->
-				return TEST_LAST_ERR
-			}
-		] as ClientApi
-	
+				getLastError:{it->
+					return TEST_LAST_ERR
+				}
+				] as ClientApi
+		
 		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
 		testee = new Assertions()
 	}
@@ -41,6 +41,89 @@ class AssertionsTest
 		
 		assertTrue(testee.passes[0].contains("assertTrue"))
 		assertTrue(testee.passes[0].contains("should pass"))
+	}
+	
+	@Test
+	void testAssertFalse()
+	{
+		testee.assertFalse("should pass", false)
+		
+		assertTrue(testee.failures.empty)
+		assertEquals(1, testee.passes.size)
+		
+		assertTrue(testee.passes[0].contains("assertFalse"))
+		assertTrue(testee.passes[0].contains("should pass"))
+	}
+	
+	@Test 
+	void testAssertFalseForFailures()
+	{
+		testee.assertFalse("should fail", true)
+		
+		assertTrue(testee.passes.empty)
+		assertEquals(1, testee.failures.size)
+		
+		assertTrue(testee.failures[0].contains("assertFalse"))
+		assertTrue(testee.failures[0].contains("should fail"))
+	}
+	
+	@Test
+	void testAssertTrueForStringInputWithValueTrue()
+	{
+		testee.assertTrue("should pass", "true")
+		testee.assertTrue("should pass", "TRUE")
+		testee.assertTrue("should pass", "TruE")
+		testee.assertTrue("should pass", "1")
+		testee.assertTrue("should pass", "100")
+		testee.assertTrue("should pass", "-1")
+		testee.assertTrue("should pass", "y")
+		testee.assertTrue("should pass", "Y")
+		
+		assertTrue(testee.failures.empty)
+	}
+	
+	@Test
+	void testAssertTrueForStringInputWithValueFalse()
+	{
+		testee.assertTrue("should fail", "false")
+		testee.assertTrue("should fail", "FALSE")
+		testee.assertTrue("should fail", "FaLsE")
+		testee.assertTrue("should fail", "0")
+		testee.assertTrue("should fail", "0.0")
+		testee.assertTrue("should fail", "n")
+		testee.assertTrue("should pass", "N")
+		
+		assertEquals(7, testee.failures.size)
+	}
+	
+	@Test
+	void testAssertFalseForStringInputWithValueFalse()
+	{
+		testee.assertFalse("should pass", "false")
+		testee.assertFalse("should pass", "FALSE")
+		testee.assertFalse("should pass", "FaLsE")
+		testee.assertFalse("should pass", "0")
+		testee.assertFalse("should pass", "0.0")
+		testee.assertFalse("should pass", "n")
+		testee.assertFalse("should pass", "N")
+		
+		assertEquals(0, testee.failures.size)
+	}
+	
+	@Test
+	void testAssertFalseForStringInputWithValueTrue()
+	{
+		testee.assertFalse("should fail", "true")
+		testee.assertFalse("should fail", "TRUE")
+		testee.assertFalse("should fail", "TruE")
+		testee.assertFalse("should fail", "1")
+		testee.assertFalse("should fail", "100")
+		testee.assertFalse("should fail", "-1")
+		testee.assertFalse("should fail", "y")
+		testee.assertFalse("should fail", "Y")
+
+		
+		assertEquals(8, testee.failures.size)
 	}
 	
 	@Test
@@ -79,7 +162,7 @@ class AssertionsTest
 		
 		assertTrue(testee.failures.empty)
 		assertEquals(1, testee.passes.size)
-
+		
 		assertTrue(testee.passes[0].contains("assertEquals"))
 		assertTrue(testee.passes[0].contains("should pass"))
 		assertFalse(testee.passes[0].contains("expected [1] actual [2]"))
@@ -114,7 +197,7 @@ class AssertionsTest
 		testee.assertTrue("a fail", false)
 		testee.assertEquals("another pass", 1, 1)
 		testee.assertEquals("another fail", 1, 2)
-
+		
 		def result =  testee.XML
 		println(result)
 		
@@ -127,7 +210,7 @@ class AssertionsTest
 			assertEquals(4, result.'@tests'.toInteger())
 			assertEquals(2, result.'@failures'.toInteger())
 			assertEquals(1, result.testsuite.size())
-
+			
 			// <testsuite>
 			def testsuite = result.testsuite[0]
 			assertEquals('Tests', testsuite.'@name')
