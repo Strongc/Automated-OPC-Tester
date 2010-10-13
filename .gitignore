@@ -19,6 +19,7 @@ OPCClientToolKit
 *.ncb
 *.suo
 *.user
+*.idc
 Debug
 Release
 
