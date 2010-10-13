@@ -1,6 +1,5 @@
 package ch.cern.opc.scriptRunner
 
-import org.junit.Assert
 import groovy.xml.DOMBuilder
 import ch.cern.opc.client.ClientInstance
 
@@ -15,12 +14,11 @@ class Assertions
 	def assertTrue(message, value)
 	{
 		def loggedMessage = formatMessage(message)
-		try
+		if(value)
 		{
-			Assert.assertTrue(value)
 			passes.add("assertTrue passed - message: ${loggedMessage}")
 		}
-		catch(AssertionError e)
+		else
 		{
 			failures.add("assertTrue failed - message: ${loggedMessage}") 
 		}
