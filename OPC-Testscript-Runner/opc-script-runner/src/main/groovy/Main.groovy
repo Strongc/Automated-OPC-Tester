@@ -20,8 +20,7 @@ class Main
 		println "opening script [${file}]\nContents..."
 		file.eachLine{ln -> println("\t"+ln)}
 		
-		def script = Eval.me("{->\n${file.text}\n}")
-		new ScriptRunner().runScript(script, new ScriptContext())
+		new ScriptRunner().runScript(file)
 	}
 }
 

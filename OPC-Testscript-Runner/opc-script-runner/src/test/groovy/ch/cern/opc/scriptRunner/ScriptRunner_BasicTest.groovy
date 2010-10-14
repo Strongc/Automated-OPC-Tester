@@ -21,11 +21,11 @@ class ScriptRunner_BasicTest
 	}
 	
 	@Test
-	void testRunScriptEvalsTheScript()
+	void testRunScriptRunsTheScript()
 	{
 		def wasScriptRun = false
 		
-		testee.runScript({wasScriptRun = true})
+		testee.runScriptClosure({wasScriptRun = true})
 		assertTrue(wasScriptRun)
 	}
 	
@@ -36,7 +36,7 @@ class ScriptRunner_BasicTest
 		def script = {myProperty = true}
 		
 		assertFalse(scriptDelegate.myProperty)
-		testee.runScript(script, scriptDelegate)
+		testee.runScriptClosure(script, scriptDelegate)
 		assertTrue(scriptDelegate.myProperty)
 	}
 	
@@ -53,7 +53,7 @@ class ScriptRunner_BasicTest
 		s.createGroup('testGroup')
 		
 		def script = {createGroup('scriptGroup')}
-		testee.runScript(script, s)
+		testee.runScriptClosure(script, s)
 		
 		assertEquals(1, groups.size())
 	}	

@@ -59,7 +59,7 @@ class ScriptRunner_ScriptExecutionTest
 			createGroup('group.1')
 		}
 		
-		testee.runScript(script, scriptDelegate)
+		testee.runScriptClosure(script, scriptDelegate)
 		
 		assertEquals(1, scriptDelegate.groups.size())
 	}
@@ -80,7 +80,7 @@ class ScriptRunner_ScriptExecutionTest
 			}
 		}
 		
-		testee.runScript(script, scriptDelegate)
+		testee.runScriptClosure(script, scriptDelegate)
 		
 		assertEquals(3, scriptDelegate.group('group.1').items.size())
 	}
@@ -90,7 +90,7 @@ class ScriptRunner_ScriptExecutionTest
 	{
 		def scriptClosure = Eval.me("{->group('group.1').with{g->g.item('item.1');g.item('item.2');println g.item('item.3').syncValue}}")
 		
-		testee.runScript(scriptClosure, scriptDelegate)
+		testee.runScriptClosure(scriptClosure, scriptDelegate)
 		
 		assertEquals(1, scriptDelegate.groups.size())
 		assertNotNull(scriptDelegate.group('group.1'))
