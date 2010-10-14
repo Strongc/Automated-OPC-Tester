@@ -4,6 +4,8 @@ import groovy.swing.SwingBuilder
 import javax.swing.*
 import java.awt.*
 
+import ch.cern.opc.scriptRunner.ScriptRunner
+
 import static javax.swing.JSplitPane.VERTICAL_SPLIT
 import static javax.swing.JSplitPane.HORIZONTAL_SPLIT
 import static javax.swing.JFileChooser.FILES_ONLY
@@ -41,6 +43,7 @@ class ScriptRunnerGui
 			menu(text: 'File', mnemonic:'F')
 			{
 				menuItem(text:'Open Script', mnemonic:'O', actionPerformed:{openScript()})
+				menuItem(text:'Run Script', mnemonic:'R', actionPerformed:{runScript()})
 			}
 		}
 	}
@@ -49,7 +52,7 @@ class ScriptRunnerGui
 	{
 		def textArea = builder.textArea(text:initialText, editable:false)
 		textAreas[id] = textArea
-		new JScrollPane(textArea)
+		return new JScrollPane(textArea)
 	}
 	
 	private def labelledPanel(text, bgColour)
@@ -69,5 +72,20 @@ class ScriptRunnerGui
 			scriptFile = scriptChooser.selectedFile
 			textAreas[SCRIPT_TEXT_AREA].text = scriptFile.text
 		}
+	}
+	
+	private def runScript()
+	{
+		if(scriptFile == null)
+		{
+			textAreas[SCRIPT_TEXT_AREA].text = 'Choose a script...'
+			return
+		}
+
+		use(ConsoleOutputRedirection)
+		{
+			ConsoleOutputRedirection.textArea = textAreas[OUTPUT_TEXT_AREA]		
+			new ScriptRunner().runScript(scriptFile)
+		}	
 	}
 }

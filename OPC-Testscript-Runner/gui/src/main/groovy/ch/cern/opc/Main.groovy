@@ -4,7 +4,6 @@ class Main
 {
 	static main(args) 
 	{
-		def  ui = new ScriptRunnerGui();
-		ui.show();
+		new ScriptRunnerGui().show();
 	}
 }
