@@ -7,6 +7,9 @@ import java.awt.*
 import ch.cern.opc.common.Log
 import ch.cern.opc.scriptRunner.ScriptRunner
 
+
+import javax.swing.tree.DefaultMutableTreeNode as TreeNode
+
 import static javax.swing.JSplitPane.VERTICAL_SPLIT
 import static javax.swing.JSplitPane.HORIZONTAL_SPLIT
 import static javax.swing.JFileChooser.FILES_ONLY
@@ -23,6 +26,7 @@ class ScriptRunnerGui
 	private def mainFrame
 	private def scriptFile
 	private def textAreas = [:]
+	private def resultsTree = new ResultsTree()
 	
 	def show()
 	{
@@ -59,10 +63,7 @@ class ScriptRunnerGui
 	
 	private def labelledPanel(text, bgColour)
 	{
-		builder.panel(background:bgColour)
-		{
-			label(text)
-		}
+		return resultsTree.tree
 	}
 	
 	private def openScript()
@@ -89,7 +90,8 @@ class ScriptRunnerGui
 		Log.setTextComponent(textAreas[OUTPUT_TEXT_AREA])
 		
 		def thread = Thread.start{
-			new ScriptRunner().runScript(scriptFile)
+			def results = new ScriptRunner().runScript(scriptFile)
+			resultsTree.addResults(results)
 		}
 	}
 }

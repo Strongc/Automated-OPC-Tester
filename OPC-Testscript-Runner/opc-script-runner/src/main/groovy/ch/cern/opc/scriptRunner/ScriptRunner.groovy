@@ -1,13 +1,18 @@
 package ch.cern.opc.scriptRunner
 
 import static ch.cern.opc.common.Log.*
+import org.w3c.dom.Element;
 
 class ScriptRunner 
 {
-	def runScript(scriptFile)
+	def Element runScript(scriptFile)
 	{
 		def scriptClosure = Eval.me("{->\n${scriptFile.text}\n}")
-		runScriptClosure(scriptClosure, new ScriptContext())
+		def context = new ScriptContext()
+
+		runScriptClosure(scriptClosure, context)
+		
+		return context.XML
 	}
 	
 	private def runScriptClosure(script, scriptDelegate = null)
