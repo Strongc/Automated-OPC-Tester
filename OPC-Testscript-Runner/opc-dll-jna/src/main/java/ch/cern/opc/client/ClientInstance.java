@@ -1,5 +1,7 @@
 package ch.cern.opc.client;
 
+import static ch.cern.opc.common.Log.*;
+
 /**
  * A singleton that proxies the {@link ch.cern.opc.client.Client Client} class
  * 
@@ -19,7 +21,7 @@ public class ClientInstance implements ClientApi
 	{
 		if(theInstance == null)
 		{
-			System.out.println("Creating the one and only client instance");
+			logInfo("Creating the one and only client instance");
 			theInstance = new ClientInstance();
 		}
 		

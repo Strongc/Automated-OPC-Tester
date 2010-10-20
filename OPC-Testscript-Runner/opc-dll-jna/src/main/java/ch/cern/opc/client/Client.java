@@ -1,6 +1,7 @@
 package ch.cern.opc.client;
 
 import com.sun.jna.NativeLong;
+import static ch.cern.opc.common.Log.*;
 
 class Client implements ClientApi 
 {
@@ -35,7 +36,7 @@ class Client implements ClientApi
 
 		if(!nativeActualRefreshRate.equals(nativeRequestedRefreshRate))
 		{
-			System.err.println("Requested refresh rate ["+refreshRateMs+"] was not met - returned refresh rate ["+nativeActualRefreshRate.longValue()+"]");
+			logError("Requested refresh rate ["+refreshRateMs+"] was not met - returned refresh rate ["+nativeActualRefreshRate.longValue()+"]");
 			return false;
 		}
 		return true;
@@ -64,6 +65,7 @@ class Client implements ClientApi
 		}
 		else
 		{
+			logError("item value was not read, group ["+groupName+"] item path ["+itemPath+"]");
 			return "ERROR - value was not read";
 		}
 	}
@@ -85,7 +87,7 @@ class Client implements ClientApi
 	private String translateCppString(byte cppBuff[])
 	{
 		final int stringTerminatorPosition = findCppStringTerminator(cppBuff);
-		System.out.println("using cpp string from 0 - " + stringTerminatorPosition);
+		logDebug("using cpp string from 0 - " + stringTerminatorPosition);
 		
 		String cppString = new String(cppBuff);
 		if(stringTerminatorPosition > 0)

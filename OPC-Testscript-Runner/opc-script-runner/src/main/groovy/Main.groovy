@@ -1,6 +1,7 @@
 import ch.cern.opc.scriptRunner.ScriptContext;
 import ch.cern.opc.scriptRunner.ScriptRunner
 import ch.cern.opc.client.ClientInstance
+import static ch.cern.opc.common.Log.*
 
 class Main 
 {
@@ -13,12 +14,12 @@ class Main
 	static main(args) 
 	{
 		final def scriptPath = 'C:\\TEMP\\the_test_script.opc.test' 
-		println 'fetching script file...'
-		println "currently hardcoded to [${scriptPath}]"
+		logInfo('fetching script file...')
+		logInfo("currently hardcoded to [${scriptPath}]")
 		
 		def file = new File(scriptPath)
-		println "opening script [${file}]\nContents..."
-		file.eachLine{ln -> println("\t"+ln)}
+		logInfo("opening script [${file}]\nContents...")
+		file.eachLine{ln -> logInfo("\t"+ln)}
 		
 		new ScriptRunner().runScript(file)
 	}

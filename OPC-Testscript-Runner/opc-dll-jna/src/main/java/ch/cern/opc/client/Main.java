@@ -1,15 +1,17 @@
 package ch.cern.opc.client;
 
+import static ch.cern.opc.common.Log.*;
+
 public class Main 
 {
 	private final static String GROUP_NM = "myGroup";
 	
     public static void main(String[] args) 
     {
-    	System.out.println("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
+    	logInfo("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	createGroup();
     	
-    	System.out.println(ClientInstance.getInstance().getLastError());
+    	logInfo(ClientInstance.getInstance().getLastError());
     	
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBool");
@@ -50,6 +52,6 @@ public class Main
 		
 		opcClient.addItem(GROUP_NM, itemName);
     	String value = opcClient.readItemSync(GROUP_NM, itemName);
-    	System.out.println("group ["+GROUP_NM+"] item ["+itemName+"] value ["+value+"]");
+    	logInfo("group ["+GROUP_NM+"] item ["+itemName+"] value ["+value+"]");
 	}
 }

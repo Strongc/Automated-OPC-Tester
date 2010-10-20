@@ -1,5 +1,6 @@
 package ch.cern.opc.scriptRunner
 
+import static ch.cern.opc.common.Log.*
 
 class ScriptRunner 
 {
@@ -11,9 +12,9 @@ class ScriptRunner
 	
 	private def runScriptClosure(script, scriptDelegate = null)
 	{
-		println "about to run the script"
+		logInfo('about to run the script')
 		script.delegate = (scriptDelegate != null? scriptDelegate: this)
 		script()
-		println "finished running the script"
+		logInfo('finished running the script')
 	}
 }

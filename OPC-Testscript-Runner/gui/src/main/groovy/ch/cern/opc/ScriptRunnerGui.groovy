@@ -4,6 +4,7 @@ import groovy.swing.SwingBuilder
 import javax.swing.*
 import java.awt.*
 
+import ch.cern.opc.common.Log
 import ch.cern.opc.scriptRunner.ScriptRunner
 
 import static javax.swing.JSplitPane.VERTICAL_SPLIT
@@ -11,6 +12,7 @@ import static javax.swing.JSplitPane.HORIZONTAL_SPLIT
 import static javax.swing.JFileChooser.FILES_ONLY
 import static javax.swing.JFileChooser.APPROVE_OPTION
 import static java.awt.Color.*
+import static ch.cern.opc.common.Log.*
 
 class ScriptRunnerGui 
 {
@@ -76,16 +78,18 @@ class ScriptRunnerGui
 	
 	private def runScript()
 	{
+		textAreas[OUTPUT_TEXT_AREA].text = ''
+		
 		if(scriptFile == null)
 		{
 			textAreas[SCRIPT_TEXT_AREA].text = 'Choose a script...'
 			return
 		}
-
-		use(ConsoleOutputRedirection)
-		{
-			ConsoleOutputRedirection.textArea = textAreas[OUTPUT_TEXT_AREA]		
+		
+		Log.setTextComponent(textAreas[OUTPUT_TEXT_AREA])
+		
+		def thread = Thread.start{
 			new ScriptRunner().runScript(scriptFile)
-		}	
+		}
 	}
 }

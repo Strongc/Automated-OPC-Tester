@@ -20,6 +20,11 @@
 		<artifactId>jna</artifactId>
 		<version>3.2.7</version>
 	</dependency>	
+    <dependency>
+      <groupId>ch.cern.opc</groupId>
+      <artifactId>common</artifactId>
+      <version>0.1</version>
+    </dependency> 	
   </dependencies>
   
   <build>

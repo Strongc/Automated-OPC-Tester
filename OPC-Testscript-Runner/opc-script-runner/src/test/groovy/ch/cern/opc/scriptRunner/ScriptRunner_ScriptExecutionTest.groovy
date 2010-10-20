@@ -95,4 +95,19 @@ class ScriptRunner_ScriptExecutionTest
 		assertEquals(1, scriptDelegate.groups.size())
 		assertNotNull(scriptDelegate.group('group.1'))
 	}
+	
+	@Test
+	void testScriptCanLogmessages()
+	{
+		def script = Eval.me("{->logError('error text');logWarning('warn text');logInfo('info text');logDebug('debug text')}")
+		
+		try
+		{
+			testee.runScriptClosure(script, scriptDelegate)
+		}
+		catch(MissingMethodException e)
+		{
+			fail('log* methods missing')
+		}
+	}
 }
