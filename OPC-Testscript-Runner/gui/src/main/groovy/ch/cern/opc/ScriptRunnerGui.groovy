@@ -73,8 +73,13 @@ class ScriptRunnerGui
 		if(scriptChooser.showOpenDialog(mainFrame) == APPROVE_OPTION)
 		{
 			scriptFile = scriptChooser.selectedFile
-			textAreas[SCRIPT_TEXT_AREA].text = scriptFile.text
+			showScript(scriptFile)
 		}
+	}
+	
+	private def showScript(file)
+	{
+		textAreas[SCRIPT_TEXT_AREA].text = file.text
 	}
 	
 	private def runScript()
@@ -87,6 +92,7 @@ class ScriptRunnerGui
 			return
 		}
 		
+		showScript(scriptFile)
 		Log.setTextComponent(textAreas[OUTPUT_TEXT_AREA])
 		
 		def thread = Thread.start{
