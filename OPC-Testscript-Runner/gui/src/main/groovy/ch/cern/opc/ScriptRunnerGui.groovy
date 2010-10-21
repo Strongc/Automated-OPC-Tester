@@ -90,6 +90,7 @@ class ScriptRunnerGui
 		Log.setTextComponent(textAreas[OUTPUT_TEXT_AREA])
 		
 		def thread = Thread.start{
+			resultsTree.clearResults()
 			def results = new ScriptRunner().runScript(scriptFile)
 			resultsTree.addResults(results)
 		}
