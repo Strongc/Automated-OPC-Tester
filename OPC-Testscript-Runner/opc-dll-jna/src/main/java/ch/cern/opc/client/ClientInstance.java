@@ -30,13 +30,13 @@ public class ClientInstance implements ClientApi
 	
 	private ClientInstance()
 	{
-		client = new Client();
+		client = new Client();		
 	}
 
 	@Override
 	public boolean init(String host, String server)
 	{
-		return client.init(host, server);
+		return client.init(host, server) && client.getItemNames();
 	}
 
 	@Override

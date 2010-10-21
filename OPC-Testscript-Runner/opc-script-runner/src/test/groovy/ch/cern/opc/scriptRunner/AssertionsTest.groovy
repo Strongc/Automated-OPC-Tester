@@ -237,5 +237,43 @@ class AssertionsTest
 		}
 	}
 	
+	@Test
+	void testExceptionsAreAdded()
+	{
+		testee.addException(new Exception())
+		assertEquals(1, testee.exceptions.size)
+	}
 	
+	@Test
+	void testExceptionsInXml()
+	{
+		def exception = new Exception('test exception')
+		testee.addException(exception)
+		
+		def result = testee.XML
+		println result
+		
+		use(DOMCategory)
+		{
+			assertEquals(1, result.size())
+			
+			// <testsuites> (root element)
+			assertEquals('OPC Test Script Runner', result.'@name')
+			assertEquals(1, result.'@failures'.toInteger())
+			
+			// <testsuite>
+			def testsuite = result.testsuite[0]
+			assertEquals('Tests', testsuite.'@name')
+			assertEquals(1, testsuite.'@failures'.toInteger())
+			
+			// <exception>
+			def e = testsuite.exception[0]
+			assertEquals('test exception', e.'@message')
+			
+			// <line>s
+			def lines = e.line
+			def expectedNumberOfLines = exception.stackTrace.length
+			assertEquals(expectedNumberOfLines, lines.length)
+		}
+	}
 }

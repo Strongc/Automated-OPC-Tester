@@ -5,10 +5,12 @@ import org.w3c.dom.Element;
 
 class ScriptRunner 
 {
+	def context
+	
 	def Element runScript(scriptFile)
 	{
-		def scriptClosure = Eval.me("{->\n${scriptFile.text}\n}")
-		def context = new ScriptContext()
+		def scriptClosure = Eval.me("{->\ntry{${scriptFile.text}}catch(e){addException(e);logError('exception thrown')}\n}")
+		context = new ScriptContext()
 
 		runScriptClosure(scriptClosure, context)
 		

@@ -10,6 +10,7 @@ class Assertions
 	
 	def passes = []	
 	def failures = []
+	def exceptions = []
 	
 	
 	def assertTrue(message, Boolean value)
@@ -77,9 +78,9 @@ class Assertions
 	{
 		def xmlBuilder = DOMBuilder.newInstance()
 		
-		def xml = xmlBuilder.testsuites(name:'OPC Test Script Runner', tests:"${passes.size+failures.size}", failures:"${failures.size}", disabled:'0', errors:'0', time:'0')
+		def xml = xmlBuilder.testsuites(name:'OPC Test Script Runner', tests:"${passes.size+failures.size}", failures:"${failures.size + exceptions.size}", disabled:'0', errors:'0', time:'0')
 		{
-			testsuite(name:'Tests', tests:"${passes.size+failures.size}", failures:"${failures.size}", disabled:'0', errors:'0', time:'0')
+			testsuite(name:'Tests', tests:"${passes.size+failures.size}", failures:"${failures.size + exceptions.size}", disabled:'0', errors:'0', time:'0')
 			{
 				passes.each{pass->
 					testcase(name:"${pass}")
@@ -91,6 +92,15 @@ class Assertions
 					testcase(name:"${fail}")
 					{
 						failure(message:"failed: last error from dll [${ClientInstance.instance.lastError}]")
+					}
+				}
+				exceptions.each{e->
+					exception(name:'exception', message:"${e.message}")
+					{
+						e.stackTrace.each
+						{
+							line(line:"${it.toString()}")
+						}
 					}
 				}
 			}
@@ -126,5 +136,10 @@ class Assertions
 	def addFail(testTypeName, message)
 	{
 		failures.add("${testTypeName} failed - message: ${message}")
+	}
+	
+	def addException(Exception e)
+	{
+		exceptions.add(e)
 	}
 }

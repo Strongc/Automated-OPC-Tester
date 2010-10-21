@@ -8,9 +8,13 @@ public class Main
 	
     public static void main(String[] args) 
     {
-    	logInfo("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
-    	createGroup();
+    	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
+//    	createGroup();
     	
+    	System.out.println(ClientInstance.getInstance().addItem(GROUP_NM, "WTF??"));
+    	System.out.println(ClientInstance.getInstance().getLastError());
+    	System.out.println(ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat"));
+/*
     	logInfo(ClientInstance.getInstance().getLastError());
     	
     	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
@@ -26,6 +30,7 @@ public class Main
     	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myLongInt", "123456");
     	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.mySmallFloat", "1.23");
     	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myBigFloat", "123.456");
+*/    	
 /*    	
     	readAndDisplayItemValue("testGroup.myBigFloat");
     	readAndDisplayItemValue("testGroup.myBool");
