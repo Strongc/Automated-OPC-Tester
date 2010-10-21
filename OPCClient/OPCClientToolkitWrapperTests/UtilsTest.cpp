@@ -11,6 +11,12 @@
 #include "Utils.h"
 #include "gtest\gtest.h"
 
+using namespace std;
+
+// test instance - normally instantiated by dllInterface and referenced elsewhere as an extern.
+// avoids having to drag in dllInterface.cpp (and all the attendant compilation problems)
+CString gstrLastError = "No errors reported";
+
 TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForString)
 {
 	OPCItemData data;
@@ -125,7 +131,16 @@ TEST(VariantTypeConversionTest, testConvertStringToString)
 	ASSERT_EQ(VT_BSTR, v.vt);
 }
 
-TEST(FailingTest, testFailFails)
+TEST(RecordErrorTest, testSimpleErrorIsRecorded)
 {
-	ASSERT_EQ(true, false);
+	RecordError("I am the error");
+	cout << gstrLastError << endl;
+	ASSERT_EQ(0, strcmp("I am the error", gstrLastError));
+}
+
+TEST(RecordErrorTest, testFormattedErrorIsRecorded)
+{
+	RecordError("Error [%d] [%s]", 69, "woohoo");
+	cout << gstrLastError << endl;
+	ASSERT_EQ(0, strcmp("Error [69] [woohoo]", gstrLastError));
 }

@@ -203,6 +203,10 @@
 			Name="SourceUnderTest"
 			>
 			<File
+				RelativePath="..\OPCClientToolKit\OPCClient.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OPCClientToolKit\OPCItemData.cpp"
 				>
 			</File>

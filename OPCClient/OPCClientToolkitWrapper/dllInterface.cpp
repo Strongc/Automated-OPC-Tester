@@ -23,7 +23,10 @@ COPCHost *gspHost = NULL;
 COPCServer *gspOpcServer = NULL;
 GroupManager gsoGroupManager;
 
+
 CString gstrLastError = "No errors reported";
+
+CAtlArray<CString> gsoOpcServerAddressSpace;
 
 
 const char* const GetLogFilePath()
@@ -109,7 +112,7 @@ extern "C"
 		log_NOTICE("addItem, success [",(bAdded?"Y":"N"),"]");
 
 		log_NOTICE("addItem completed, for group name [", pGroupName,"]");
-		return true;
+		return bAdded;
 	}
 
 	__declspec(dllexport) const bool __cdecl readItemSync(const char* const pGroupName, const char* pItemPath, char* pBuff, const int nBuffSz)
@@ -133,16 +136,13 @@ extern "C"
 	{
 		log_NOTICE("getItemNames: called");
 
-		CAtlArray<CString> opcItemNames ;
-	  	gspOpcServer->getItemNames(opcItemNames);
+	  	gspOpcServer->getItemNames(gsoOpcServerAddressSpace);
 
-		log_NOTICE("getItemNames: there are [", pantheios::integer(opcItemNames.GetCount()),"] items");
+		log_NOTICE("getItemNames: there are [", pantheios::integer(gsoOpcServerAddressSpace.GetCount()),"] items");
 
-		for(unsigned int i=0; i<opcItemNames.GetCount(); i++)
+		for(unsigned int i=0; i<gsoOpcServerAddressSpace.GetCount(); i++)
 		{
-			char itemName[100];
-			strcpy_s(itemName, 100, CStringA(opcItemNames[i]).GetString());
-			log_NOTICE("getItemNames: string [", pantheios::integer(i),"] is [", itemName,"]");
+			log_NOTICE("getItemNames: string [", pantheios::integer(i),"] is [", CStringA(gsoOpcServerAddressSpace[i]).GetString(),"]");
 		}
 	}
 

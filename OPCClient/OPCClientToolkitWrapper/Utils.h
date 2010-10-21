@@ -1,11 +1,14 @@
 #pragma once
 
+#include <cstdarg>
+#include <cstdio>
 #include "OPCItemData.h"
 #include <pantheios/pantheios.hpp>
 #include <pantheios/inserters/integer.hpp>
 
 using namespace pantheios;
 
+extern CString gstrLastError;
 
 static char* ConvertVariantToCharArray(VARIANT& variant, char* pBuff, size_t szBuff)
 {
@@ -49,4 +52,18 @@ static bool ConvertIntToVarType(const int nVarType, VARTYPE& vt)
 		log_ERROR("Failed to convert canonical OPC datatype [", pantheios::integer(nVarType),"]to variant datatype");
 		return false;
 	}
+}
+
+static void RecordError(char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	char buff[1028];
+    vsprintf_s(buff, 1028, format, args);
+
+	gstrLastError = buff;
+	log_ERROR(buff);
+
+    va_end(args);
 }

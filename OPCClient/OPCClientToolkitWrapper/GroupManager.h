@@ -10,7 +10,7 @@
 using namespace pantheios;
 using namespace std;
 
-extern CString gstrLastError;
+extern CAtlArray<CString> gsoOpcServerAddressSpace;
 
 class GroupManager
 {
@@ -44,9 +44,8 @@ class GroupManager
 			}
 
 			// uh oh: no datatype property found
-			gstrLastError = "no datatype property found";
 			assert(false);
-			log_ERROR("GetDataTypePropertyDsc - failed to find OPC item data type property description for [", pItemName,"]");
+			RecordError("GetDataTypePropertyDsc - failed to find OPC item data type property description for [%s]", pItemName);
 
 			return auto_ptr<CPropertyDescription>(NULL);
 		}
@@ -77,7 +76,7 @@ class GroupManager
 
 			// uh oh: no property descriptor found for data type property
 			assert(false);
-			log_ERROR("GetItemDataType - failed to find OPC item data type for [", pItemName,"]");
+			RecordError("GetItemDataType - failed to find OPC item data type for [%s]", pItemName);
 			return -1;
 		}
 
@@ -117,6 +116,7 @@ class GroupManager
 				return true;
 			}
 
+			RecordError("ReadItemSync: failed to write item [%s]", pItemName);
 			return false;
 		}
 
@@ -138,7 +138,7 @@ class GroupManager
 				}
 			}
 
-			log_ERROR("WriteItemSync: failed to write item [", pItemName,"] value [", pValue,"]");
+			RecordError("WriteItemSync: failed to write item [%s] value [%s]", pItemName, pValue);
 			return false;
 		}
 	};
@@ -160,17 +160,17 @@ public:
 
 	bool AddItem(const char* pGroupName, const char* pItemAddress)
 	{
+		if(!IsValidItem(pItemAddress)) return false;
+
 		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
 		if(pGroupNode != NULL)
 		{
 			pGroupNode->AddItem(pItemAddress);
-
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		RecordError("AddItem: failed to find group [%s]", pGroupName);
+		return false;
 	};
 
 	bool ReadItemSync(const char* const pGroupName, const char* const pItemPath, char* pBuff, size_t szBuff)
@@ -183,10 +183,9 @@ public:
 			log_NOTICE("readItemSync: group [", pGroupName,"] item [",pItemPath,"] value [",pBuff,"]");
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		RecordError("ReadItemSync: failed to find group [%s]", pGroupName);
+		return false;
 	};
 
 
@@ -200,9 +199,24 @@ public:
 			log_NOTICE("WriteItemSync: group [", pGroupName,"] item [",pItemPath,"] value [",pValue,"]");
 			return true;
 		}
-		else
+
+		RecordError("WriteItemSync: failed to find group [%s]", pGroupName);
+		return false;
+	}
+
+	bool IsValidItem(const char* const pItemPath)
+	{
+		unsigned int nAddressSpaceSz = gsoOpcServerAddressSpace.GetCount();
+
+		for(unsigned int i=0; i<nAddressSpaceSz; i++)
 		{
-			return false;
+			if(strcmp(pItemPath, CStringA(gsoOpcServerAddressSpace[i]).GetString()) == 0)
+			{
+				return true;
+			}
 		}
+
+		RecordError("IsValidItem [%s] was not found in opc server address space of size [%d]", pItemPath, nAddressSpaceSz);
+		return false;
 	}
 };
