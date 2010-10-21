@@ -83,6 +83,9 @@ class Assertions
 			{
 				passes.each{pass->
 					testcase(name:"${pass}")
+					{
+						success(message:'test passed')
+					}
 				}
 				failures.each{fail->
 					testcase(name:"${fail}")

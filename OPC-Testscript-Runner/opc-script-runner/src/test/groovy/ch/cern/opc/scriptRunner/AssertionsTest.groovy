@@ -200,7 +200,7 @@ class AssertionsTest
 		
 		def result =  testee.XML
 		println(result)
-		
+
 		use(DOMCategory)
 		{
 			assertEquals(1, result.size())
@@ -232,10 +232,9 @@ class AssertionsTest
 			assertEquals('assertEquals failed - message: another fail expected [1] actual [2]', assertEqualsFailure.'@name')
 			failedTestcases.each {
 				assertEquals(1, it.failure.size())
-				//assertEquals('failed', it.failure[0].'@message')
 				assertTrue(it.failure[0].'@message'.contains(TEST_LAST_ERR)) 
 			}
-		}		
+		}
 	}
 	
 	
