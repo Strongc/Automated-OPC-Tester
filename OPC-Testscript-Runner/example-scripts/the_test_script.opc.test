@@ -4,7 +4,7 @@ init('', 'Matrikon.OPC.Simulation')
 
 println "last error is: ${lastError}"
 
-throw new Exception()
+//throw new Exception()
 
 for(i in 1..1)
 {

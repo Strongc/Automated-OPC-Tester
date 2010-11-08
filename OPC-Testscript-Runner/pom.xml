@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Generated from archetype; please customize.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ch.cern.opc</groupId>
+    <artifactId>automated-tester-app</artifactId>
+    <name>Automated OPC Tester</name>
+    <version>0.1</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>ch.cern.opc</groupId>
+			<artifactId>opc-script-runner</artifactId>
+			<version>0.1</version>
+		</dependency> 
+	    	<dependency>
+	      		<groupId>ch.cern.opc</groupId>
+	      		<artifactId>common</artifactId>
+	      		<version>0.1</version>
+	    	</dependency> 	
+	    	<dependency>
+			<groupId>ch.cern.opc</groupId>
+			<artifactId>gui</artifactId>
+			<version>0.1</version>
+	    	</dependency>
+	    	<dependency>
+			<groupId>ch.cern.opc</groupId>
+			<artifactId>opc-dll-jna</artifactId>
+			<version>0.1</version>
+	    	</dependency>
+	</dependencies>
+
+	<build>
+
+		<pluginManagement>
+			<plugins>		
+			
+				<plugin>
+				  <groupId>org.apache.maven.plugins</groupId>
+				  <artifactId>maven-assembly-plugin</artifactId>
+				  <configuration>
+				    <descriptorRefs>
+				      <descriptorRef>jar-with-dependencies</descriptorRef>
+				    </descriptorRefs>
+				    <archive>
+				      <manifest>
+					<mainClass>ch.cern.opc.Main</mainClass>
+				      </manifest>
+				    </archive>
+				  </configuration>
+				</plugin>				
+      			</plugins>
+	
+		</pluginManagement>
+		
+	</build>
+
+</project>

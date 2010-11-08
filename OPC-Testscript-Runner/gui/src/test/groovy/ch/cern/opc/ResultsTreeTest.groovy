@@ -52,8 +52,9 @@ class ResultsTreeTest
 	@Test
 	void testAddResultsCreatesTreeNodes()
 	{
+		println xml
 		testee.addResults(xml)
-		assertEquals(6, countTreeNodes(testee.root))
+		assertEquals(10, countTreeNodes(testee.root))
 	}
 	
 	@Test
