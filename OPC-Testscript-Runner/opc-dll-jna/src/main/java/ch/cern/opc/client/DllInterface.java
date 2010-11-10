@@ -10,7 +10,7 @@ interface DllInterface extends Library
     Native.loadLibrary("AutomatedOpcTester.dll", DllInterface.class);
 
     public void init(String host, String server);
-    public void getItemNames();
+    public boolean getItemNames(String[] itemsBuffer, int elementLength, int numElements, int offset);
     public NativeLong createGroup(String groupName, NativeLong requestedRefreshRate);
     public boolean addItem(String groupName, String itemPath);
     public boolean readItemSync(String groupName, String itemPath, byte buffer[], int bufferSz);

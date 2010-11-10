@@ -132,18 +132,27 @@ extern "C"
 		return false;
 	}
 
-	__declspec(dllexport) void __cdecl getItemNames(void)
+	__declspec(dllexport) const bool __cdecl getItemNames(char* itemsBuffer[], const int nElementLength, const int nNumElements, const int nOffSet)
 	{
-		log_NOTICE("getItemNames: called");
+		log_NOTICE("getItemNames: called, nNumElements [",((pantheios::integer)nNumElements),"] nElementLength [",((pantheios::integer)nElementLength),"] nOffset [", ((pantheios::integer)nOffSet),"]");
 
-	  	gspOpcServer->getItemNames(gsoOpcServerAddressSpace);
-
-		log_NOTICE("getItemNames: there are [", pantheios::integer(gsoOpcServerAddressSpace.GetCount()),"] items");
-
-		for(unsigned int i=0; i<gsoOpcServerAddressSpace.GetCount(); i++)
+		if(gsoOpcServerAddressSpace.IsEmpty())
 		{
-			log_NOTICE("getItemNames: string [", pantheios::integer(i),"] is [", CStringA(gsoOpcServerAddressSpace[i]).GetString(),"]");
+	  		gspOpcServer->getItemNames(gsoOpcServerAddressSpace);
 		}
+
+		log_NOTICE("item names retrived: there are [", pantheios::integer(gsoOpcServerAddressSpace.GetCount()),"] items");
+
+		for(unsigned int i=nOffSet; i<gsoOpcServerAddressSpace.GetCount() && i-nOffSet < nNumElements; i++)
+		{
+			strcpy_s(itemsBuffer[i-nOffSet], nElementLength, CStringA(gsoOpcServerAddressSpace[i]).GetString());
+			log_NOTICE("getItemNames: copying opc item to java buffer, index [", pantheios::integer(i),"] value [", CStringA(gsoOpcServerAddressSpace[i]).GetString(),"]");
+		}
+
+		bool result = nNumElements > gsoOpcServerAddressSpace.GetCount() - nOffSet;
+		log_NOTICE("getItemNames: result [",(result?"Y":"N"),"]");
+		
+		return result;
 	}
 
 	__declspec(dllexport) void __cdecl getLastError(char* const pErrorBuffer, const int nBuffSz)

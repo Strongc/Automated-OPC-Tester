@@ -9,37 +9,7 @@ public class Main
     public static void main(String[] args) 
     {
     	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
-//    	createGroup();
-    	
-    	System.out.println(ClientInstance.getInstance().addItem(GROUP_NM, "WTF??"));
-    	System.out.println(ClientInstance.getInstance().getLastError());
-    	System.out.println(ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat"));
-/*
-    	logInfo(ClientInstance.getInstance().getLastError());
-    	
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBool");
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myLongInt");
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myShortInt");
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.mySmallFloat");
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
-    	
-    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myString", "pish");
-    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myBool", "1");
-    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myShortInt", "123");
-    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myLongInt", "123456");
-    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.mySmallFloat", "1.23");
-    	ClientInstance.getInstance().writeItemSync(GROUP_NM, "testGroup.myBigFloat", "123.456");
-*/    	
-/*    	
-    	readAndDisplayItemValue("testGroup.myBigFloat");
-    	readAndDisplayItemValue("testGroup.myBool");
-    	readAndDisplayItemValue("testGroup.myLongInt");
-    	readAndDisplayItemValue("testGroup.myReadOnly");
-    	readAndDisplayItemValue("testGroup.myShortInt");
-    	readAndDisplayItemValue("testGroup.mySmallFloat");
-    	readAndDisplayItemValue("testGroup.myString");
-*/    	
+    	ClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
     }
 
 	private static void createGroup() 
@@ -48,7 +18,7 @@ public class Main
 		
     	opcClient.init("", "Matrikon.OPC.Simulation");
     	opcClient.createGroup(GROUP_NM, 1000);
-    	opcClient.getItemNames();
+//    	opcClient.getItemNames();
 	}
 
 	private static void readAndDisplayItemValue(String itemName) 

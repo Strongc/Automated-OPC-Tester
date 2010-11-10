@@ -1,5 +1,9 @@
 package ch.cern.opc.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.sun.jna.NativeLong;
 import static ch.cern.opc.common.Log.*;
 
@@ -43,10 +47,33 @@ class Client implements ClientApi
 	}
 
 	@Override
-	public boolean getItemNames() 
+	public List<String> getItemNames() 
 	{
-		DllInterface.INSTANCE.getItemNames();
-		return true;
+    	final int nElementSz = 300;
+    	final int nNumElements = 1000;
+    	
+    	List<String> result = new ArrayList<String>();
+    	
+    	boolean gotEmAll = false;
+    	for(int offset = 0; !gotEmAll; offset += nNumElements)
+    	{
+    		String[] s = createBuffer(nElementSz, nNumElements);
+    		gotEmAll = DllInterface.INSTANCE.getItemNames(s, nElementSz, nNumElements, offset);
+    		System.out.println("gotEmAll ["+gotEmAll+"] offset ["+offset+"]");
+    		
+        	for(int i=0; i<nNumElements; i++)
+        	{
+        		if(!s[i].isEmpty())
+        		{
+        			System.out.println("item ["+i+"] value ["+s[i]+"]");
+        			result.add(s[i]);
+        		}
+        	}
+        	
+//        	result.addAll(Arrays.asList(s));
+    	}
+		
+		return result;
 	}
 
 	@Override
@@ -111,4 +138,15 @@ class Client implements ClientApi
 		}
 		return -1;
 	}
+	
+	private String[] createBuffer(final int nElementSz, final int nNumElements) {
+		String result[] = new String[nNumElements];    	
+    	
+		for(int i=0; i<nNumElements; i++)
+    	{    		
+    		result[i] = new String(new char[nElementSz]);
+    	}
+		return result;
+	}
+	
 }

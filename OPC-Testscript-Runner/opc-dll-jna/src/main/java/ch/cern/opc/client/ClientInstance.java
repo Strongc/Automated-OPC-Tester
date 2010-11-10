@@ -2,6 +2,9 @@ package ch.cern.opc.client;
 
 import static ch.cern.opc.common.Log.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A singleton that proxies the {@link ch.cern.opc.client.Client Client} class
  * 
@@ -11,6 +14,8 @@ import static ch.cern.opc.common.Log.*;
 public class ClientInstance implements ClientApi
 {
 	private static ClientInstance theInstance = null;
+	
+	private List<String> opcAddressSpace = new ArrayList<String>();
 
 	/**
 	 * The instance of the dll as seen by jna
@@ -36,7 +41,13 @@ public class ClientInstance implements ClientApi
 	@Override
 	public boolean init(String host, String server)
 	{
-		return client.init(host, server) && client.getItemNames();
+		logInfo("Initialising instance for host ["+host+"] server ["+server+"]");
+		boolean initialised = client.init(host, server);
+		
+		opcAddressSpace.addAll(client.getItemNames());
+		logInfo("Retrieved opc server address space, ["+opcAddressSpace.size()+"] items");
+		
+		return initialised && !opcAddressSpace.isEmpty();
 	}
 
 	@Override
@@ -58,9 +69,9 @@ public class ClientInstance implements ClientApi
 	}
 
 	@Override
-	public boolean getItemNames() 
+	public List<String> getItemNames() 
 	{
-		return client.getItemNames();
+		return opcAddressSpace;
 	}
 
 	@Override
