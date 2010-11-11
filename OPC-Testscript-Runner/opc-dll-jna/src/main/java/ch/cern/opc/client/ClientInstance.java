@@ -43,7 +43,8 @@ public class ClientInstance implements ClientApi
 	{
 		logInfo("Initialising instance for host ["+host+"] server ["+server+"]");
 		boolean initialised = client.init(host, server);
-		
+
+		opcAddressSpace.clear();
 		opcAddressSpace.addAll(client.getItemNames());
 		logInfo("Retrieved opc server address space, ["+opcAddressSpace.size()+"] items");
 		

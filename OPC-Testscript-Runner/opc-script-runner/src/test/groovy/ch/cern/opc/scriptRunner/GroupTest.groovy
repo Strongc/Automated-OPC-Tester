@@ -9,8 +9,12 @@ import org.junit.Before;
 
 class GroupTest 
 {
-	final static def TESTEE_GROUP_NAME = 'testee.group'
-	final static def TEST_ITEM_PATH = 'test.item.path'
+	private final static def TESTEE_GROUP_NAME = 'testee.group'
+	
+	private final static def TEST_ITEM_PATH_1 = 'test.item.path_1'
+	private final static def TEST_ITEM_PATH_2 = 'test.item.path_2'
+	private final static def TEST_ITEM_PATH_3 = 'test.item.path_3'
+	private final static def TEST_ITEM_PATH_4 = 'test.item.off.piste.path_4'
 	
 	def testee
 	
@@ -70,17 +74,17 @@ class GroupTest
 	@Test
 	void testAddItemAndFindItem()
 	{
-		testee.addItem(TEST_ITEM_PATH)
+		testee.addItem(TEST_ITEM_PATH_1)
 		
-		assertEquals(TEST_ITEM_PATH, testee.findItem(TEST_ITEM_PATH).path)
+		assertEquals(TEST_ITEM_PATH_1, testee.findItem(TEST_ITEM_PATH_1).path)
 	}
 	
 	@Test
 	void testAddItemAddsGroupNameToItem()
 	{
-		testee.addItem(TEST_ITEM_PATH)
+		testee.addItem(TEST_ITEM_PATH_1)
 		
-		assertEquals(testee.name, testee.findItem(TEST_ITEM_PATH).groupName)
+		assertEquals(testee.name, testee.findItem(TEST_ITEM_PATH_1).groupName)
 	}
 	
 	@Test(expected = IllegalArgumentException)
@@ -106,29 +110,94 @@ class GroupTest
 	@Test 
 	void testAddItemCallsDllClientWithGroupNameAndItemPath()
 	{
-		testee.addItem(TEST_ITEM_PATH)
+		testee.addItem(TEST_ITEM_PATH_1)
 		assertEquals(testee.name, addedItemGroupName)
-		assertEquals(TEST_ITEM_PATH, addedItemPath)
+		assertEquals(TEST_ITEM_PATH_1, addedItemPath)
 	}
 	
 	@Test
 	void testGetItemAddsItemIfNotAlreadyInGroup()
 	{
-		assertNull(testee.findItem(TEST_ITEM_PATH))
+		assertNull(testee.findItem(TEST_ITEM_PATH_1))
 		
-		testee.item(TEST_ITEM_PATH)
+		testee.item(TEST_ITEM_PATH_1)
 	
-		assertEquals(TEST_ITEM_PATH, testee.findItem(TEST_ITEM_PATH).path)
+		assertEquals(TEST_ITEM_PATH_1, testee.findItem(TEST_ITEM_PATH_1).path)
 	}
 	
 	@Test
 	void testGetItemDoesNotAddItemIfAlreadyInGroup()
 	{
-		testee.item(TEST_ITEM_PATH)
+		testee.item(TEST_ITEM_PATH_1)
 		assertEquals(1, testee.items.size())
 		
-		testee.item(TEST_ITEM_PATH)
+		testee.item(TEST_ITEM_PATH_1)
 		assertEquals(1, testee.items.size())
+	}
+	
+	@Test
+	void testItemsReturnsCollectionOfAlreadyAddedItems()
+	{
+		testee.item(TEST_ITEM_PATH_1)
+		testee.item(TEST_ITEM_PATH_2)
+		testee.item(TEST_ITEM_PATH_3)
+		testee.item(TEST_ITEM_PATH_4)
+		assertEquals(4, testee.items.size())
+		
+		assertEquals(0, testee.items('precise_no_match').size())
+		assertEquals(1, testee.items(TEST_ITEM_PATH_1).size())
+		assertEquals(0, testee.items('*off.piste*').size())
+		assertEquals(0, testee.items('**off.piste').size())
+		assertEquals(0, testee.items('**off.piste*').size())
+		assertEquals(1, testee.items('**off.piste**').size())
+		assertEquals(3, testee.items('*.item.path*').size())
+		assertEquals(4, testee.items('**.path*').size())
+		assertEquals(0, testee.items('*').size())
+		assertEquals(4, testee.items('**').size())
+		assertEquals(3, testee.items('*.*.*').size())
+	}
+	
+	@Test
+	void testRegExp()
+	{
+		def patternText = '[a-zA-Z0-9\\.\\_\\-]*.item.path[a-zA-Z0-9\\.\\_\\-]*'
+		def pattern = ~/${patternText}/
+		
+		assertTrue(pattern.matcher('arse-test.item.path_1').matches())
+	}
+	
+	@Test
+	void testReplacement()
+	{
+		def text = '*Woo**'
+		
+		def chars = text.chars
+		def regexp = ""
+		
+		for(def i = chars.length-1; i >= 0; i--)
+		{
+			println("char is [${chars[i]}]")
+			if(chars[i] != '*')
+			{
+				regexp = new String(chars[i]) + regexp
+			}
+			else
+			{
+				//** expression
+				if(chars[i] == '*' && i > 0 && chars[i-1] == '*')
+				{
+					regexp = '[** regexp_expression]' + regexp
+					i--
+				}
+				//* expression
+				else
+				{
+					regexp = '[* regexp_expression]' + regexp
+				}
+			}
+		}
+		
+		println regexp
 	}
 	
 }

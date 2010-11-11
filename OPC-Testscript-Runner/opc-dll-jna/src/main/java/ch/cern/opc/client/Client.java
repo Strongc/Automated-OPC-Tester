@@ -1,11 +1,12 @@
 package ch.cern.opc.client;
 
+import static ch.cern.opc.common.Log.logDebug;
+import static ch.cern.opc.common.Log.logError;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.sun.jna.NativeLong;
-import static ch.cern.opc.common.Log.*;
 
 class Client implements ClientApi 
 {
