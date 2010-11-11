@@ -44,21 +44,20 @@ class Group
 	
 	def items(patternText)
 	{
-		def pattern = ~/${replaceStarsWithRegexps(patternText)}/
-		
 		def matchingItems = []
-		
-		items.keySet().each
+        def pattern = ~/${replaceStarsWithRegexps(patternText)}/
+
+		ClientInstance.instance.getItemNames().each 
 		{itemPath->
 			if(pattern.matcher(itemPath).matches())
 			{
-				matchingItems << items[itemPath]
+				matchingItems << item(itemPath)
 			}
 		}
 		
 		return matchingItems
 	}
-	
+
 	private def replaceStarsWithRegexps(def text)
 	{
 		def chars = text.chars
@@ -66,7 +65,6 @@ class Group
 		
 		for(def i = chars.length-1; i >= 0; i--)
 		{
-			println("char is [${chars[i]}]")
 			if(chars[i] != '*')
 			{
 				result = new String(chars[i]) + result

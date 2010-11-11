@@ -1,0 +1,23 @@
+init('', 'Matrikon.OPC.Simulation')
+
+logInfo "script demonstrates using adding and controlling multiple items in a group using the * and ** notation"
+
+group('test_group').with
+{
+
+	for(i in 0..10)
+	{
+	
+		items('**.my*').each
+		{item->
+			logInfo(i%2)
+			item.syncValue = "${i%2}"
+			//logInfo("item [${item.path}] has value [${item.syncValue}]")
+			assertEquals("verify values have been written", "${i%2}", item.syncValue)
+		}
+		
+		sleep(1000)
+	}
+	
+	logInfo('end of script')
+}

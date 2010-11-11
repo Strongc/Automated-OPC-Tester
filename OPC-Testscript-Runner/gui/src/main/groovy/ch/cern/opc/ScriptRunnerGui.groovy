@@ -63,7 +63,7 @@ class ScriptRunnerGui
 	
 	private def labelledPanel(text, bgColour)
 	{
-		return resultsTree.tree
+		return new JScrollPane(resultsTree.tree)
 	}
 	
 	private def openScript()

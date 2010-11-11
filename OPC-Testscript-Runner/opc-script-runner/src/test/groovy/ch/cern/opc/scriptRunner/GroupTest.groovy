@@ -15,6 +15,10 @@ class GroupTest
 	private final static def TEST_ITEM_PATH_2 = 'test.item.path_2'
 	private final static def TEST_ITEM_PATH_3 = 'test.item.path_3'
 	private final static def TEST_ITEM_PATH_4 = 'test.item.off.piste.path_4'
+	private final static def TEST_ITEM_PATH_5 = 'rootitem'
+	
+	
+	def OPC_ADDRESS_SPACE = [TEST_ITEM_PATH_1, TEST_ITEM_PATH_2, TEST_ITEM_PATH_3, TEST_ITEM_PATH_4, TEST_ITEM_PATH_5]
 	
 	def testee
 	
@@ -45,6 +49,9 @@ class GroupTest
 				addedItemGroupName = groupName
 				addedItemPath = path
 				return true
+			},
+			getItemNames:{
+				return OPC_ADDRESS_SPACE
 			}
 		] as ClientApi
 	
@@ -152,52 +159,16 @@ class GroupTest
 		assertEquals(1, testee.items('**off.piste**').size())
 		assertEquals(3, testee.items('*.item.path*').size())
 		assertEquals(4, testee.items('**.path*').size())
-		assertEquals(0, testee.items('*').size())
-		assertEquals(4, testee.items('**').size())
-		assertEquals(3, testee.items('*.*.*').size())
+		assertEquals(1, testee.items('*').size())
+		assertEquals(5, testee.items('**').size())
+		assertEquals(4, testee.items('*.*.*').size())
 	}
 	
 	@Test
-	void testRegExp()
+	void testItemsAddingAllItemsFromAddressSpaceMatchingPattern()
 	{
-		def patternText = '[a-zA-Z0-9\\.\\_\\-]*.item.path[a-zA-Z0-9\\.\\_\\-]*'
-		def pattern = ~/${patternText}/
-		
-		assertTrue(pattern.matcher('arse-test.item.path_1').matches())
+		assertEquals(0, testee.items.size())
+		testee.items('**')
+		assertEquals(OPC_ADDRESS_SPACE.size(), testee.items.size())
 	}
-	
-	@Test
-	void testReplacement()
-	{
-		def text = '*Woo**'
-		
-		def chars = text.chars
-		def regexp = ""
-		
-		for(def i = chars.length-1; i >= 0; i--)
-		{
-			println("char is [${chars[i]}]")
-			if(chars[i] != '*')
-			{
-				regexp = new String(chars[i]) + regexp
-			}
-			else
-			{
-				//** expression
-				if(chars[i] == '*' && i > 0 && chars[i-1] == '*')
-				{
-					regexp = '[** regexp_expression]' + regexp
-					i--
-				}
-				//* expression
-				else
-				{
-					regexp = '[* regexp_expression]' + regexp
-				}
-			}
-		}
-		
-		println regexp
-	}
-	
 }
