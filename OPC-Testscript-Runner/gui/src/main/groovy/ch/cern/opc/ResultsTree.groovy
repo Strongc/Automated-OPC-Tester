@@ -17,20 +17,18 @@ class ResultsTree
 	def tree
 	def root
 	
-	static final def SUCCESS_NODE_NAME = 'success'
-	static final def FAILURE_NODE_NAME = 'failure'
 	static final def ROOT_NAME = 'test results'
 	
 	def ResultsTree()
 	{
-		root = new TreeNode(ROOT_NAME)
+		root = new ResultTreeNode(ROOT_NAME, ResultTreeNodeColour.GREEN)
 		tree = new JTree(root)
 		tree.setCellRenderer(new RedGreenRenderer())
 	}
 	
 	def addResults(Element xml)
 	{
-		createNodes(root, xml)
+		root.add(new TreeNodeFactory().createNodes(xml))
 		tree.treeModel.reload()
 	}
 	
@@ -40,31 +38,29 @@ class ResultsTree
 		tree.treeModel.reload()
 	}
 	
-	private def createNodes(TreeNode parentNode, xml)
+	@Override
+	String toString()
 	{
-		use(DOMCategory)
-		{
-			def newNode = createNode(xml)
-			xml.children().each{
-				createNodes(newNode, it)
+		def result = ""
+		
+		def nodeToStringClosure
+		nodeToStringClosure = {node, indentCount ->
+			def indentString = ""			
+			for(int i=0; i<indentCount; i++)
+			{
+				indentString += "\t"
 			}
-			parentNode.add(newNode)
-		}
-	}
-	
-	private def createNode(element)
-	{
-		def result
-		
-		if(SUCCESS_NODE_NAME.equals(element.name()) || FAILURE_NODE_NAME.equals(element.name()))
-		{
-			result = new TreeNode(element.'@message')
-		}
-		else
-		{
-			result = new TreeNode(element.'@name')
+			if(indentCount > 0) indentString += '|_'
+			
+			result += (indentString + node.toString() + "\n")
+			
+			node.children.each
+			{
+				nodeToStringClosure(it, indentCount + 1)
+			}
 		}
 		
+		nodeToStringClosure(root, 0)
 		return result
 	}
 	
@@ -89,26 +85,27 @@ class ResultsTree
 			return this
 		}
 		
-		private def containsFailures(TreeNode node)
+		private def containsFailures(ResultTreeNode node)
 		{
 			def failedChildren = []
-			getFailedTestNodes(node, failedChildren)
+			
+			def failureCheckerClosure
+			failureCheckerClosure = 
+			{currentNode->
+				if(ResultTreeNodeColour.RED == currentNode.colour)
+				{
+					failedChildren << currentNode
+				}	
+				
+				currentNode.children.each
+				{childNode ->
+					failureCheckerClosure(childNode)
+				}
+			}
+			
+			failureCheckerClosure(node)
 			
 			return failedChildren.size > 0
 		}
-		
-		private def getFailedTestNodes(TreeNode node, failures)
-		{
-			if(node.toString().contains('failed:'))
-			{
-				failures << node
-			}
-			
-			node.children.each
-			{
-				getFailedTestNodes(it, failures)
-			}
-		}
-		
 	} 
 }

@@ -9,10 +9,10 @@ import groovy.xml.dom.DOMCategory
 import ch.cern.opc.client.ClientApi
 import ch.cern.opc.client.ClientInstance
 
-import static ch.cern.opc.scriptRunner.Assertions.NULL_MSG
-import static ch.cern.opc.scriptRunner.Assertions.EMPTY_MSG
+import static ch.cern.opc.scriptRunner.RunResults.NULL_MSG
+import static ch.cern.opc.scriptRunner.RunResults.EMPTY_MSG
 
-class AssertionsTest 
+class RunResultsTest 
 {
 	static final def TEST_LAST_ERR = 'this is the last error'
 	
@@ -28,7 +28,7 @@ class AssertionsTest
 				] as ClientApi
 		
 		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
-		testee = new Assertions()
+		testee = new RunResults()
 	}
 	
 	@Test

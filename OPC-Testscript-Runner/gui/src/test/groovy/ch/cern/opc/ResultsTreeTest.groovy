@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
 import groovy.xml.DOMBuilder
-import javax.swing.tree.TreeModel
-import javax.swing.tree.TreeNode
 
 class ResultsTreeTest 
 {
@@ -15,6 +13,7 @@ class ResultsTreeTest
 	
 	static final def TEST_PASSED_MSG = 'well done you passed'
 	static final def TEST_FAILED_MSG = 'you failed you insufferable fool'
+	static final def EXCEPTION_MSG = 'some exception occurred'
 	
 	@Before
 	void setup()
@@ -31,15 +30,15 @@ class ResultsTreeTest
 		{
 			testsuite(name:'Tests', tests:'2', failures:'1', disabled:'0', errors:'0', time:'0')
 			{
-				testcase(name:'assertSomething, passed')
+				testcase(name:'assertSomething')
 				{
 					success(message:TEST_PASSED_MSG)
 				}
-				testcase(name:'assertSomethingElse, failure')
+				testcase(name:'assertSomethingElse')
 				{
 					failure(message:TEST_FAILED_MSG)
 				}
-				exception(message:'some exception message')
+				exception(name:EXCEPTION_MSG)
 				{
 					line(line:'exception line 1')
 					line(line:'exception line 2')
@@ -52,33 +51,9 @@ class ResultsTreeTest
 	@Test
 	void testAddResultsCreatesTreeNodes()
 	{
-		println xml
 		testee.addResults(xml)
-		assertEquals(10, countTreeNodes(testee.root))
-	}
-	
-	@Test
-	void testPassedTestNodesHaveCorrectMessage()
-	{
-		testee.addResults(xml)
-		
-		def passedNodes = []
-		getPassedTestNodes(testee.root, passedNodes)
-
-		assertEquals(1, passedNodes.size)
-		assertEquals(TEST_PASSED_MSG, passedNodes[0].getChildAt(0).toString())
-	}
-	
-	@Test
-	void testFailedTestNodesHaveCorrectMessage()
-	{
-		testee.addResults(xml)
-		
-		def failedNodes = []
-		getFailedTestNodes(testee.root, failedNodes)
-		
-		assertEquals(1, failedNodes.size)
-		assertEquals(TEST_FAILED_MSG, failedNodes[0].getChildAt(0).toString())
+		println testee
+		assertEquals(10, treeNodeCount)
 	}
 	
 	@Test
@@ -86,52 +61,26 @@ class ResultsTreeTest
 	{
 		testee.addResults(xml)
 		testee.clearResults()
-		assertEquals(0, countTreeNodes(testee.root))
+		assertEquals('root is left', 1, treeNodeCount)
 	}
 	
-	private def countTreeNodes(TreeNode node)
+	private def getTreeNodeCount()
 	{
-		nodeCounter += node.childCount
+		def result = 0
 		
-		node.children.each{
-			countTreeNodes(it)
-		}
-
-		return nodeCounter
-	}
-	
-	private def getPassedTestNodes(TreeNode node, nodes)
-	{
-		/*
-		 * test passed tree node structure is
-		 * +assertSomething
-		 * 	|_test passed
-		 */
-		if(node.childCount == 1 && TEST_PASSED_MSG.equals(node.getChildAt(0).toString()))
-		{
-			nodes << node
+		def nodeCounterClosure
+		nodeCounterClosure = 
+		{node ->
+			result++
+			
+			node.children.each
+			{childNode->
+				nodeCounterClosure(childNode)
+			}
 		}
 		
-		node.children.each{
-			getPassedTestNodes(it, nodes)
-		}
-	}
-	
-	private def getFailedTestNodes(TreeNode node, nodes)
-	{
-		/*
-		 * test passed tree node structure is
-		 * +assertSomething
-		 * 	|_failed: failure message...
-		 */
-		if(node.childCount == 1 && TEST_FAILED_MSG.equals(node.getChildAt(0).toString()))
-		{
-			nodes << node
-		}
+		nodeCounterClosure(testee.root)
 		
-		node.children.each{
-			getFailedTestNodes(it, nodes)
-		}
+		return result
 	}
-	
 }

@@ -3,7 +3,7 @@ package ch.cern.opc.scriptRunner
 import ch.cern.opc.client.ClientInstance
 import ch.cern.opc.common.Log
 
-@Mixin([Assertions, Log])
+@Mixin([RunResults, Log])
 class ScriptContext 
 {
 	def groups = [:]

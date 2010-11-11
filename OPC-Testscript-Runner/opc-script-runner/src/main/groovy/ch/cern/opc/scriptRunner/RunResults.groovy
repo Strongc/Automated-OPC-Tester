@@ -3,7 +3,7 @@ package ch.cern.opc.scriptRunner
 import groovy.xml.DOMBuilder
 import ch.cern.opc.client.ClientInstance
 
-class Assertions 
+class RunResults 
 {
 	final static def NULL_MSG = "null assertion message";
 	final static def EMPTY_MSG = "empty assertion message";

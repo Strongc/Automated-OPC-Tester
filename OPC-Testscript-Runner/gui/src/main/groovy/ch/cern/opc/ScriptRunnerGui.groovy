@@ -98,6 +98,7 @@ class ScriptRunnerGui
 		def thread = Thread.start{
 			resultsTree.clearResults()
 			def results = new ScriptRunner().runScript(scriptFile)
+			println(results)
 			resultsTree.addResults(results)
 		}
 	}
