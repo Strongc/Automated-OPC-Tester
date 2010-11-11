@@ -13,7 +13,7 @@ for(i in 1..1)
 		logInfo ">>starting group [${name}] iteration [${i}]"
 		assertTrue("group creation test", true)
 		
-		assertTrue('deliberate fail', false)
+		//assertTrue('deliberate fail', false)
 
 		item('testGroup.myBigFloat').with
 		{
@@ -79,4 +79,5 @@ group('group.2').with
 	logInfo '<<ending group.2'
 }
 
-println XML
+assertTrue('deliberate fail', false)
+throw new Exception('deliberate exception')
