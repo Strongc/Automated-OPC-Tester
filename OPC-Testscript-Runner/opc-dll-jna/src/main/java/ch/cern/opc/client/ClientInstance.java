@@ -92,6 +92,12 @@ public class ClientInstance implements ClientApi
 	{
 		return client.writeItemSync(groupName, itemPath, value);
 	}
+	
+	@Override
+	public boolean writeItemAsync(String groupName, String itemPath, String value) 
+	{
+		return client.writeItemAsync(groupName, itemPath, value);
+	}
 
 	@Override
 	public String getLastError() 

@@ -23,9 +23,17 @@ class ItemTest
 		def group
 		def item
 		def theValue
+
+		def WriteItemValues(group, item, theValue)
+		{
+			this.group = group
+			this.item = item
+			this.theValue = theValue
+		}
 	}
 
 	def requestedSetSyncValueParameters
+	def requestedSetAsyncValueParameters
 	
 	@Before
 	void setup()
@@ -35,15 +43,16 @@ class ItemTest
 		
 		def theClientInstance = [
 			readItemSync: {groupName, path ->
-				println "readItemSync: group [${groupName}] path [${path}]"
 				requestedReadItemSyncGroupName = groupName
 				requestedReadItemSyncPath = path
 				return TESTEE_ITEM_VALUE
 			},
 			writeItemSync: {groupName, path, value ->
-				println "writeItemSync: group [${groupName}] path [${path}] value [${value}]"
-				requestedSetSyncValueParameters = new WriteItemValues()
-				requestedSetSyncValueParameters.with {group = groupName;item=path;theValue=value}
+				requestedSetSyncValueParameters = new WriteItemValues(groupName, path, value)
+				return true
+			},
+			writeItemAsync: {groupName, path, value ->
+				requestedSetAsyncValueParameters = new WriteItemValues(groupName, path, value)
 				return true
 			}
 		] as ClientApi
@@ -111,5 +120,14 @@ class ItemTest
 		assertEquals("123", requestedSetSyncValueParameters.theValue)
 		assertEquals(TESTEE_ITEM_PATH, requestedSetSyncValueParameters.item)
 		assertEquals(TESTEE_GROUP_NAME, requestedSetSyncValueParameters.group)
+	}
+	
+	@Test
+	void testAsyncValueWritesValue()
+	{
+		testee.asyncValue = '456'
+		assertEquals('456', requestedSetAsyncValueParameters.theValue)
+		assertEquals(TESTEE_ITEM_PATH, requestedSetAsyncValueParameters.item)
+		assertEquals(TESTEE_GROUP_NAME, requestedSetAsyncValueParameters.group)
 	}
 }

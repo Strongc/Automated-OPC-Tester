@@ -28,4 +28,9 @@ class Item
 	{
 		return ClientInstance.instance.writeItemSync(groupName, path, value)
 	}
+	
+	def setAsyncValue(value)
+	{
+		return ClientInstance.instance.writeItemAsync(groupName, path, value)
+	}
 }

@@ -1,0 +1,10 @@
+init('', 'Matrikon.OPC.Simulation')
+
+logInfo('script demonstrates aysnchronous writing then reading for an item')
+
+group('test_group').with
+{
+	item('testGroup.myString').asyncValue = 'asynchronously written value'
+}
+
+logInfo('end of script')

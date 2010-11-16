@@ -132,6 +132,12 @@ extern "C"
 		return false;
 	}
 
+	__declspec(dllexport) const bool __cdecl writeItemAsync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
+	{
+		log_ERROR("writeItemAsync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"] NO IMPLEMENTATION YET");
+		return false;
+	}
+
 	__declspec(dllexport) const bool __cdecl getItemNames(char* itemsBuffer[], const int nElementLength, const int nNumElements, const int nOffSet)
 	{
 		log_NOTICE("getItemNames: called, nNumElements [",((pantheios::integer)nNumElements),"] nElementLength [",((pantheios::integer)nElementLength),"] nOffset [", ((pantheios::integer)nOffSet),"]");

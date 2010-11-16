@@ -103,6 +103,12 @@ class Client implements ClientApi
 	{
 		return DllInterface.INSTANCE.writeItemSync(groupName, itemPath, value);
 	}
+	
+	@Override
+	public boolean writeItemAsync(String groupName, String itemPath, String value) 
+	{
+		return DllInterface.INSTANCE.writeItemAsync(groupName, itemPath, value);
+	}
 
 	@Override
 	public String getLastError() 
@@ -149,5 +155,4 @@ class Client implements ClientApi
     	}
 		return result;
 	}
-	
 }

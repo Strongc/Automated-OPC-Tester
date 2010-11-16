@@ -80,6 +80,36 @@ class GroupManager
 			return -1;
 		}
 
+		bool WriteItem(const char* const pItemName, const char* const pValue, const bool isAsync)
+		{
+			COPCItem* pItem = m_items[CString(pItemName)];
+			if(pItem != NULL)
+			{
+				VARTYPE vt = m_itemsDataTypes[CString(pItemName)];
+				if(VT_EMPTY != vt)
+				{
+					_variant_t varValue(pValue);
+					if(S_OK == VariantChangeType(&varValue.GetVARIANT(), &varValue.GetVARIANT(), VARIANT_ALPHABOOL, vt))
+					{
+						if(isAsync)
+						{
+							pItem->writeAsynch(varValue);
+						}
+						else
+						{
+							pItem->writeSync(varValue);
+						}
+						
+						log_NOTICE("WriteItem: successfully requested write item [", pItemName,"] value [", pValue,"] async [",(isAsync?"T":"F"),"]");
+						return true;
+					}
+				}
+			}
+
+			RecordError("WriteItem: failed to write item [%s] value [%s] async [%s]", pItemName, pValue, (isAsync?"T":"F"));
+			return false;
+		}
+
 	public:
 
 		GroupNode(const char* const pGroupName, COPCGroup* pGroup):m_pGroupName(_strdup(pGroupName)), m_pGroup(pGroup)
@@ -120,26 +150,14 @@ class GroupManager
 			return false;
 		}
 
+		bool WriteItemAsync(const char* const pItemName, const char* const pValue)
+		{
+			return WriteItem(pItemName, pValue, true);
+		}
+
 		bool WriteItemSync(const char* const pItemName, const char* const pValue)
 		{
-			COPCItem* pItem = m_items[CString(pItemName)];
-			if(pItem != NULL)
-			{
-				VARTYPE vt = m_itemsDataTypes[CString(pItemName)];
-				if(VT_EMPTY != vt)
-				{
-					_variant_t varValue(pValue);
-					if(S_OK == VariantChangeType(&varValue.GetVARIANT(), &varValue.GetVARIANT(), VARIANT_ALPHABOOL, vt))
-					{
-						pItem->writeSync(varValue);
-						log_NOTICE("WriteItemSync: successfully wrote item [", pItemName,"] value [", pValue,"]");
-						return true;
-					}
-				}
-			}
-
-			RecordError("WriteItemSync: failed to write item [%s] value [%s]", pItemName, pValue);
-			return false;
+			return WriteItem(pItemName, pValue, false);
 		}
 	};
 
