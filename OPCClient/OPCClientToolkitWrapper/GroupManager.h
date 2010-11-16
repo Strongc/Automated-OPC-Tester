@@ -82,18 +82,23 @@ class GroupManager
 
 		bool WriteItem(const char* const pItemName, const char* const pValue, const bool isAsync)
 		{
+			log_NOTICE("writing item [", pItemName,"]");
 			COPCItem* pItem = m_items[CString(pItemName)];
 			if(pItem != NULL)
 			{
+				log_NOTICE("got item [", pItemName,"]");
 				VARTYPE vt = m_itemsDataTypes[CString(pItemName)];
 				if(VT_EMPTY != vt)
 				{
+					log_NOTICE("got item type [", pantheios::integer(vt),"]");
 					_variant_t varValue(pValue);
 					if(S_OK == VariantChangeType(&varValue.GetVARIANT(), &varValue.GetVARIANT(), VARIANT_ALPHABOOL, vt))
 					{
 						if(isAsync)
 						{
+							log_NOTICE("starting async write");
 							pItem->writeAsynch(varValue);
+							log_NOTICE("completed async write");
 						}
 						else
 						{
@@ -163,9 +168,11 @@ class GroupManager
 
 private:
 	CAtlMap<CString , GroupNode*> m_groups;
+	IAsynchDataCallback& m_updateHandler;
 
 public:
-	GroupManager()
+	GroupManager(IAsynchDataCallback& updateHandler)
+		:m_updateHandler(updateHandler)
 	{
 		m_groups.InitHashTable(257);
 	};
@@ -173,6 +180,7 @@ public:
 
 	void AddGroup(const char* const pGroupName, COPCGroup* pGroup)
 	{
+		pGroup->enableAsynch(m_updateHandler);
 		m_groups[CString(pGroupName)] = new GroupNode(pGroupName, pGroup);
 	};
 
@@ -219,6 +227,23 @@ public:
 		}
 
 		RecordError("WriteItemSync: failed to find group [%s]", pGroupName);
+		return false;
+	}
+
+	bool WriteItemAsync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
+	{
+		log_NOTICE("WriteItemAsync: called");
+		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
+		if(pGroupNode != NULL)
+		{
+			log_NOTICE("WriteItemAsync: found group, writing...");
+			pGroupNode->WriteItemAsync(pItemPath, pValue);
+
+			log_NOTICE("WriteItemAsync: group [", pGroupName,"] item [",pItemPath,"] value [",pValue,"]");
+			return true;
+		}
+
+		RecordError("WriteItemAsync: failed to find group [%s]", pGroupName);
 		return false;
 	}
 

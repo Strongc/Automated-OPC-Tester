@@ -8,6 +8,7 @@
 #include "OPCServer.h"
 #include "OPCGroup.h"
 #include "GroupManager.h"
+#include "AsyncUpdateHandler.h"
 
 #include <pantheios/pantheios.hpp>
 #include <pantheios/backends/bec.file.h>
@@ -21,7 +22,8 @@ char gscLogFilePath[MAX_PATH];
 
 COPCHost *gspHost = NULL;
 COPCServer *gspOpcServer = NULL;
-GroupManager gsoGroupManager;
+AsyncUpdateHandler updateHandler;
+GroupManager gsoGroupManager(updateHandler);
 
 
 CString gstrLastError = "No errors reported";
@@ -129,13 +131,14 @@ extern "C"
 		log_NOTICE("writeItemSync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
 		bool result = gsoGroupManager.WriteItemSync(pGroupName, pItemPath, pValue);
 		log_NOTICE("writeItemSync complete, group [", pGroupName,"] item [", pItemPath,"] result [", pantheios::integer(result),"]");
-		return false;
+		return result;
 	}
 
 	__declspec(dllexport) const bool __cdecl writeItemAsync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{
-		log_ERROR("writeItemAsync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"] NO IMPLEMENTATION YET");
-		return false;
+		log_NOTICE("writeItemAsync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
+		bool result = gsoGroupManager.WriteItemAsync(pGroupName, pItemPath, pValue);
+		return result;
 	}
 
 	__declspec(dllexport) const bool __cdecl getItemNames(char* itemsBuffer[], const int nElementLength, const int nNumElements, const int nOffSet)

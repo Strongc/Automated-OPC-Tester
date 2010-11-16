@@ -11,7 +11,11 @@ public class Main
     	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	ClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
     	
-    	System.out.println("result" + ClientInstance.getInstance().writeItemAsync("testGroup", "testItem", "testValue"));
+    	createGroup();
+    	
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");    	
+    	
+    	System.out.println("result" + ClientInstance.getInstance().writeItemAsync(GROUP_NM, "testGroup.myString", "testValue"));
     }
 
 	private static void createGroup() 
