@@ -5,6 +5,7 @@
 #include "OPCItemData.h"
 #include <pantheios/pantheios.hpp>
 #include <pantheios/inserters/integer.hpp>
+#include "comutil.h"
 
 using namespace pantheios;
 

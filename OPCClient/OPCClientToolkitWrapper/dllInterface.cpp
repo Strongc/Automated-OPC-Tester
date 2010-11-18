@@ -168,4 +168,9 @@ extern "C"
 	{
 		strcpy_s(pErrorBuffer, nBuffSz, gstrLastError);
 	}
+
+	__declspec(dllexport) void __cdecl registerAsyncUpdate(updateCallback cb)
+	{
+		updateHandler.SetCallback(cb);
+	}
 }

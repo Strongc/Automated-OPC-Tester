@@ -4,11 +4,12 @@ logInfo('script demonstrates aysnchronous writing then reading for an item')
 
 group('test_group').with
 {
+	item('testGroup.myBool')
 	for(i in 1..15)
 	{
 		item('testGroup.myString').asyncValue = "async value [${i}]"
 		
-		sleep(1000)
+		sleep(2000)
 	}
 	
 	

@@ -15,6 +15,7 @@ public interface ClientApi
 	public String readItemSync(String groupName, String itemPath);
 	public boolean writeItemSync(String groupName, String itemPath, String value);
 	public boolean writeItemAsync(String groupName, String itemPath, String value);
+	public void registerAsyncUpdate(AsyncUpdateCallback callback);
 	public String getLastError();
 	
 	public State getState();

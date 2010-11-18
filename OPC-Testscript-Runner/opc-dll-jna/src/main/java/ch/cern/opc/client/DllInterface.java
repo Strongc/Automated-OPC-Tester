@@ -17,4 +17,5 @@ interface DllInterface extends Library
     public boolean writeItemSync(String groupName, String itemPath, String value);
     public boolean writeItemAsync(String groupName, String itemPath, String value);
     public void getLastError(byte buffer[], int bufferSz);
+    public void registerAsyncUpdate(AsyncUpdateCallback cb);
 }

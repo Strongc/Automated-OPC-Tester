@@ -104,4 +104,10 @@ public class ClientInstance implements ClientApi
 	{
 		return client.getLastError();
 	}
+
+	@Override
+	public void registerAsyncUpdate(AsyncUpdateCallback callback) 
+	{
+		client.registerAsyncUpdate(callback);
+	}
 }

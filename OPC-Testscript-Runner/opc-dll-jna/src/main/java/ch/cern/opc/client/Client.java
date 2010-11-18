@@ -155,4 +155,10 @@ class Client implements ClientApi
     	}
 		return result;
 	}
+
+	@Override
+	public void registerAsyncUpdate(AsyncUpdateCallback callback) 
+	{
+		DllInterface.INSTANCE.registerAsyncUpdate(callback);
+	}
 }

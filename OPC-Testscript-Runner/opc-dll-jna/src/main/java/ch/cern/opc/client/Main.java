@@ -13,11 +13,33 @@ public class Main
     	
     	createGroup();
     	
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");    	
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
+    	
+    	ClientInstance.getInstance().registerAsyncUpdate(new AsyncUpdateCallback() {
+			@Override
+			public int onUpdate(String itemPath, String value) 
+			{
+				System.out.println("onUpdate called item ["+itemPath+"] value ["+value+"]");
+				return 0;
+			}
+		});
+    	
+    	try 
+    	{
+    		for(int i=0; i<15; i++)
+    		{
+    			Thread.sleep(1000);
+    			System.out.println(i%2 == 0? "tick": "tock");
+    		}
+		} 
+    	catch (InterruptedException e) 
+		{
+			e.printStackTrace();
+		}
     	
     	System.out.println("result" + ClientInstance.getInstance().writeItemAsync(GROUP_NM, "testGroup.myString", "testValue"));
     }
-
+    
 	private static void createGroup() 
 	{
 		ClientApi opcClient = ClientInstance.getInstance();
