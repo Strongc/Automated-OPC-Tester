@@ -11,7 +11,7 @@ class RunResults
 	def passes = []	
 	def failures = []
 	def exceptions = []
-	
+	def asyncUpdater = new AsyncUpdateHandler();
 	
 	def assertTrue(message, Boolean value)
 	{
@@ -72,6 +72,11 @@ class RunResults
 		{
 			addFail('assertEquals', formatMessage(message, expected, actual))
 		}
+	}
+	
+	def assertAsyncEquals(message, timeoutMs, expected, itemPath)
+	{
+		asyncUpdater.register()
 	}
 	
 	def getXML()
