@@ -9,8 +9,7 @@ class ScriptRunner
 	
 	def Element runScript(scriptFile)
 	{
-		//def scriptClosure = Eval.me("{->\ntry{${scriptFile.text}}catch(e){addException(e);logError('exception thrown')}\n}")
-		def scriptClosure = Eval.me("{->\n${scriptFile.text}\n}")
+		def scriptClosure = Eval.me("{->\ntry{${scriptFile.text}}catch(e){addException(e);logError('exception thrown')}\n}")
 		context = new ScriptContext()
 
 		runScriptClosure(scriptClosure, context)

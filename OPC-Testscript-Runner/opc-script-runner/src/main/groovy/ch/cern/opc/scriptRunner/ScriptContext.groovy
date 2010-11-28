@@ -2,6 +2,7 @@ package ch.cern.opc.scriptRunner
 
 import ch.cern.opc.client.ClientInstance
 import ch.cern.opc.common.Log
+import ch.cern.opc.scriptRunner.results.RunResults;
 
 @Mixin([RunResults, Log])
 class ScriptContext 

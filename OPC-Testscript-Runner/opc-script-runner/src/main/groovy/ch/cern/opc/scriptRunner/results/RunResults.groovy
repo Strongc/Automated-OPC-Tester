@@ -1,7 +1,9 @@
-package ch.cern.opc.scriptRunner
+package ch.cern.opc.scriptRunner.results
+
 
 import groovy.xml.DOMBuilder
 import ch.cern.opc.client.ClientInstance
+import ch.cern.opc.scriptRunner.AsyncUpdateHandler
 
 class RunResults 
 {

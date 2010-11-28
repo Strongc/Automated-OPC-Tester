@@ -1,4 +1,5 @@
-package ch.cern.opc.scriptRunner
+package ch.cern.opc.scriptRunner.results
+import ch.cern.opc.scriptRunner.results.RunResults;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -9,8 +10,8 @@ import groovy.xml.dom.DOMCategory
 import ch.cern.opc.client.ClientApi
 import ch.cern.opc.client.ClientInstance
 
-import static ch.cern.opc.scriptRunner.RunResults.NULL_MSG
-import static ch.cern.opc.scriptRunner.RunResults.EMPTY_MSG
+import static ch.cern.opc.scriptRunner.results.RunResults.NULL_MSG
+import static ch.cern.opc.scriptRunner.results.RunResults.EMPTY_MSG
 
 class RunResultsTest 
 {
