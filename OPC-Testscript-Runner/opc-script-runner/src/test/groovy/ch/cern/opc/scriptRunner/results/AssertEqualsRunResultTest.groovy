@@ -6,9 +6,9 @@ import groovy.xml.dom.DOMCategory
 import ch.cern.opc.client.ClientApi
 import ch.cern.opc.client.ClientInstance
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
 
 class AssertEqualsRunResultTest 
 {

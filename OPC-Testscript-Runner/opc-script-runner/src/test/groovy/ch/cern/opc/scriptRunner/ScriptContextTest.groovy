@@ -26,7 +26,6 @@ class ScriptContextTest
 				return true
 			},
 			init: {host, server ->
-				println 'skdjhskhgksjhgksj'
 				initialisationParameters = ['host': host, 'server':server]
 				return true
 			},

@@ -5,7 +5,7 @@ import static RunResultUtil.formatMessage
 
 protected class AssertEqualsRunResult implements RunResult 
 {
-	final def title = 'assertEquals'
+	static final def TITLE = 'assertEquals'
 	
 	final def message
 	final def outputMessage
@@ -33,14 +33,14 @@ protected class AssertEqualsRunResult implements RunResult
 		def element
 		if(isPassed)
 		{
-			element = xmlBuilder.testcase(name:"${title} passed: ${message}")
+			element = xmlBuilder.testcase(name:"${TITLE} passed: ${message}")
 			{
 				success(message:outputMessage)
 			}
 		}
 		else
 		{
-			element = xmlBuilder.testcase(name:"${title} failed: ${message}")
+			element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 			{
 				failure(message:outputMessage)
 			}
