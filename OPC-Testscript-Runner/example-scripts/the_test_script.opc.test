@@ -24,8 +24,9 @@ for(i in 1..10)
 		item('testGroup.myBool').with		
 		{
 			def togglingBool = (i.mod(2) == 0)
-			syncValue = "${i.mod(2)}"
-			if(i.mod(2))
+			syncValue = "${togglingBool}"
+			logInfo("boolean value read from OPCS is [${syncValue}]")
+			if(togglingBool)
 				assertTrue("check boolean is true", syncValue)
 			else
 				assertFalse("check boolean is false", syncValue)
