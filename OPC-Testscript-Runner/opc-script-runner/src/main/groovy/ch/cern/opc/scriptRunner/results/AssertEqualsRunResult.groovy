@@ -1,12 +1,10 @@
 package ch.cern.opc.scriptRunner.results
 
 import ch.cern.opc.client.ClientInstance
+import static RunResultUtil.formatMessage
 
 protected class AssertEqualsRunResult implements RunResult 
 {
-	final static def NULL_MSG = "null assertion message";
-	final static def EMPTY_MSG = "empty assertion message";
-	
 	final def title = 'assertEquals'
 	
 	final def message
@@ -35,33 +33,19 @@ protected class AssertEqualsRunResult implements RunResult
 		def element
 		if(isPassed)
 		{
-			element = xmlBuilder.testcase(name:"assertEquals passed: ${message}")
+			element = xmlBuilder.testcase(name:"${title} passed: ${message}")
 			{
 				success(message:outputMessage)
 			}
 		}
 		else
 		{
-			element = xmlBuilder.testcase(name:"assertEquals failed: ${message}")
+			element = xmlBuilder.testcase(name:"${title} failed: ${message}")
 			{
 				failure(message:outputMessage)
 			}
 		}
-	}
-	
-	private def formatMessage(message)
-	{
-		if(message == null)
-		{
-			return NULL_MSG
-		}
-		
-		if(message.trim().empty)
-		{
-			return EMPTY_MSG
-		}
-		
-		return message
+		return element
 	}
 
 	private def formatOutputMessage(expected, actual)
