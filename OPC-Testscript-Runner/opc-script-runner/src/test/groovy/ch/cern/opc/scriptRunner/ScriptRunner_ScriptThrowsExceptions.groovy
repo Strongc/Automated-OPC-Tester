@@ -33,6 +33,6 @@ class ScriptRunner_ScriptThrowsExceptions
 		file << script
 		
 		testee.runScript(file)
-		assertEquals(1, testee.context.exceptions.size)
+		assertEquals(1, testee.context.results.size)
 	}
 }	
