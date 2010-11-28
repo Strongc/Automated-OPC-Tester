@@ -2,18 +2,17 @@ package ch.cern.opc.scriptRunner.results
 
 import static RunResultUtil.formatMessage
 import static RunResultUtil.toBoolean
-import static RunResultUtil.AnalyzedBooleanType
 
-protected class AssertTrueRunResult implements RunResult
+protected class AssertFalseRunResult implements RunResult
 {
-	static final def TITLE = 'assertTrue'
+	static final def TITLE = 'assertFalse'
 	final def message
 	final def isPassed
 	
-	def AssertTrueRunResult(message, actual)
+	def AssertFalseRunResult(message, actual)
 	{
 		this.message = formatMessage(message)
-		isPassed = (RunResultUtil.AnalyzedBooleanType.TRUE == toBoolean(actual))
+		isPassed = (RunResultUtil.AnalyzedBooleanType.FALSE == toBoolean(actual))
 	}
 	
 	def toXml(xmlBuilder)
@@ -23,14 +22,14 @@ protected class AssertTrueRunResult implements RunResult
 		{
 			element = xmlBuilder.testcase(name:"${TITLE} passed: ${message}")
 			{
-				success(message:'value was true')
+				success(message:'value was false')
 			}
 		}
 		else
 		{
 			element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 			{
-				failure(message:'value was not true')
+				failure(message:'value was not false')
 			}
 		}
 	}	

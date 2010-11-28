@@ -9,8 +9,6 @@ import org.junit.Test;
 
 class AssertTrueRunResultTest 
 {
-	static final def TEST_LAST_ERR = 'this is the last error'
-	
 	def xmlBuilder = DOMBuilder.newInstance()
 
 	@Before
@@ -103,7 +101,6 @@ class AssertTrueRunResultTest
 	{
 		def testee = new AssertTrueRunResult('untrue input, I should fail', 'something other than the word true')
 		def xml = testee.toXml(xmlBuilder)
-		println xml
 		
 		assertEquals(1, xml.size())
 		assertEquals('assertTrue failed: untrue input, I should fail', xml.'@name')
