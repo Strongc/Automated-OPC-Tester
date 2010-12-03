@@ -10,11 +10,6 @@ target
 # ignore log output
 *.log
 
-# ignore OPCClientToolkit and 3rdParty directories: these are available from
-# svn within CERN and can be built from sourceforge outwith CERN
-3rdParty
-OPCClientToolKit
-
 # ignore VC++ intermediate files
 *.ncb
 *.suo
