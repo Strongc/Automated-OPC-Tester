@@ -5,7 +5,7 @@
 
     <groupId>ch.cern.opc</groupId>
     <artifactId>opc-script-runner</artifactId>
-    <name>OPC Script Runner</name>
+    <name>opc-script-runner</name>
     <version>0.1</version>
 
 	<properties>

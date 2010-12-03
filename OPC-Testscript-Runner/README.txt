@@ -1,3 +1,10 @@
-Build with 'mvn assembly:single'
-cd into generated 'target' dir
-start app with 'java -cp automated-tester-app-0.1-jar-with-dependencies.jar  ch.cern.opc.Main'
+To build all the modules, run command
+'mvn clean install'
+from this directory
+
+To build an executable, run command
+'mvn assembly:single'
+from directory 'gui'
+the output of the maven target prints out where the executable jar file goes.
+
+To run the executable jar file, locate the output (see comment above) and double click it.
