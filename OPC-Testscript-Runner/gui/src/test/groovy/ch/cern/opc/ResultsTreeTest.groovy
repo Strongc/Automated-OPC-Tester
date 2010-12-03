@@ -53,7 +53,7 @@ class ResultsTreeTest
 	{
 		testee.addResults(xml)
 		println testee
-		assertEquals(10, treeNodeCount)
+		assertEquals(11, treeNodeCount)
 	}
 	
 	@Test

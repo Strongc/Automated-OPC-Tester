@@ -23,12 +23,15 @@ char gscLogFilePath[MAX_PATH];
 COPCHost *gspHost = NULL;
 COPCServer *gspOpcServer = NULL;
 AsyncUpdateHandler updateHandler;
+TransactionCompleteHandler transactionHandler;
 GroupManager gsoGroupManager(updateHandler);
 
 
 CString gstrLastError = "No errors reported";
 
 CAtlArray<CString> gsoOpcServerAddressSpace;
+
+
 
 
 const char* const GetLogFilePath()
@@ -102,7 +105,7 @@ extern "C"
 		COPCGroup *pGroup = gspOpcServer->makeGroup(pGroupName, true, requestedRefreshRate, actualRefreshRate, 0.0);
 		gsoGroupManager.AddGroup(pGroupName, pGroup);
 
-		log_NOTICE("createGroup completed, for group name [", pGroupName,"]");
+		log_NOTICE("createGroup completed, for group name [", pGroupName,"] actual refresh rate [",((pantheios::integer)actualRefreshRate),"]");
 		return actualRefreshRate;
 	} 
 
@@ -125,6 +128,17 @@ extern "C"
 		log_NOTICE("readItemSync complete, buffer [", pBuff,"] buffer sz [", pantheios::integer(nBuffSz),"]");
 		return result;
 	}
+
+	__declspec(dllexport) const bool __cdecl readItemAsync(const char* const pGroupName, const char* pItemPath)
+	{
+		log_NOTICE("readItemAsync called, group [",pGroupName,"] item [",pItemPath,"]");
+
+		bool result = gsoGroupManager.ReadItemAsync(pGroupName, pItemPath);
+
+		log_NOTICE("readItemAsync complete");
+		return false;
+	}
+
 
 	__declspec(dllexport) const bool __cdecl writeItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{

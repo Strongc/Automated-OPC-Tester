@@ -18,6 +18,12 @@ class ScriptRunner_ScriptThrowsExceptions
 	{
 		testee = new ScriptRunner()
 		file = new File('temp_script_file.txt')
+		
+		def theClientInstance = [
+			registerAsyncUpdate: {}
+		] as ClientApi
+	
+		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
 	}
 	
 	@After

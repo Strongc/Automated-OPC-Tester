@@ -8,11 +8,23 @@ import ch.cern.opc.scriptRunner.AsyncUpdateHandler
 
 import org.w3c.dom.*;
 import javax.xml.parsers.*
+import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult;
+import ch.cern.opc.scriptRunner.results.async.AssertAsynchManager
 
 class RunResults 
 {
+	private static final def PING_PERIOD_FOR_ASYNC_COMPLETION = 2000
+	private static final def MAX_WAIT_FOR_ASYNC_COMPLETION_MS = 60000
+	
 	def results = []	
-	def asyncUpdater = new AsyncUpdateHandler();
+	private final def asyncManager
+	private final def asyncUpdater
+	
+	def RunResults()
+	{
+		asyncManager = new AssertAsynchManager()
+		asyncUpdater = new AsyncUpdateHandler(asyncManager)
+	}
 	
 	def assertTrue(message, value)
 	{
@@ -36,7 +48,10 @@ class RunResults
 	
 	def assertAsyncEquals(message, timeoutMs, expected, itemPath)
 	{
-		asyncUpdater.register()
+		def assertAsync = new AssertAsyncEqualsRunResult(message, timeoutMs, itemPath, expected)
+		assertAsync.registerWithManager(asyncManager)
+		
+		results.add(assertAsync)
 	}
 	
 	def getXML()
@@ -51,4 +66,26 @@ class RunResults
 		
 		return root
 	}
+	
+	def onScriptStart()
+	{
+		logInfo('onScriptStart called')
+		asyncUpdater.register()
+		asyncManager.startTicking()
+	}
+	
+	def onScriptEnd()
+	{
+		logInfo('onScriptEnd called')
+		if(asyncManager.registeredAsyncAssertsCount > 0)
+		{
+			for(def elapsedWait = 0; elapsedWait < MAX_WAIT_FOR_ASYNC_COMPLETION_MS && asyncManager.registeredAsyncAssertsCount > 0; elapsedWait += PING_PERIOD_FOR_ASYNC_COMPLETION)
+			{
+				logInfo("waiting for [${asyncManager.registeredAsyncAssertsCount}] asynchronous asserts to complete... waiting for [${MAX_WAIT_FOR_ASYNC_COMPLETION_MS-elapsedWait}]")
+				sleep(PING_PERIOD_FOR_ASYNC_COMPLETION)
+			}   
+		}
+		asyncManager.stopTicking()
+	}
+
 }

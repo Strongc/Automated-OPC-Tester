@@ -4,17 +4,14 @@ logInfo('script demonstrates aysnchronous writing then reading for an item')
 
 group('test_group').with
 {
-	item('testGroup.myBool')
-	for(i in 1..10)
-	{
-		assertAsyncEquals('checking async update value', 1000, 'beouf!', 'this.that.the.other')
-		item('testGroup.myString').asyncValue = "async value [${i}]"
-		logInfo("loop counter ${i}")
-	
-		
-		sleep(10000)
-	}
-	
+	item('testGroup.myString').syncValue = 'a'
+	assertAsyncEquals('checking async update value', 30, 'b', 'testGroup.myString')
+
+	logInfo("starting sleep, thread id [${Thread.currentThread().id}]")
+	sleep(2000)
+	logInfo("finished sleep, thread id [${Thread.currentThread().id}]")
+
+	//item('testGroup.myString').asyncValue = 'New Async Value'
 	
 }
 

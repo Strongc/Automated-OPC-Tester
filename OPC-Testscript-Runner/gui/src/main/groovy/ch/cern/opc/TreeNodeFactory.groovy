@@ -73,7 +73,9 @@ public class TreeNodeFactory extends DOMCategory
 			
 			if(element.success.size() == 1)
 			{
-				return new ResultTreeNode(element.'@name', ResultTreeNodeColour.GREEN) 
+				def result = new ResultTreeNode(element.'@name', ResultTreeNodeColour.GREEN)
+				result.add(new ResultTreeNode("message: ${element.success[0].'@message'}", ResultTreeNodeColour.GREEN))
+				return result 
 			}
 			else if(element.failure.size() == 1)
 			{

@@ -43,7 +43,8 @@ class ScriptRunner_ScriptExecutionTest
 			readItemSync: {groupName, path ->
 				println "readItemSync: group [${groupName}] item [${path}]"
 				return 'someValue'
-			}	
+			},
+			registerAsyncUpdate: {}
 		] as ClientApi
 	
 		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}

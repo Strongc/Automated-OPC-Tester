@@ -14,6 +14,7 @@ interface DllInterface extends Library
     public NativeLong createGroup(String groupName, NativeLong requestedRefreshRate);
     public boolean addItem(String groupName, String itemPath);
     public boolean readItemSync(String groupName, String itemPath, byte buffer[], int bufferSz);
+    public boolean readItemAsync(String groupName, String itemPath);
     public boolean writeItemSync(String groupName, String itemPath, String value);
     public boolean writeItemAsync(String groupName, String itemPath, String value);
     public void getLastError(byte buffer[], int bufferSz);

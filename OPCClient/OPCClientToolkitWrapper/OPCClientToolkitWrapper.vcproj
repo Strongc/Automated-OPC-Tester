@@ -189,6 +189,10 @@
 				RelativePath=".\Pantheios_implicit_link.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TransactionCompleteHandler.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -205,6 +209,14 @@
 			</File>
 			<File
 				RelativePath=".\GroupManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GroupNode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TransactionCompleteHandler.h"
 				>
 			</File>
 			<File

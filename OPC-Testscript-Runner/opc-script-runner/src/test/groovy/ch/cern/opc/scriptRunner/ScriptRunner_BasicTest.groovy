@@ -12,12 +12,14 @@ import org.junit.Before;
 class ScriptRunner_BasicTest 
 {
 	def testee
+	def stubDelegate
 	def clientState
 	
 	@Before
 	void setup()
 	{
 		testee = new ScriptRunner()
+		stubDelegate = [onScriptStart:{}, onScriptEnd:{}]
 	}
 	
 	@Test
@@ -25,36 +27,36 @@ class ScriptRunner_BasicTest
 	{
 		def wasScriptRun = false
 		
-		testee.runScriptClosure({wasScriptRun = true})
+		testee.runScriptClosure({wasScriptRun = true}, stubDelegate)
 		assertTrue(wasScriptRun)
 	}
 	
 	@Test
 	void testRunScriptWithDelegateFindsDelegateProperties()
 	{
-		def scriptDelegate = [myProperty:false]
+		stubDelegate.myProperty = false
+		
 		def script = {myProperty = true}
 		
-		assertFalse(scriptDelegate.myProperty)
-		testee.runScriptClosure(script, scriptDelegate)
-		assertTrue(scriptDelegate.myProperty)
+		assertFalse(stubDelegate.myProperty)
+		testee.runScriptClosure(script, stubDelegate)
+		assertTrue(stubDelegate.myProperty)
 	}
-	
+
 	@Test
-	void testRunScriptWithCreateGroupCreatesGroupOnDelegate()
+	void testRunScriptCallsOnScriptStartBeforeAndOnScriptEndAfter()
 	{
-		def groups = [:]
-		MockScriptRunnerDelegate.metaClass.createGroup = {name ->
-			println "creating a group [name: ${name}], groups [${groups}]"
-			groups["woo"] = new Object()
-		}
+		def events = []
 		
-		def s = new MockScriptRunnerDelegate()
-		s.createGroup('testGroup')
+		def scriptDelegate = [
+			onScriptStart:{events << 'script started'},
+			onScriptEnd:{events << 'script ended'}]
 		
-		def script = {createGroup('scriptGroup')}
-		testee.runScriptClosure(script, s)
+		testee.runScriptClosure({events << 'script run'}, scriptDelegate)
 		
-		assertEquals(1, groups.size())
+		assertEquals(3, events.size())
+		assertEquals('script started', events[0])
+		assertEquals('script run', events[1])
+		assertEquals('script ended', events[2])
 	}	
 }

@@ -24,15 +24,18 @@ class TreeNodeFactoryTest
 	@Test
 	void testCreateTestcaseNodeForSuccessfulTestcase()
 	{
-		def testcaseElement = xmlBuilder.testcase(name:'thisAssertionPasses')
+		def testcaseElement = xmlBuilder.testcase(name:'someAssertionType')
 		{
 			success(message:'well done, you passed')
 		}
 		
 		def node = testee.createTestcaseNode(testcaseElement)
 		
-		assertEquals('thisAssertionPasses', node.toString())
+		assertEquals('someAssertionType', node.toString())
 		assertEquals(ResultTreeNodeColour.GREEN, node.colour)
+		
+		def childNode = node.getChildAt(0)
+		assertEquals('message: well done, you passed', childNode.toString())
 	}
 	
 	@Test

@@ -6,38 +6,40 @@ public class Main
 {
 	private final static String GROUP_NM = "myGroup";
 	
-    public static void main(String[] args) 
+    public static void main(String[] args) throws InterruptedException 
     {
     	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	ClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
     	
     	createGroup();
     	
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
-    	
-    	ClientInstance.getInstance().registerAsyncUpdate(new AsyncUpdateCallback() {
+    	ClientInstance.getInstance().registerAsyncUpdate(new AsyncUpdateCallback() 
+    	{
 			@Override
 			public int onUpdate(String itemPath, String value) 
 			{
-				System.out.println("onUpdate called item ["+itemPath+"] value ["+value+"]");
-				return 0;
+				System.out.println("onUpdate called with item ["+itemPath+"] value ["+value+"]");
+				return 1;
 			}
 		});
     	
-    	try 
-    	{
-    		for(int i=0; i<15; i++)
-    		{
-    			Thread.sleep(1000);
-    			System.out.println(i%2 == 0? "tick": "tock");
-    		}
-		} 
-    	catch (InterruptedException e) 
-		{
-			e.printStackTrace();
-		}
+    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
     	
-    	System.out.println("result" + ClientInstance.getInstance().writeItemAsync(GROUP_NM, "testGroup.myString", "testValue"));
+    	
+    	for(int i=0; i<100; i++)
+    	{
+    		ClientInstance.getInstance().writeItemAsync(GROUP_NM, "testGroup.myString", "loop_"+i);
+    		System.out.println("written async");
+    		
+    		Thread.sleep(500);
+    		
+    		ClientInstance.getInstance().readItemAsync(GROUP_NM, "testGroup.myString");
+    		System.out.println("read async");
+    		
+    		Thread.sleep(500);
+    	}
+
+    	System.out.println("completed");
     }
     
 	private static void createGroup() 

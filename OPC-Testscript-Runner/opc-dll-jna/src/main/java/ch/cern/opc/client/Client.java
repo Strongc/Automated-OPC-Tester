@@ -161,4 +161,10 @@ class Client implements ClientApi
 	{
 		DllInterface.INSTANCE.registerAsyncUpdate(callback);
 	}
+
+	@Override
+	public boolean readItemAsync(String groupName, String itemPath) 
+	{
+		return DllInterface.INSTANCE.readItemAsync(groupName, itemPath);
+	}
 }

@@ -110,4 +110,10 @@ public class ClientInstance implements ClientApi
 	{
 		client.registerAsyncUpdate(callback);
 	}
+
+	@Override
+	public boolean readItemAsync(String groupName, String itemPath) 
+	{
+		return client.readItemAsync(groupName, itemPath);
+	}
 }

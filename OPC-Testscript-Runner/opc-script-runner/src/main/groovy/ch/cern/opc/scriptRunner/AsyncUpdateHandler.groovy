@@ -7,6 +7,14 @@ import static ch.cern.opc.common.Log.*
 class AsyncUpdateHandler implements AsyncUpdateCallback 
 {
 	private def registered = false
+	private def monitor = new Object()
+	
+	final def assertAsyncManager
+	
+	def AsyncUpdateHandler(assertAsyncManager)
+	{
+		this.assertAsyncManager = assertAsyncManager
+	}
 	
 	def register()
 	{
@@ -28,7 +36,8 @@ class AsyncUpdateHandler implements AsyncUpdateCallback
 		}
 		else
 		{
-			logInfo("asyncUpdateHander.onUpdate called for item [${itemPath}] value [${value}]")
+			logInfo("asyncUpdateHander.onUpdate called for item [${itemPath}] value [${value}] thread [${Thread.currentThread().id}]")
+			assertAsyncManager.asyncUpdate(itemPath, value)
 			return 1
 		}
 	}

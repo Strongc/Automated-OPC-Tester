@@ -21,7 +21,11 @@ class ScriptRunner
 	{
 		logInfo('about to run the script')
 		script.delegate = (scriptDelegate != null? scriptDelegate: this)
+		
+		script.delegate.onScriptStart()
 		script()
+		script.delegate.onScriptEnd()
+		
 		logInfo('finished running the script')
 	}
 }

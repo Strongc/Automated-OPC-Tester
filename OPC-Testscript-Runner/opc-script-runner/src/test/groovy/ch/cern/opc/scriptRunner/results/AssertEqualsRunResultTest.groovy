@@ -14,11 +14,12 @@ class AssertEqualsRunResultTest
 {
 	static final def TEST_LAST_ERR = 'this is the last error'
 	
-	def xmlBuilder = DOMBuilder.newInstance()
+	def xmlBuilder
 	
 	@Before
 	void setup()
 	{
+		xmlBuilder = DOMBuilder.newInstance()
 		com.sun.org.apache.xerces.internal.dom.ElementImpl.mixin(DOMCategory)
 		groovy.xml.dom.DOMCategory.NodesHolder.mixin(DOMCategory)
 		
