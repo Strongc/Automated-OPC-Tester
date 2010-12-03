@@ -1,18 +1,19 @@
 package ch.cern.opc.scriptRunner.results.async
 
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult.ASYNC_STATE.WAITING
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult.ASYNC_STATE.TIMED_OUT
 
 protected class AssertAsynchManager 
 {
 	private final def asyncAsserts = []
 	private final AssertAsynchTicker ticker = new AssertAsynchTicker()
 	
-	def registerAsyncAssert(asyncAssert)
+	def synchronized registerAsyncAssert(asyncAssert)
 	{
 		asyncAsserts << asyncAssert 
 	}
 	
-	def asyncUpdate(itemPath, actualValue)
+	def synchronized asyncUpdate(itemPath, actualValue)
 	{
 		asyncAsserts.each
 		{
@@ -22,18 +23,27 @@ protected class AssertAsynchManager
 		removeNonWaitingAsyncAsserts()
 	}
 	
-	def getRegisteredAsyncAssertsCount()
+	def synchronized getRegisteredAsyncAssertsCount()
 	{
 		return asyncAsserts.size() 
 	}
 	
-	def onTick()
+	def synchronized onTick()
 	{
 		asyncAsserts.each
 		{
 			it.onTick()
 		}
 		
+		removeNonWaitingAsyncAsserts()
+	}
+	
+	def synchronized timeoutAllRemainingAsyncAsserts()
+	{
+		asyncAsserts.each
+		{
+			it.state = TIMED_OUT
+		}
 		removeNonWaitingAsyncAsserts()
 	}
 	

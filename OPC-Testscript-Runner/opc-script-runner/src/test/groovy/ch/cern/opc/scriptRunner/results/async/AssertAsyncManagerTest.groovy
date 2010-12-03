@@ -97,6 +97,25 @@ class AssertAsyncManagerTest
 	}
 	
 	@Test
+	void testTimeoutAllRemainingAsyncAsserts()
+	{
+		def allAsyncAsserts = []
+		
+		for(i in 1..3)
+		{
+			allAsyncAsserts << new AssertAsyncEqualsRunResult(null, null, null, null)
+		}
+		allAsyncAsserts.each{testee.registerAsyncAssert(it)}
+
+		assertEquals(3, testee.registeredAsyncAssertsCount)
+		
+		testee.timeoutAllRemainingAsyncAsserts()
+		
+		assertEquals(0, testee.registeredAsyncAssertsCount)
+		allAsyncAsserts.each{assertEquals(TIMED_OUT, it.state)}
+	}
+	
+	@Test
 	void testStartTickingAndStopTicking()
 	{
 		def tickCalledCounter = 0

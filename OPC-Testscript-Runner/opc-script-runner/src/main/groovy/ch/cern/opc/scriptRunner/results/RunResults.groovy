@@ -84,6 +84,7 @@ class RunResults
 				logInfo("waiting for [${asyncManager.registeredAsyncAssertsCount}] asynchronous asserts to complete... waiting for [${MAX_WAIT_FOR_ASYNC_COMPLETION_MS-elapsedWait}]")
 				sleep(PING_PERIOD_FOR_ASYNC_COMPLETION)
 			}   
+			asyncManager.timeoutAllRemainingAsyncAsserts()
 		}
 		asyncManager.stopTicking()
 	}
