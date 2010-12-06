@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 class ScriptRunner 
 {
-	def context
+	static def context = null
 	
 	def Element runScript(scriptFile)
 	{

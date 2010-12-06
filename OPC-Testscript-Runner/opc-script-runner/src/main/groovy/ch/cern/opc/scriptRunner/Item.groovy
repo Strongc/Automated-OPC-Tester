@@ -1,7 +1,10 @@
 package ch.cern.opc.scriptRunner
 
 import ch.cern.opc.client.ClientInstance
+import ch.cern.opc.common.Log
+import ch.cern.opc.scriptRunner.results.RunResults
 
+@Mixin(Log)
 class Item 
 {
 	def groupName
@@ -32,5 +35,15 @@ class Item
 	def setAsyncValue(value)
 	{
 		return ClientInstance.instance.writeItemAsync(groupName, path, value)
+	}
+	
+	def assertEquals(message, expectedValue)
+	{
+		ScriptContext.instance.assertEquals(message, expectedValue, syncValue)
+	}
+	
+	def assertAsyncEquals(message, timeout, expectedValue)
+	{
+		ScriptContext.instance.assertAsyncEquals(message, timeout, expectedValue, path)
 	}
 }

@@ -8,6 +8,7 @@ protected class RunResultUtil
 	final static def EMPTY_MSG = "empty assertion message"
 	
 	private static final def ACCEPTED_FALSE_STRINGS = ['false', 'FALSE', 'False', '0', 'Zero', 'zero']
+	private static final def ACCEPTED_TRUE_STRINGS = ['-1']
 	
 	public enum AnalyzedBooleanType {TRUE, FALSE, NEITHER}
 
@@ -41,6 +42,10 @@ protected class RunResultUtil
 					if(ACCEPTED_FALSE_STRINGS.contains(actual))
 					{
 						return AnalyzedBooleanType.FALSE
+					}
+					else if(ACCEPTED_TRUE_STRINGS.contains(actual))
+					{
+						return AnalyzedBooleanType.TRUE
 					}
 					else
 					{

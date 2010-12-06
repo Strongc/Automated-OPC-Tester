@@ -84,6 +84,13 @@ class AssertTrueRunResultTest
 	}
 	
 	@Test
+	void testAssertTrueWithMinusOneAsString()
+	{
+		def testee = new AssertTrueRunResult('negative one input, I should pass', '-1')
+		assertTrue(testee.isPassed)
+	}
+	
+	@Test
 	void testAssertTrueWithStringTrue()
 	{
 		def testee = new AssertTrueRunResult('true input, I should pass', 'true')

@@ -7,7 +7,19 @@ import ch.cern.opc.scriptRunner.results.RunResults;
 @Mixin([RunResults, Log])
 class ScriptContext 
 {
+	private static def instance
+	
+	def static getInstance()
+	{
+		return instance
+	}
+	
 	def groups = [:]
+	
+	def ScriptContext()
+	{
+		instance = this
+	}
 	
 	private def createGroup(name)
 	{

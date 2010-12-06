@@ -8,6 +8,7 @@ import static groovy.lang.Closure.*
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
+import groovy.mock.interceptor.*
 
 class ScriptRunner_BasicTest 
 {

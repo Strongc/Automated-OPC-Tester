@@ -12,8 +12,8 @@ group('test_group').with
 		{item->
 			logInfo(i%2)
 			item.syncValue = "${i%2}"
-			//logInfo("item [${item.path}] has value [${item.syncValue}]")
-			assertEquals("verify values have been written", "${i%2}", item.syncValue)
+
+			item.assertEquals("values written for item: ${item.path}", "${i%2}")
 		}
 		
 		sleep(1000)

@@ -4,15 +4,16 @@ logInfo('script demonstrates aysnchronous writing then reading for an item')
 
 group('test_group').with
 {
-	item('testGroup.myString').syncValue = 'a'
-	assertAsyncEquals('checking async update value', 30, 'b', 'testGroup.myString')
-
-	logInfo("starting sleep, thread id [${Thread.currentThread().id}]")
-	sleep(2000)
-	logInfo("finished sleep, thread id [${Thread.currentThread().id}]")
-
-	//item('testGroup.myString').asyncValue = 'New Async Value'
-	
+	item('testGroup.myString').with
+	{
+		syncValue = 'b'
+		assertEquals('expected value is b', 'b')
+		
+		assertAsyncEquals('checking async update value', 30, 'a')
+		
+		sleep(2500)		
+		syncValue = 'a'
+	}	
 }
 
 logInfo('end of script')

@@ -118,5 +118,12 @@ class ScriptContextTest
 		assertEquals(TEST_LAST_ERR, testee.lastError)
 	}
 	
-	
+	@Test
+	void testInstanceFieldHoldsLastInstance()
+	{
+		assertEquals(testee, ScriptContext.instance)
+		
+		def newInstance = new ScriptContext()
+		assertEquals(newInstance, ScriptContext.instance)
+	}
 }
