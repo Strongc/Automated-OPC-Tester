@@ -10,7 +10,7 @@ protected class RunResultUtil
 	private static final def ACCEPTED_FALSE_STRINGS = ['false', 'FALSE', 'False', '0', 'Zero', 'zero']
 	private static final def ACCEPTED_TRUE_STRINGS = ['-1', '1']
 	
-	public enum AnalyzedBooleanType {TRUE, FALSE, NEITHER}
+	public static enum AnalyzedBooleanType {TRUE, FALSE, NEITHER}
 
 	def static formatMessage(message)	
 	{
