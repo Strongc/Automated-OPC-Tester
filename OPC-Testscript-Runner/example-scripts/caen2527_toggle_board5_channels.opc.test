@@ -1,0 +1,43 @@
+logInfo "test controls board5 in a caen2527 with 12 channels. Each channel is toggled on and off repeatedly"
+
+init('', 'CAEN.HVOPCServer')
+
+logInfo "OPC connection made"
+
+logInfo "Starting script body..."
+
+group('board5_channels').with
+{
+
+	for(i in 0..30)
+	{
+		def togglingBool = (i.mod(2) == 0)
+		logInfo "togglingBool value is [${togglingBool}]"
+		
+		items('**Chan*.Pw').each	
+		{item->
+			logInfo "turning pw for item [${item.path}] to value [${togglingBool}]"
+			item.syncValue = "${togglingBool}"	
+			logInfo "turned pw for item [${item.path}] to value [${togglingBool}]"
+		}
+				
+		logInfo "Sleeping..."
+		sleep(3000)
+		
+		items('**Chan*.Pw').each	
+		{item->
+			if(togglingBool)
+			{
+				assertTrue('channel should be on', item.syncValue)
+			}
+			else
+			{
+				assertFalse('channel should be off', item.syncValue)
+			}
+		}
+		
+	}
+		
+}
+
+logInfo "End of script"

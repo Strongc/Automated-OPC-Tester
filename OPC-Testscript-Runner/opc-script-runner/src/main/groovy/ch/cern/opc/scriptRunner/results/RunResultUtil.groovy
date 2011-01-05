@@ -8,7 +8,7 @@ protected class RunResultUtil
 	final static def EMPTY_MSG = "empty assertion message"
 	
 	private static final def ACCEPTED_FALSE_STRINGS = ['false', 'FALSE', 'False', '0', 'Zero', 'zero']
-	private static final def ACCEPTED_TRUE_STRINGS = ['-1']
+	private static final def ACCEPTED_TRUE_STRINGS = ['-1', '1']
 	
 	public enum AnalyzedBooleanType {TRUE, FALSE, NEITHER}
 
@@ -36,6 +36,10 @@ protected class RunResultUtil
 				if(BooleanUtils.toBoolean(actual))
 				{
 					return AnalyzedBooleanType.TRUE
+				}
+				else if(isNumericalString(actual))
+				{
+					return (Integer.parseInt(actual) != 0? AnalyzedBooleanType.TRUE: AnalyzedBooleanType.FALSE)
 				}
 				else
 				{
@@ -67,6 +71,19 @@ protected class RunResultUtil
 		}
 		
 		return AnalyzedBooleanType.NEITHER
+	}
+	
+	private static def isNumericalString(string)
+	{
+		try
+		{
+			Integer.parseInt(string)
+			return true
+		}
+		catch(NumberFormatException e)
+		{
+			return false	
+		}
 	}
 
 }

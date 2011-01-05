@@ -57,7 +57,6 @@ static bool ConvertIntToVarType(const int nVarType, VARTYPE& vt)
 
 static void RecordError(char* format, ...)
 {
-	log_ERROR("RecordError called - format [", format,"]");
 	va_list args;
 	va_start(args, format);
 

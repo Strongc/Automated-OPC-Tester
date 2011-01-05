@@ -24,59 +24,64 @@ struct GroupNode
 
 		auto_ptr<CPropertyDescription> GetDataTypePropertyDsc(COPCItem* pItem)
 		{
-			const char* const pItemName = (pItem != NULL? pItem->getName(): "NULL");
+			if(pItem == NULL)
+			{				
+				RecordError("GetDataTypePropertyDsc - received NULL input");
+				assert(false);
+				return auto_ptr<CPropertyDescription>(NULL);
+			}
 
-			if(pItem != NULL)
+			CAtlArray<CPropertyDescription> itemProperties;
+			pItem->getSupportedProperties(itemProperties);
+
+			log_NOTICE("GetDataTypePropertyDsc - found [", pantheios::integer(itemProperties.GetCount()),"] properties for item [", pItem->getName(),"]");
+			for(unsigned int i = 0; i < itemProperties.GetCount(); i++)
 			{
-				CAtlArray<CPropertyDescription> itemProperties;
-				pItem->getSupportedProperties(itemProperties);
+				CPropertyDescription& props = itemProperties.GetAt(i);
+				log_NOTICE("GetDataTypePropertyDsc - examining property [", string(props.desc),"]");
 
-				for(unsigned int i = 0; i < itemProperties.GetCount(); i++)
+				if(string(props.desc).find("DataType") != string::npos || string(props.desc).find("Data Type"))
 				{
-					CPropertyDescription& props = itemProperties.GetAt(i);
-
-					if(string(props.desc).find("DataType") != string::npos)
-					{
-						return auto_ptr<CPropertyDescription>(new CPropertyDescription(props.id, props.desc, props.type));
-					}
+					return auto_ptr<CPropertyDescription>(new CPropertyDescription(props.id, props.desc, props.type));
 				}
 			}
 
 			// uh oh: no datatype property found
+			RecordError("GetDataTypePropertyDsc - failed to find OPC item data type property description for [%s]", pItem->getName());
 			assert(false);
-			RecordError("GetDataTypePropertyDsc - failed to find OPC item data type property description for [%s]", pItemName);
-
 			return auto_ptr<CPropertyDescription>(NULL);
 		}
 
 		int GetItemDataType(COPCItem* pItem)
 		{
-			const char* const pItemName = (pItem != NULL? pItem->getName(): "NULL");
-
-			if(pItem != NULL)
-			{
-				auto_ptr<CPropertyDescription> propDsc = GetDataTypePropertyDsc(pItem);
-				if(propDsc.get() != NULL)
-				{
-					log_NOTICE("Found DataType property description for item [", pItem->getName(),"]");
-
-					CAtlArray<CPropertyDescription> propsToRead;
-					propsToRead.Add(*propDsc.get());
-
-					ATL::CAutoPtrArray<SPropertyValue> propValues;
-					pItem->getProperties(propsToRead, propValues);
-
-					assert(1 == propValues.GetCount());
-					_variant_t value(propValues[0]->value);
-
-					return static_cast<int>(value);
-				}
+			if(pItem == NULL)
+			{				
+				RecordError("GetItemDataType - received [null] input");
+				assert(false);
+				return -1;
 			}
 
-			// uh oh: no property descriptor found for data type property
-			assert(false);
-			RecordError("GetItemDataType - failed to find OPC item data type for [%s]", pItemName);
-			return -1;
+			auto_ptr<CPropertyDescription> propDsc = GetDataTypePropertyDsc(pItem);
+
+			if(propDsc.get() == NULL)
+			{				
+				RecordError("GetItemDataType - failed to find OPC item data type for [%s]", pItem->getName());
+				assert(false);
+				return -1;
+			}
+
+			log_NOTICE("Found DataType property description for item [", pItem->getName(),"]");
+
+			CAtlArray<CPropertyDescription> propsToRead;
+			propsToRead.Add(*propDsc.get());
+
+			ATL::CAutoPtrArray<SPropertyValue> propValues;
+			pItem->getProperties(propsToRead, propValues);
+
+			assert(1 == propValues.GetCount());
+			_variant_t value(propValues[0]->value);
+
+			return static_cast<int>(value);
 		}
 
 		bool WriteItem(const char* const pItemName, const char* const pValue, const bool isAsync)
