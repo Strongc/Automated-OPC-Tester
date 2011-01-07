@@ -68,7 +68,8 @@ class ScriptRunnerGui
 	
 	private def openScript()
 	{
-		def scriptChooser = builder.fileChooser(id:'fileChooser', fileSelectionMode: FILES_ONLY)
+		def currentDirectory = (scriptFile != null? new File(scriptFile.parent): null) 
+		def scriptChooser = builder.fileChooser(id:'fileChooser', fileSelectionMode: FILES_ONLY, currentDirectory: currentDirectory)
 		
 		if(scriptChooser.showOpenDialog(mainFrame) == APPROVE_OPTION)
 		{
