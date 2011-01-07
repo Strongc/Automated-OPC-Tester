@@ -15,7 +15,7 @@ class ScriptRunner
 
 		runScriptClosure(scriptClosure, context)
 		println "ClientInstance.instance [${(ClientInstance.instance == null)?'NULL':'NON NULL'}]"
-		ClientInstance.instance.destroy();
+		ClientInstance.instance.end();
 		
 		return context.XML
 	}

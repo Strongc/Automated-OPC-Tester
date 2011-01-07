@@ -33,12 +33,14 @@ class Client implements ClientApi
 	}
 
 	@Override
-	public boolean destroy() 
+	public void end() 
 	{
+		// disconnect client session
+		INSTANCE.end();
+		
+		// drop DLL
 		NativeLibrary.getInstance(DLL_NM).dispose();
 		INSTANCE = null;
-		
-		return true;
 	}
 
 	@Override

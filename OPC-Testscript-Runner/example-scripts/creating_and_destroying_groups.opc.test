@@ -12,7 +12,7 @@ for(i in 1..100)
 	// add items and write here
 	testGroup.with
 	{
-		item('testGroup.myString').syncValue = groupName
+		item('testGroup.myString').asyncValue = groupName
 	}
 	
 	// destroy group here

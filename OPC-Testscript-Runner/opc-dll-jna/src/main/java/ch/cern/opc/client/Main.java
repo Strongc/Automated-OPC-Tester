@@ -14,10 +14,14 @@ public class Main
     	ClientApi opcClient = ClientInstance.getInstance();
     	opcClient.init("", "Matrikon.OPC.Simulation");
     	
-    	for(int i=0; i<10000; i++)
+    	for(int i=0; i<1000; i++)
     	{
     		String groupName = "arseGroup_"+i;
-    		opcClient.createGroup(groupName, 1000);
+    		opcClient.createGroup(groupName, 100);
+    		
+    		opcClient.addItem(groupName, "testGroup.myString");
+    		opcClient.writeItemAsync(groupName, "testGroup.myString", groupName);
+    		
     		opcClient.destroyGroup(groupName);
 /*    	
     	ClientInstance.getInstance().registerAsyncUpdate(new AsyncUpdateCallback() 
@@ -47,6 +51,7 @@ public class Main
     	}
   */  	
     	}
+    	opcClient.end();
 
     	System.out.println("completed");
     }

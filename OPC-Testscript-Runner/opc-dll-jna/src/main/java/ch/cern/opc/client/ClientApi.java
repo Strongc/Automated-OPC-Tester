@@ -7,8 +7,8 @@ public interface ClientApi
 	public enum State {UNINITIALISED, CREATED, DESTROYED}
 	
 	public boolean init(String host, String server);
+	public void end();
 	public List<String> getItemNames();
-	public boolean destroy();
 	
 	public boolean createGroup(String groupName, long refreshRateMs);
 	public boolean destroyGroup(String groupName);

@@ -52,12 +52,10 @@ public class ClientInstance implements ClientApi
 	}
 
 	@Override
-	public boolean destroy() 
+	public void end() 
 	{
-		boolean result = client.destroy();
+		client.end();
 		theInstance = null;
-		
-		return result;
 	}
 
 	@Override

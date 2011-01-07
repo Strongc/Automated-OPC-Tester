@@ -6,6 +6,8 @@ import com.sun.jna.NativeLong;
 interface DllInterface extends Library 
 {
     public void init(String host, String server);
+    public void end();
+    
     public boolean getItemNames(String[] itemsBuffer, int elementLength, int numElements, int offset);
     public NativeLong createGroup(String groupName, NativeLong requestedRefreshRate);
     public boolean destroyGroup(String groupName);
