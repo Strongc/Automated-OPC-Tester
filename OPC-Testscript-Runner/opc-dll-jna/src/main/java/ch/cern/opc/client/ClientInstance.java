@@ -54,7 +54,10 @@ public class ClientInstance implements ClientApi
 	@Override
 	public boolean destroy() 
 	{
-		return client.destroy();
+		boolean result = client.destroy();
+		theInstance = null;
+		
+		return result;
 	}
 
 	@Override
@@ -67,6 +70,12 @@ public class ClientInstance implements ClientApi
 	public boolean createGroup(String groupName, long refreshRateMs) 
 	{
 		return client.createGroup(groupName, refreshRateMs);
+	}
+
+	@Override
+	public boolean destroyGroup(String groupName) 
+	{
+		return client.destroyGroup(groupName);
 	}
 
 	@Override
@@ -116,4 +125,5 @@ public class ClientInstance implements ClientApi
 	{
 		return client.readItemAsync(groupName, itemPath);
 	}
+
 }

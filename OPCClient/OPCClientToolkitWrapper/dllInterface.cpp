@@ -22,16 +22,13 @@ char gscLogFilePath[MAX_PATH];
 
 COPCHost *gspHost = NULL;
 COPCServer *gspOpcServer = NULL;
+CAtlArray<CString> gsoOpcServerAddressSpace;
+
 AsyncUpdateHandler updateHandler;
 TransactionCompleteHandler transactionHandler;
 GroupManager gsoGroupManager(updateHandler);
 
-
 CString gstrLastError = "No errors reported";
-
-CAtlArray<CString> gsoOpcServerAddressSpace;
-
-
 
 
 const char* const GetLogFilePath()
@@ -101,28 +98,37 @@ extern "C"
 	{
 		log_NOTICE("createGroup called, group name [", pGroupName,"] requested refresh rate [", ((pantheios::integer)requestedRefreshRate),"]");
 
-		unsigned long actualRefreshRate = requestedRefreshRate;
-		COPCGroup *pGroup = gspOpcServer->makeGroup(pGroupName, true, requestedRefreshRate, actualRefreshRate, 0.0);
-		gsoGroupManager.AddGroup(pGroupName, pGroup);
+		unsigned long actualRefreshRate = gsoGroupManager.CreateGroup(pGroupName, requestedRefreshRate);
 
 		log_NOTICE("createGroup completed, for group name [", pGroupName,"] actual refresh rate [",((pantheios::integer)actualRefreshRate),"]");
 		return actualRefreshRate;
 	} 
+
+	__declspec(dllexport) const bool __cdecl destroyGroup(const char* const pGroupName)
+	{
+		log_NOTICE("destroyGroup called, group name [", pGroupName,"]");
+
+		bool result = gsoGroupManager.DestroyGroup(pGroupName);
+
+		log_NOTICE("destroyGroup completed, for group name [", pGroupName,"] success [",(result?"Y":"N"),"]");
+		return result;
+	} 
+
 
 	__declspec(dllexport) const bool __cdecl addItem(const char* const pGroupName, const char* pItemPath)
 	{
 		log_NOTICE("addItem called, group name [", pGroupName,"] item name [", pItemPath,"]");
 
 		bool bAdded = gsoGroupManager.AddItem(pGroupName, pItemPath);
-		log_NOTICE("addItem, success [",(bAdded?"Y":"N"),"]");
 
-		log_NOTICE("addItem completed, for group name [", pGroupName,"]");
+		log_NOTICE("addItem completed, for group name [", pGroupName,"] success [",(bAdded?"Y":"N"),"]");
 		return bAdded;
 	}
 
 	__declspec(dllexport) const bool __cdecl readItemSync(const char* const pGroupName, const char* pItemPath, char* pBuff, const int nBuffSz)
 	{
 		log_NOTICE("readItemSync called, group [",pGroupName,"] item [",pItemPath,"] initial buffer [", pBuff,"] buffer sz [", pantheios::integer(nBuffSz),"]");
+
 		bool result = gsoGroupManager.ReadItemSync(pGroupName, pItemPath, pBuff, nBuffSz);
 
 		log_NOTICE("readItemSync complete, buffer [", pBuff,"] buffer sz [", pantheios::integer(nBuffSz),"]");
@@ -135,7 +141,7 @@ extern "C"
 
 		bool result = gsoGroupManager.ReadItemAsync(pGroupName, pItemPath);
 
-		log_NOTICE("readItemAsync complete");
+		log_NOTICE("readItemAsync complete, success [", (result?"Y":"N"),"]");
 		return false;
 	}
 
@@ -143,15 +149,20 @@ extern "C"
 	__declspec(dllexport) const bool __cdecl writeItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{
 		log_NOTICE("writeItemSync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
+		
 		bool result = gsoGroupManager.WriteItemSync(pGroupName, pItemPath, pValue);
-		log_NOTICE("writeItemSync complete, group [", pGroupName,"] item [", pItemPath,"] result [", pantheios::integer(result),"]");
+		
+		log_NOTICE("writeItemSync complete, group [", pGroupName,"] item [", pItemPath,"] success [", (result?"Y":"N"),"]");
 		return result;
 	}
 
 	__declspec(dllexport) const bool __cdecl writeItemAsync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{
 		log_NOTICE("writeItemAsync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
+		
 		bool result = gsoGroupManager.WriteItemAsync(pGroupName, pItemPath, pValue);
+		
+		log_NOTICE("writeItemAsync completed, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"], success [", (result?"Y":"N"),"]");
 		return result;
 	}
 

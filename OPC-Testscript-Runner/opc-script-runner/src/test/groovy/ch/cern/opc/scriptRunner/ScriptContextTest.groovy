@@ -25,6 +25,10 @@ class ScriptContextTest
 				println "created group name [${groupName}] refresh rate [${refreshRate}]"
 				return true
 			},
+			destroyGroup: {groupName ->
+				println "destroyed group name [${groupName}]"
+				return true
+			},
 			init: {host, server ->
 				initialisationParameters = ['host': host, 'server':server]
 				return true
@@ -125,5 +129,25 @@ class ScriptContextTest
 		
 		def newInstance = new ScriptContext()
 		assertEquals(newInstance, ScriptContext.instance)
+	}
+	
+	@Test
+	void testDestroyGroupRemovesItFromGroupsCollection()
+	{
+		testee.group(TEST_GROUP_NAME)
+		assertEquals(1, testee.groups.size())
+		
+		testee.group(TEST_GROUP_NAME).destroy()
+		assertEquals(0, testee.groups.size())
+	}
+	
+	@Test
+	void testDestroyGroupHandlesUndefinedGroups()
+	{
+		testee.group(TEST_GROUP_NAME)
+		assertEquals(1, testee.groups.size())
+		
+		testee.destroyGroup('undefined group')
+		assertEquals(1, testee.groups.size())
 	}
 }

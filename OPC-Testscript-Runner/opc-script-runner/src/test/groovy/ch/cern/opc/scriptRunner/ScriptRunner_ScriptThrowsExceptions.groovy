@@ -20,7 +20,8 @@ class ScriptRunner_ScriptThrowsExceptions
 		file = new File('temp_script_file.txt')
 		
 		def theClientInstance = [
-			registerAsyncUpdate: {}
+			registerAsyncUpdate: {},
+			destroy:{return true}
 		] as ClientApi
 	
 		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}

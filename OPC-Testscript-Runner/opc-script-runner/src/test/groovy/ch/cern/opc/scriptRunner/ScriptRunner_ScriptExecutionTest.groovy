@@ -44,6 +44,7 @@ class ScriptRunner_ScriptExecutionTest
 				println "readItemSync: group [${groupName}] item [${path}]"
 				return 'someValue'
 			},
+			destroy: {},
 			registerAsyncUpdate: {}
 		] as ClientApi
 	

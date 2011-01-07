@@ -6,23 +6,38 @@ import static ch.cern.opc.common.Log.logError;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
 import com.sun.jna.NativeLong;
 
 class Client implements ClientApi 
 {
-
+	private final static String DLL_NM = "AutomatedOpcTester.dll"; 
 	private final static int MAX_BUFF_SZ = 1000;
+	
+	private DllInterface INSTANCE;
+	
+	public Client()
+	{
+		INSTANCE = (DllInterface)Native.loadLibrary(DLL_NM, DllInterface.class);
+		logDebug("Created OPC DLL client, library ["+DLL_NM+"]");
+	}
 	
 	@Override
 	public boolean init(String host, String server) 
 	{
-		DllInterface.INSTANCE.init(host, server);
+		INSTANCE.init(host, server);
+		logDebug("Initialised OPC DLL client library with host ["+host+"] server ["+server+"]");
+		
 		return true;
 	}
 
 	@Override
 	public boolean destroy() 
 	{
+		NativeLibrary.getInstance(DLL_NM).dispose();
+		INSTANCE = null;
+		
 		return true;
 	}
 
@@ -35,9 +50,8 @@ class Client implements ClientApi
 	@Override
 	public boolean createGroup(String groupName, long refreshRateMs) 
 	{
-		
 		NativeLong nativeRequestedRefreshRate = new NativeLong(refreshRateMs);
-		NativeLong nativeActualRefreshRate = DllInterface.INSTANCE.createGroup(groupName, nativeRequestedRefreshRate);
+		NativeLong nativeActualRefreshRate = INSTANCE.createGroup(groupName, nativeRequestedRefreshRate);
 
 		if(!nativeActualRefreshRate.equals(nativeRequestedRefreshRate))
 		{
@@ -45,6 +59,12 @@ class Client implements ClientApi
 			return false;
 		}
 		return true;
+	}
+	
+	@Override
+	public boolean destroyGroup(String groupName) 
+	{
+		return INSTANCE.destroyGroup(groupName);
 	}
 
 	@Override
@@ -59,7 +79,7 @@ class Client implements ClientApi
     	for(int offset = 0; !gotEmAll; offset += nNumElements)
     	{
     		String[] s = createBuffer(nElementSz, nNumElements);
-    		gotEmAll = DllInterface.INSTANCE.getItemNames(s, nElementSz, nNumElements, offset);
+    		gotEmAll = INSTANCE.getItemNames(s, nElementSz, nNumElements, offset);
     		System.out.println("gotEmAll ["+gotEmAll+"] offset ["+offset+"]");
     		
         	for(int i=0; i<nNumElements; i++)
@@ -70,8 +90,6 @@ class Client implements ClientApi
         			result.add(s[i]);
         		}
         	}
-        	
-//        	result.addAll(Arrays.asList(s));
     	}
 		
 		return result;
@@ -80,14 +98,14 @@ class Client implements ClientApi
 	@Override
 	public boolean addItem(String groupName, String itemPath) 
 	{
-		return DllInterface.INSTANCE.addItem(groupName, itemPath);
+		return INSTANCE.addItem(groupName, itemPath);
 	}
 
 	@Override
 	public String readItemSync(String groupName, String itemPath) 
 	{
 		byte buff[] = new byte[MAX_BUFF_SZ];
-		if(DllInterface.INSTANCE.readItemSync(groupName, itemPath, buff, MAX_BUFF_SZ))
+		if(INSTANCE.readItemSync(groupName, itemPath, buff, MAX_BUFF_SZ))
 		{
 			return translateCppString(buff);
 		}
@@ -101,20 +119,20 @@ class Client implements ClientApi
 	@Override
 	public boolean writeItemSync(String groupName, String itemPath, String value) 
 	{
-		return DllInterface.INSTANCE.writeItemSync(groupName, itemPath, value);
+		return INSTANCE.writeItemSync(groupName, itemPath, value);
 	}
 	
 	@Override
 	public boolean writeItemAsync(String groupName, String itemPath, String value) 
 	{
-		return DllInterface.INSTANCE.writeItemAsync(groupName, itemPath, value);
+		return INSTANCE.writeItemAsync(groupName, itemPath, value);
 	}
 
 	@Override
 	public String getLastError() 
 	{
 		byte buff[] = new byte[MAX_BUFF_SZ];
-		DllInterface.INSTANCE.getLastError(buff, MAX_BUFF_SZ);
+		INSTANCE.getLastError(buff, MAX_BUFF_SZ);
 		return translateCppString(buff);
 	}
 	
@@ -159,12 +177,12 @@ class Client implements ClientApi
 	@Override
 	public void registerAsyncUpdate(AsyncUpdateCallback callback) 
 	{
-		DllInterface.INSTANCE.registerAsyncUpdate(callback);
+		INSTANCE.registerAsyncUpdate(callback);
 	}
 
 	@Override
 	public boolean readItemAsync(String groupName, String itemPath) 
 	{
-		return DllInterface.INSTANCE.readItemAsync(groupName, itemPath);
+		return INSTANCE.readItemAsync(groupName, itemPath);
 	}
 }

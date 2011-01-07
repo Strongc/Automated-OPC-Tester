@@ -25,6 +25,8 @@ class GroupTest
 	def createdGroupName
 	def createdGroupRefreshRate
 	
+	def destroyedGroupName
+	
 	def addedItemGroupName
 	def addedItemPath
 	
@@ -34,6 +36,8 @@ class GroupTest
 		createdGroupName = null
 		createdGroupRefreshRate = null
 		
+		destroyedGroupName = null
+		
 		addedItemGroupName = null
 		addedItemPath = null
 		
@@ -42,6 +46,11 @@ class GroupTest
 				println "createGroup: name [${groupName}] refresh rate[${refreshRate}]"
 				createdGroupName = groupName
 				createdGroupRefreshRate = refreshRate
+				return true
+			},
+		destroyGroup: {groupName ->
+				println "destroyGroup: name [${groupName}]"
+				destroyedGroupName = groupName
 				return true
 			},
 			addItem: {groupName, path ->
@@ -170,5 +179,13 @@ class GroupTest
 		assertEquals(0, testee.items.size())
 		testee.items('**')
 		assertEquals(OPC_ADDRESS_SPACE.size(), testee.items.size())
+	}
+	
+	@Test
+	void testDestroyGroupCallsDestroyGroup()
+	{
+		testee.destroy()
+		
+		assertEquals(TESTEE_GROUP_NAME, destroyedGroupName)
 	}
 }

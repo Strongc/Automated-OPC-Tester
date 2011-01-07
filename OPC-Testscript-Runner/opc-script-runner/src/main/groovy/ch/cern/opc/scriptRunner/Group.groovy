@@ -57,6 +57,12 @@ class Group
 		
 		return matchingItems
 	}
+	
+	def destroy()
+	{
+		ClientInstance.instance.destroyGroup(name)
+		ScriptContext.instance.destroyGroup(name)
+	}
 
 	private def replaceStarsWithRegexps(def text)
 	{
@@ -71,7 +77,7 @@ class Group
 			}
 			else
 			{
-				// expression '**'
+				// expression '**' - note decrement extra place due to replacing 2 * chars
 				if(chars[i] == '*' && i > 0 && chars[i-1] == '*')
 				{
 					result = STAR_REG_EXPS['**'] + result

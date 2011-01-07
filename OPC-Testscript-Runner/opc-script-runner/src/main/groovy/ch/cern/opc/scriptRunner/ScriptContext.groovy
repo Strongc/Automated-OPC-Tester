@@ -41,6 +41,11 @@ class ScriptContext
 		return findGroup(name)
 	}
 	
+	def destroyGroup(name)
+	{
+		groups.remove(name)
+	}
+	
 	def init(host, server)
 	{
 		ClientInstance.instance.init(host, server)

@@ -11,6 +11,7 @@ public interface ClientApi
 	public boolean destroy();
 	
 	public boolean createGroup(String groupName, long refreshRateMs);
+	public boolean destroyGroup(String groupName);
 	public boolean addItem(String groupName, String itemPath);
 	public String readItemSync(String groupName, String itemPath);
 	public boolean readItemAsync(String groupName, String itemPath);

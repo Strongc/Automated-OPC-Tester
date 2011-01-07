@@ -12,6 +12,7 @@
 using namespace pantheios;
 using namespace std;
 
+extern COPCServer *gspOpcServer;
 extern CAtlArray<CString> gsoOpcServerAddressSpace;
 extern TransactionCompleteHandler transactionHandler;
 
@@ -31,10 +32,42 @@ public:
 	};
 
 
-	void AddGroup(const char* const pGroupName, COPCGroup* pGroup)
+	unsigned long CreateGroup(const char* const pGroupName, const unsigned long requestedRefreshRate)
 	{
+		if(m_groups.Lookup(pGroupName))
+		{
+			log_WARNING("CreateGroup called with already existent group [", pGroupName,"]");
+			return requestedRefreshRate;
+		}
+
+		unsigned long actualRefreshRate = requestedRefreshRate;
+		COPCGroup *pGroup = gspOpcServer->makeGroup(pGroupName, true, requestedRefreshRate, actualRefreshRate, 0.0);
+		
 		pGroup->enableAsynch(m_updateHandler);
 		m_groups[CString(pGroupName)] = new GroupNode(pGroupName, pGroup);
+
+		return actualRefreshRate;
+	};
+
+	bool DestroyGroup(const char* const pGroupName)
+	{
+		if(!m_groups.Lookup(pGroupName))
+		{
+			log_WARNING("DestroyGroup called with non-existent group [", pGroupName,"]");
+			return false;
+		}
+
+		GroupNode* pNode = m_groups[CString(pGroupName)];
+
+		if(!m_groups.RemoveKey(pGroupName))
+		{			
+			log_ERROR("DestroyGroup failed to remove key [", pGroupName,"] item count [", ((pantheios::integer)m_groups.GetCount()),"]");
+			assert(false);
+
+		}
+		delete pNode;
+
+		return true;
 	};
 
 	bool AddItem(const char* pGroupName, const char* pItemAddress)

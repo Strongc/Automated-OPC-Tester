@@ -127,6 +127,16 @@ struct GroupNode
 			m_itemsDataTypes.InitHashTable(257);
 		};
 
+		virtual ~GroupNode()
+		{
+			log_NOTICE("Deleting group node [", m_pGroupName,"]");
+
+			m_pGroup->disableAsynch();
+
+			delete m_pGroup;
+			free(m_pGroupName); 
+		}
+
 		void AddItem(const char* const pItemName)
 		{
 			log_NOTICE("GroupNode [", m_pGroupName,"] adding item [", pItemName,"]...");

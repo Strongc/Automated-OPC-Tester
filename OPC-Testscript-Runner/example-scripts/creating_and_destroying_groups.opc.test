@@ -1,0 +1,23 @@
+init('', 'Matrikon.OPC.Simulation')
+
+logInfo('script demonstrates creating and destroying OPC client groupings')
+
+for(i in 1..100)
+{
+	def groupName = 'test.group.'+i
+	
+	// create group here
+	def testGroup = group(groupName)
+	
+	// add items and write here
+	testGroup.with
+	{
+		item('testGroup.myString').syncValue = groupName
+	}
+	
+	// destroy group here
+	sleep(100)
+	testGroup.destroy()
+}
+
+logInfo('end of script')

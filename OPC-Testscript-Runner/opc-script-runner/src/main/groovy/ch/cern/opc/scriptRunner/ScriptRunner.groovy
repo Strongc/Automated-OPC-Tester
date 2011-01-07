@@ -2,6 +2,7 @@ package ch.cern.opc.scriptRunner
 
 import static ch.cern.opc.common.Log.*
 import org.w3c.dom.Element;
+import ch.cern.opc.client.ClientInstance
 
 class ScriptRunner 
 {
@@ -13,6 +14,8 @@ class ScriptRunner
 		context = new ScriptContext()
 
 		runScriptClosure(scriptClosure, context)
+		println "ClientInstance.instance [${(ClientInstance.instance == null)?'NULL':'NON NULL'}]"
+		ClientInstance.instance.destroy();
 		
 		return context.XML
 	}
@@ -25,7 +28,7 @@ class ScriptRunner
 		script.delegate.onScriptStart()
 		script()
 		script.delegate.onScriptEnd()
-		
+				
 		logInfo('finished running the script')
 	}
 }
