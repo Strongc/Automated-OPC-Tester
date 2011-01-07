@@ -2,7 +2,7 @@ init('', 'Matrikon.OPC.Simulation')
 
 logInfo('script demonstrates creating and destroying OPC client groupings')
 
-for(i in 1..100)
+for(i in 1..20)
 {
 	def groupName = 'test.group.'+i
 	
@@ -12,11 +12,14 @@ for(i in 1..100)
 	// add items and write here
 	testGroup.with
 	{
-		item('testGroup.myString').asyncValue = groupName
+		def theItem = item('testGroup.myString')
+		
+		theItem.asyncValue = groupName
+		theItem.assertAsyncEquals('checking async write worked', 2, groupName)
 	}
 	
 	// destroy group here
-	sleep(100)
+	sleep(300)
 	testGroup.destroy()
 }
 

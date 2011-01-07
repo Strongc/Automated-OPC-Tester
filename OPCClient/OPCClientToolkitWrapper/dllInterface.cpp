@@ -80,7 +80,7 @@ extern "C"
 {
 	__declspec(dllexport) void __cdecl init(const char* const pHost, const char* const pServer)
 	{
-		cout << "Initialising with host ["<< pHost <<"] port ["<< pServer <<"]" << endl;
+		log_NOTICE("Initialising with host [",pHost,"] port [",pServer,"]");
 
 		InitialiseLogging();
 
@@ -92,6 +92,14 @@ extern "C"
 
 		gspOpcServer = gspHost->connectDAServer(pServer);
 		log_NOTICE("init: connected opcServer [", pServer,"]");
+	}
+
+	__declspec(dllexport) void __cdecl end()
+	{
+		log_NOTICE("Ending client session");
+
+		COPCClient::stop();
+		log_NOTICE("stop - called for OPCClient class");
 	}
 
 	__declspec(dllexport) const unsigned long __cdecl createGroup(const char* const pGroupName, const unsigned long requestedRefreshRate)
