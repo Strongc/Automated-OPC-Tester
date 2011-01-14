@@ -150,4 +150,49 @@ class ScriptContextTest
 		testee.destroyGroup('undefined group')
 		assertEquals(1, testee.groups.size())
 	}
+	
+	@Test
+	void testGenerateRandomIntPositiveRange()
+	{
+		for(i in 1..10)
+		{
+			def firstRandomValue = testee.randomInt(5, 10)
+			assertTrue(firstRandomValue >= 5 && firstRandomValue <= 10)
+			
+			def secondRandomValue = testee.randomInt(10, 5)
+			assertTrue(secondRandomValue >= 5 && secondRandomValue <= 10)
+		}
+	}
+	
+	@Test
+	void testRandomIntNegativeRange()
+	{
+		for(i in 1..10)
+		{
+			def firstRandomValue = testee.randomInt(-15, -20)
+			assertTrue(firstRandomValue >= -20 && firstRandomValue <= -15)
+			
+			def secondRandomValue = testee.randomInt(-20, -15)
+			assertTrue(secondRandomValue >= -20 && secondRandomValue <= -15)
+		}
+	}
+	
+	@Test
+	void testRandomPositiveAndNegativeRange()
+	{
+		for(i in 1..10)
+		{
+			def randomValue = testee.randomInt(-1, 1)
+			assertTrue(randomValue >= -1 && randomValue <= 1)
+		}
+
+	}
+
+	@Test
+	void testRandomIntBoundaryConditions()
+	{
+		assertTrue(5 == testee.randomInt(5, 5))
+		assertTrue(0 == testee.randomInt(0, 0))
+		assertTrue(-100 == testee.randomInt(-100, -100))
+	}
 }

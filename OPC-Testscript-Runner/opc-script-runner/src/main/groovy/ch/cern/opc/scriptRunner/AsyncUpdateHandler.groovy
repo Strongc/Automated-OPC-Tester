@@ -36,7 +36,7 @@ class AsyncUpdateHandler implements AsyncUpdateCallback
 		}
 		else
 		{
-			logDebug("asyncUpdateHandler.onUpdate called for item [${itemPath}] value [${value}] thread [${Thread.currentThread().id}]")
+			logTrace("asyncUpdateHandler.onUpdate called for item [${itemPath}] value [${value}] thread [${Thread.currentThread().id}]")
 			assertAsyncManager.asyncUpdate(itemPath, value)
 			return 1
 		}

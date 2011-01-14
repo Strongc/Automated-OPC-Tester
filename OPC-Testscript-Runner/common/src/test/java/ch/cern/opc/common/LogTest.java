@@ -2,6 +2,7 @@ package ch.cern.opc.common;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static ch.cern.opc.common.Log.*;
 
 import javax.swing.JTextArea;
 
@@ -32,16 +33,93 @@ public class LogTest
 	{
 		assertTrue(textComponent.getText().isEmpty());
 		
-		Log.logError("error");
-		testThreadSnooze(250);		
-		assertEquals("error\n", textComponent.getText());
+		logError("error");
+		assertLoggedContent("error\n");
 		
-		Log.logWarning("warning");
-		Log.logInfo("info");
-		Log.logDebug("debug");
-
+		logWarning("warning");
+		logInfo("info");
+		assertLoggedContent("error\nwarning\ninfo\n");
+	}
+	
+	@Test
+	public void testLogLevelTrace()
+	{
+		logLevel(LogLevel.TRACE.name());
+		
+		logError("error");
+		logWarning("warning");
+		logInfo("info");
+		logDebug("debug");
+		logTrace("trace");
+		
+		assertLoggedContent("error\nwarning\ninfo\ndebug\ntrace\n");
+	}
+	
+	@Test
+	public void testLogLevelDebug()
+	{
+		logLevel(LogLevel.DEBUG.name());
+		
+		logError("error");
+		logWarning("warning");
+		logInfo("info");
+		logDebug("debug");
+		logTrace("trace");
+		
+		assertLoggedContent("error\nwarning\ninfo\ndebug\n");
+	}
+	
+	@Test
+	public void testLogLevelInfo()
+	{
+		logLevel(LogLevel.INFO.name());
+		
+		logError("error");
+		logWarning("warning");
+		logInfo("info");
+		logDebug("debug");
+		logTrace("trace");
+		
+		assertLoggedContent("error\nwarning\ninfo\n");
+	}
+	
+	@Test
+	public void testLogLevelWarn()
+	{
+		logLevel(LogLevel.WARN.name());
+		
+		logError("error");
+		logWarning("warning");
+		logInfo("info");
+		logDebug("debug");
+		logTrace("trace");
+		
+		assertLoggedContent("error\nwarning\n");
+	}	
+	
+	@Test
+	public void testLogAtStringVersion()
+	{
+		logLevel("WaRn");
+		
+		logInfo("info");
+		logDebug("debug");
+		logTrace("trace");
+		assertLoggedContent("");
+		
+		logLevel("TrAcE");
+		
+		logInfo("info");
+		logDebug("debug");
+		logTrace("trace");
+		assertLoggedContent("info\ndebug\ntrace\n");
+	}
+	
+	
+	private static void assertLoggedContent(final String expected)
+	{
 		testThreadSnooze(250);
-		assertEquals("error\nwarning\ninfo\ndebug\n", textComponent.getText());
+		assertEquals(expected, Log.textArea.getText());
 	}
 
 	/**

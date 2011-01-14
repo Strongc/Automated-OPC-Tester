@@ -8,6 +8,7 @@ import ch.cern.opc.scriptRunner.results.RunResults;
 class ScriptContext 
 {
 	private static def instance
+	private def randomGenerator
 	
 	def static getInstance()
 	{
@@ -54,5 +55,24 @@ class ScriptContext
 	def getLastError()
 	{
 		return ClientInstance.instance.lastError
+	}
+	
+	private def getRandomGenerator()
+	{
+		if(randomGenerator == null)
+		{
+			randomGenerator = new Random()
+		}
+		
+		return randomGenerator
+	}
+	
+	def randomInt(limitA, limitB)
+	{
+		def diff = (limitA - limitB).abs()
+		
+		if(diff < 1) return limitA
+		
+		return [limitA, limitB].min() + getRandomGenerator().nextInt(diff);
 	}
 }

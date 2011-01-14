@@ -1,44 +1,46 @@
 init('', 'WIENER.Plein.Baus.OPC.Server.DA')
 
 logInfo('script creates and destroys OPC client groupings for Wiener OPCS')
+logLevel('info')
 
-for(i in 1..10)
+for(i in 1..10000)
 {
 	def groupName = 'test.group.'+i
 	
 	// create group here
 	def testGroup = group(groupName)
-	
-	// add all items to group here
+		
 	testGroup.with
 	{
+		// add every OPC item to group
 		def groupItems = items('**')
-		sleep(500)
-
+		sleep(randomInt(100, 200))
 		logInfo("group [${groupName}] has [${groupItems.size()}] items")
 
 		def channelOnOffs = items('**.Channel.*.OnOff')
-		logInfo("number of channels [${channelOnOffs.size()}]")
+		logInfo("number of channels [${channelOnOffs.size()}] for loop number [${i}]")
 
 		// toggle all rise rates (value 2 or 4)
 		items('**Channel.*.VoltageRiseRate').each{it.syncValue = (i%2? '2': '4')}
-		sleep(500)
+		sleep(randomInt(100, 200))
 
 		// turn all channels on
 		channelOnOffs.each {it.syncValue = '1'}		
-		sleep(500)
+		sleep(randomInt(200, 300))
 
 		// adjust all fall rates (value 2 or 4)
 		items('**Channel.*.VoltageFallRate').each{it.syncValue = (i%2? '2': '4')}
-		sleep(500)
+		sleep(randomInt(100, 200))
 
 		// turn all channels off
 		channelOnOffs.each {it.syncValue = '0'}
-		sleep(500)	
+		sleep(randomInt(200, 300))
 	}
 	
 	// destroy group here
 	testGroup.destroy()
+	
+	logInfo("group [${groupName}] destroyed")
 }
 
 logInfo('end of script')
