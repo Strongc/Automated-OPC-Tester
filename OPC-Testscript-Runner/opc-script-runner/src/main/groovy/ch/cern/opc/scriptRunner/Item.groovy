@@ -16,9 +16,9 @@ class Item
 		if(groupName.empty) throw new IllegalArgumentException("groupName must not be null")
 		
 		if(path == null) throw new IllegalArgumentException("path must not be null")
-		if(path.empty) throw new IllegalArgumentException("path must not be empty")
+		if(path.toString().empty) throw new IllegalArgumentException("path must not be empty")
 		
-		this.path = path
+		this.path = path.toString()
 		this.groupName = groupName
 	}
 	

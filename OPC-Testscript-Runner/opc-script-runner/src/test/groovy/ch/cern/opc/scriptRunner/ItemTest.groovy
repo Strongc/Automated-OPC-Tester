@@ -99,6 +99,12 @@ class ItemTest
 	}
 	
 	@Test
+	void testConstructorHandlesGStringPaths()
+	{
+		new Item(TESTEE_GROUP_NAME, "GString created at ${new Date()}")
+	}
+	
+	@Test
 	void testSyncValueUsesCorrectGroupAndPath()
 	{
 		testee.syncValue

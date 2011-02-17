@@ -122,7 +122,13 @@ class GroupTest
 		assertEquals('the.group.name', createdGroupName)
 		assertEquals(1000, createdGroupRefreshRate)
 	}
-	
+
+	@Test
+	void testConstructorHandlesNamesAsGStrings()
+	{
+		new Group("I am a gstring created at ${new Date()}")
+	}
+
 	@Test 
 	void testAddItemCallsDllClientWithGroupNameAndItemPath()
 	{
@@ -184,6 +190,7 @@ class GroupTest
 	@Test
 	void testDestroyGroupCallsDestroyGroup()
 	{
+		println("testee [${testee.toString()}] - calling destroy...")
 		testee.destroy()
 		
 		assertEquals(TESTEE_GROUP_NAME, destroyedGroupName)

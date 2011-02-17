@@ -16,10 +16,11 @@ class Group
 	def Group(name)
 	{
 		if(name == null) throw new IllegalArgumentException("Group names cannot be null")
-		if(name.empty) throw new IllegalArgumentException("Group names cannot be empty")
+		if(name.toString().empty) throw new IllegalArgumentException("Group names cannot be empty")
 		
-		this.name = name
+		this.name = name.toString()
 		ClientInstance.instance.createGroup(name, 1000)
+		println "group [${name}] created"
 	}
 	
 	private def addItem(path)

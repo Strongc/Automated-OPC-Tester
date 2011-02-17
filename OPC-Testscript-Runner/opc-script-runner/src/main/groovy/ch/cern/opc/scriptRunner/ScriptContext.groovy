@@ -12,6 +12,10 @@ class ScriptContext
 	
 	def static getInstance()
 	{
+		if(null == instance)
+		{
+			instance = new ScriptContext()
+		}
 		return instance
 	}
 	
