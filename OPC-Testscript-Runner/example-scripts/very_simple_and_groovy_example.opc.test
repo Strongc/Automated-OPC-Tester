@@ -1,0 +1,32 @@
+/*
+* This script does the following:
+* 1. Connects to the Matrikon Simulation Server
+* 2. Creates a group called 'my.group'
+* 3. Adds 4 items to the group
+* 4. Writes to each item
+*
+* Possible problems are:
+* 1. The Matrikon Simulation Server is not correctly installed - verify it is by connecting a 3rd party
+* visual OPC client to the OPC server such as the Matrikon Explorer.
+* 2. The OPC items that the script attempts to add to the group are not in the OPC server namespace. Again
+* use the visual OPC client to verify whether the namespace contains the items.
+*/
+
+logInfo('script started...')
+
+// This connects the testbench's OPC client to the Matrikon OPC Simulation Server
+init('', 'Matrikon.OPC.Simulation')
+logInfo('OPC testbench connected to target OPC Server')
+
+// create a group called 'my.group', add items and set their values synchronously using the groovy 'with' keyword
+group('my.group').with
+{
+	item('Bucket Brigade.Boolean').syncValue = '1'
+	item('Bucket Brigade.Int1').syncValue = '2'
+	item('Bucket Brigade.Real4').syncValue = '3.0'
+	item('Bucket Brigade.String').syncValue = 'four'
+	
+	logInfo("OPC group [${name}] created and all [${items.size()}] items written")
+}
+
+logInfo('end of script')
