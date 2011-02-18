@@ -19,13 +19,11 @@ import static ch.cern.opc.common.Log.*
 
 class ScriptRunnerGui 
 {
-	private static final def SCRIPT_TEXT_AREA = 1
-	private static final def OUTPUT_TEXT_AREA = 2
-	
 	private def builder = new SwingBuilder()
 	private def mainFrame
 	private def scriptFile
-	private def textAreas = [:]
+	private def scriptTextArea
+	private def outputTextArea
 	private def resultsTree = new ResultsTree()
 	
 	def show()
@@ -34,8 +32,8 @@ class ScriptRunnerGui
 				splitPane(orientation:HORIZONTAL_SPLIT,
 				leftComponent:labelledPanel('xml results tree', GREEN),
 				rightComponent:splitPane(orientation: VERTICAL_SPLIT,
-				topComponent:textAreaPanel(SCRIPT_TEXT_AREA, 'no script loaded'),
-				bottomComponent:textAreaPanel(OUTPUT_TEXT_AREA, 'no script output'))
+				topComponent:scriptTextPanel('no script loaded'),
+				bottomComponent:outputTextPanel('no script output'))
 				)
 			}
 
@@ -54,11 +52,16 @@ class ScriptRunnerGui
 		}
 	}
 	
-	private def textAreaPanel(id, initialText)
+	private def scriptTextPanel(initialText)
 	{
-		def textArea = builder.textArea(text:initialText, editable:false)
-		textAreas[id] = textArea
-		return new JScrollPane(textArea)
+		scriptTextArea = builder.textArea(text:initialText, editable:false)
+		return new JScrollPane(scriptTextArea)
+	}
+	
+	private def outputTextPanel(initialText)
+	{
+		outputTextArea = builder.textArea(text:initialText, editable:false)
+		return new JScrollPane(outputTextArea)
 	}
 	
 	private def labelledPanel(text, bgColour)
@@ -80,21 +83,21 @@ class ScriptRunnerGui
 	
 	private def showScript(file)
 	{
-		textAreas[SCRIPT_TEXT_AREA].text = file.text
+		scriptTextArea.text = file.text
 	}
 	
 	private def runScript()
 	{
-		textAreas[OUTPUT_TEXT_AREA].text = ''
+		outputTextArea.text = ''
 		
 		if(scriptFile == null)
 		{
-			textAreas[SCRIPT_TEXT_AREA].text = 'Choose a script...'
+			scriptTextArea.text = 'Choose a script...'
 			return
 		}
 		
 		showScript(scriptFile)
-		Log.setTextComponent(textAreas[OUTPUT_TEXT_AREA])
+		Log.setTextComponent(outputTextArea)
 		
 		def thread = Thread.start{
 			resultsTree.clearResults()

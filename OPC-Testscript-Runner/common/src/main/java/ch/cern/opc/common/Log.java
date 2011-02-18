@@ -1,11 +1,14 @@
 package ch.cern.opc.common;
 
+import java.io.IOException;
+
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 public class Log 
 {
@@ -28,19 +31,47 @@ public class Log
 			
 			return false;
 		}
+		
+		Level toLog4jLevel()
+		{
+			if(this == LogLevel.TRACE) return Level.TRACE;
+			if(this == LogLevel.DEBUG) return Level.DEBUG;
+			if(this == LogLevel.INFO) return Level.INFO;
+			if(this == LogLevel.WARN) return Level.WARN;
+			
+			// default
+			return Level.DEBUG;
+		}
 	}
 	
+	private final static String LOG_CATEGORY_NM = "script_runner";
 	private final static LogLevel DEFAULT_LOG_LEVEL = LogLevel.INFO;
 	
-	private static Logger log;
-	protected static JTextArea textArea;
+	protected static LimitedSizeTextLogger textArea;
+	
 	private static LogLevel logLevel = DEFAULT_LOG_LEVEL;
+	private static final int MAX_OUTPUT_TEXT_AREA_CHAR_COUNT = 100000;
 
 	static 
 	{
-		log = Logger.getLogger("OPC_Test_Script_Runner");
-		log.setLevel(Level.DEBUG);
+		// console appender
 		BasicConfigurator.configure();
+		
+		// create file appender
+		try 
+		{
+			final String fmt = "%d{dd/MM/yyyy HH:mm:ss.SSS} %-5p: %m%n";
+			final String logfile = "script_runner.log";
+			
+			BasicConfigurator.configure(new FileAppender(new PatternLayout(fmt), logfile));
+		} 
+		catch (IOException e) 
+		{
+			throw new RuntimeException("Failed to start script runner logfile");
+		}
+		
+		// initialize to default level
+		logLevel(DEFAULT_LOG_LEVEL.name());
 	}
 	
 	public static void logLevel(final String levelString)
@@ -54,41 +85,43 @@ public class Log
 				logLevel = level;
 			}
 		}
+		
+		Logger.getLogger(LOG_CATEGORY_NM).setLevel(logLevel.toLog4jLevel());
 	}
 
 	public static void logError(Object msg)
 	{
 		updateTextComponent(msg);
-		log.error(msg);
+		Logger.getLogger(LOG_CATEGORY_NM).error(msg);
 	}
 
 	public static void logWarning(Object msg)
 	{
 		updateTextComponent(msg);
-		log.warn(msg);
+		Logger.getLogger(LOG_CATEGORY_NM).warn(msg);
 	}
 
 	public static void logInfo(Object msg)
 	{
 		updateTextComponent(msg, LogLevel.INFO);
-		log.info(msg);
+		Logger.getLogger(LOG_CATEGORY_NM).info(msg);
 	}
 
 	public static void logDebug(String msg)
 	{
 		updateTextComponent(msg, LogLevel.DEBUG);
-		log.debug(msg);
+		Logger.getLogger(LOG_CATEGORY_NM).debug(msg);
 	}
 	
 	public static void logTrace(String msg) 
 	{
 		updateTextComponent(msg, LogLevel.TRACE);
-		log.trace(msg);
+		Logger.getLogger(LOG_CATEGORY_NM).trace(msg);
 	}
 
 	public static void setTextComponent(JTextArea textArea) 
 	{
-		Log.textArea = textArea;
+		Log.textArea = new LimitedSizeTextLogger(textArea, MAX_OUTPUT_TEXT_AREA_CHAR_COUNT);
 	}
 	
 	private static void updateTextComponent(final Object msg, final LogLevel level)
@@ -101,15 +134,9 @@ public class Log
 
 	private static void updateTextComponent(final Object msg)
 	{
-		if(textArea == null) return;
-		
-		SwingUtilities.invokeLater(new Runnable()
+		if(textArea != null)
 		{
-			public void run()
-			{
-				textArea.append(msg + "\n");
-				textArea.setCaretPosition(textArea.getText().length() - 1);
-			}
-		});
+			textArea.publish(msg.toString());
+		}
 	}
 }
