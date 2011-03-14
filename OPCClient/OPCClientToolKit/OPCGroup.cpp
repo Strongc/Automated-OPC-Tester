@@ -22,9 +22,10 @@ Boston, MA  02111-1307, USA.
 #include "OPCGroup.h"
 #include "OPCItem.h"
 
+#include <pantheios/pantheios.hpp>
+#include <pantheios/inserters/integer.hpp>
 
-
-
+using namespace pantheios;
 
 /**
 * Handles OPC (DCOM) callbacks at the group level. It deals with the receipt of data from asynchronous operations.
@@ -225,15 +226,18 @@ opcServer(server)
 	}
 }
 
-
-
-
-
-
-
-
 COPCGroup::~COPCGroup()
 {
+	log_NOTICE("COPCGroup::~COPCGroup called, deleting group [", name,"] item count [", pantheios::integer(items.GetCount()),"]");
+	while(!items.IsEmpty())
+	{
+		COPCItem* pItem = items[0];
+		items.RemoveAt(0);
+		log_NOTICE("COPCGroup::~COPCGroup, deleting item [", pItem->getName(),"] remaining item count [", pantheios::integer(items.GetCount()),"]");
+		delete pItem;
+	}
+	log_NOTICE("COPCGroup::~COPCGroup called, deleted items for group [", name,"] item count [", pantheios::integer(items.GetCount()),"]");
+
 	opcServer.getServerInterface()->RemoveGroup(groupHandle, FALSE);
 }
 
@@ -338,7 +342,11 @@ COPCItem * COPCGroup::addItem(CString &itemName, bool active)
 	if (addItems(names, itemsCreated, errors, active)!= 0){
 		throw OPCException("Failed to add item");
 	}
-	return itemsCreated[0];
+
+	COPCItem* pNewItem = itemsCreated[0];
+	items.Add(pNewItem);
+
+	return pNewItem;
 }
 
 

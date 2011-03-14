@@ -41,7 +41,7 @@ public:
 		}
 
 		unsigned long actualRefreshRate = requestedRefreshRate;
-		COPCGroup *pGroup = gspOpcServer->makeGroup(pGroupName, true, requestedRefreshRate, actualRefreshRate, 0.0);
+		COPCGroup *pGroup = gspOpcServer->makeGroup(pGroupName, /*true*/false, requestedRefreshRate, actualRefreshRate, 0.0);
 		
 		pGroup->enableAsynch(m_updateHandler);
 		m_groups[CString(pGroupName)] = new GroupNode(pGroupName, pGroup);
