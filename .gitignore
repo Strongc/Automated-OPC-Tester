@@ -17,6 +17,7 @@ target
 *.idc
 Debug
 Release
+~AutoRecover.*.vcproj
 
 # ignore VC++ test output
 test_detail.xml
