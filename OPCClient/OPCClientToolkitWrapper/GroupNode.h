@@ -22,36 +22,6 @@ struct GroupNode
 		CAtlMap<CString , COPCItem *> m_items;
 		CAtlMap<CString, int> m_itemsDataTypes;
 
-		auto_ptr<CPropertyDescription> GetDataTypePropertyDsc(COPCItem* pItem)
-		{
-			if(pItem == NULL)
-			{				
-				RecordError("GetDataTypePropertyDsc - received NULL input");
-				assert(false);
-				return auto_ptr<CPropertyDescription>(NULL);
-			}
-
-			CAtlArray<CPropertyDescription> itemProperties;
-			pItem->getSupportedProperties(itemProperties);
-
-			log_NOTICE("GetDataTypePropertyDsc - found [", pantheios::integer(itemProperties.GetCount()),"] properties for item [", pItem->getName(),"]");
-			for(unsigned int i = 0; i < itemProperties.GetCount(); i++)
-			{
-				CPropertyDescription& props = itemProperties.GetAt(i);
-				log_NOTICE("GetDataTypePropertyDsc - examining property [", string(props.desc),"]");
-
-				if(string(props.desc).find("DataType") != string::npos || string(props.desc).find("Data Type"))
-				{
-					return auto_ptr<CPropertyDescription>(new CPropertyDescription(props.id, props.desc, props.type));
-				}
-			}
-
-			// uh oh: no datatype property found
-			RecordError("GetDataTypePropertyDsc - failed to find OPC item data type property description for [%s]", pItem->getName());
-			assert(false);
-			return auto_ptr<CPropertyDescription>(NULL);
-		}
-
 		int GetItemDataType(COPCItem* pItem)
 		{
 			if(pItem == NULL)
@@ -61,27 +31,7 @@ struct GroupNode
 				return -1;
 			}
 
-			auto_ptr<CPropertyDescription> propDsc = GetDataTypePropertyDsc(pItem);
-
-			if(propDsc.get() == NULL)
-			{				
-				RecordError("GetItemDataType - failed to find OPC item data type for [%s]", pItem->getName());
-				assert(false);
-				return -1;
-			}
-
-			log_NOTICE("Found DataType property description for item [", pItem->getName(),"]");
-
-			CAtlArray<CPropertyDescription> propsToRead;
-			propsToRead.Add(*propDsc.get());
-
-			ATL::CAutoPtrArray<SPropertyValue> propValues;
-			pItem->getProperties(propsToRead, propValues);
-
-			assert(1 == propValues.GetCount());
-			_variant_t value(propValues[0]->value);
-
-			return static_cast<int>(value);
+			return pItem->getDataType();
 		}
 
 		bool WriteItem(const char* const pItemName, const char* const pValue, const bool isAsync)

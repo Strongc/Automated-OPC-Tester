@@ -20,13 +20,14 @@ Boston, MA  02111-1307, USA.
 #include "OPCServer.h"
 #include "OPCItem.h"
 #include "OPCGroup.h"
+#include <assert.h>
 #include <pantheios/pantheios.hpp>
 
 using namespace pantheios;
 
 
 COPCItem::COPCItem(CString &itemName, COPCGroup &g):
-name(itemName), group(g){
+name(itemName), group(g), dataType(-1){
 }
 
 
@@ -171,6 +172,22 @@ void COPCItem::getSupportedProperties(CAtlArray<CPropertyDescription> &desc){
 	COPCClient::comFree(pvtDataTypes);
 }
 
+int COPCItem::getDataType()
+{
+	if(dataType < 0) 
+	{
+		CAtlArray<CPropertyDescription> propsToRead;
+		propsToRead.Add(CPropertyDescription(1, "", VT_EMPTY));
+
+		ATL::CAutoPtrArray<SPropertyValue> propValues;
+		getProperties(propsToRead, propValues);
+
+		assert(1 == propValues.GetCount());
+		dataType = propValues[0]->value.intVal;
+	}
+
+	return dataType;
+}
 
 void COPCItem::getProperties(const CAtlArray<CPropertyDescription> &propsToRead, ATL::CAutoPtrArray<SPropertyValue> &propsRead){
 	unsigned noProperties = (DWORD)propsToRead.GetCount();

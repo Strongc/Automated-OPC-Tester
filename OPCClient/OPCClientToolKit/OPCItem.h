@@ -44,6 +44,7 @@ private:
 	COPCGroup & group;
 
 	CString name;
+	int dataType;
 	
 protected:
 	friend class COPCGroup;
@@ -93,6 +94,8 @@ public:
 	* retreive the OPC item properties for the descriptors passed. Any data previously existing in propsRead will be destroyed.
 	*/
 	void getProperties(const CAtlArray<CPropertyDescription> &propsToRead, ATL::CAutoPtrArray<SPropertyValue> &propsRead);
+
+	int getDataType();
 };
 
 #endif // !defined(AFX_OPCITEM_H__B01EC96B_8666_4498_93C9_980AAFEABFB6__INCLUDED_)
