@@ -21,17 +21,12 @@ Boston, MA  02111-1307, USA.
 #include "OPCItem.h"
 #include "OPCGroup.h"
 #include <pantheios/pantheios.hpp>
-#include <pantheios/inserters/integer.hpp>
 
 using namespace pantheios;
-
-static int itemInstances = 0;
 
 
 COPCItem::COPCItem(CString &itemName, COPCGroup &g):
 name(itemName), group(g){
-	itemInstances++;
-	log_NOTICE("Created item, count [", pantheios::integer(itemInstances),"]");
 }
 
 
@@ -40,9 +35,6 @@ COPCItem::~COPCItem()
 	HRESULT *itemResult;
 	group.getItemManagementInterface()->RemoveItems(1, &serversItemHandle, &itemResult);
 	COPCClient::comFree(itemResult);
-
-	itemInstances--;
-	log_NOTICE("Deleted item, count [", pantheios::integer(itemInstances),"]");
 }
 
 

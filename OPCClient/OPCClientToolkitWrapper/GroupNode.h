@@ -22,13 +22,13 @@ struct GroupNode
 		CAtlMap<CString , COPCItem *> m_items;
 		CAtlMap<CString, int> m_itemsDataTypes;
 
-		CPropertyDescription* GetDataTypePropertyDsc(COPCItem* pItem)
+		auto_ptr<CPropertyDescription> GetDataTypePropertyDsc(COPCItem* pItem)
 		{
 			if(pItem == NULL)
 			{				
 				RecordError("GetDataTypePropertyDsc - received NULL input");
 				assert(false);
-				return NULL;
+				return auto_ptr<CPropertyDescription>(NULL);
 			}
 
 			CAtlArray<CPropertyDescription> itemProperties;
@@ -42,14 +42,14 @@ struct GroupNode
 
 				if(string(props.desc).find("DataType") != string::npos || string(props.desc).find("Data Type"))
 				{
-					return new CPropertyDescription(props.id, props.desc, props.type);
+					return auto_ptr<CPropertyDescription>(new CPropertyDescription(props.id, props.desc, props.type));
 				}
 			}
 
 			// uh oh: no datatype property found
 			RecordError("GetDataTypePropertyDsc - failed to find OPC item data type property description for [%s]", pItem->getName());
 			assert(false);
-			return NULL;
+			return auto_ptr<CPropertyDescription>(NULL);
 		}
 
 		int GetItemDataType(COPCItem* pItem)
@@ -61,7 +61,7 @@ struct GroupNode
 				return -1;
 			}
 
-			auto_ptr<CPropertyDescription> propDsc(GetDataTypePropertyDsc(pItem));
+			auto_ptr<CPropertyDescription> propDsc = GetDataTypePropertyDsc(pItem);
 
 			if(propDsc.get() == NULL)
 			{				
@@ -143,7 +143,7 @@ struct GroupNode
 			COPCItem* pItem = m_pGroup->addItem(CString(pItemName), true);
 						
 			m_items[CString(pItemName)] = pItem;
-			/*m_itemsDataTypes[CString(pItemName)] = */GetItemDataType(pItem);
+			m_itemsDataTypes[CString(pItemName)] = GetItemDataType(pItem);
 
 			log_NOTICE("Added item to group - name [", pItemName,"] type [", pantheios::integer(m_itemsDataTypes[CString(pItemName)]),"]");
 		};

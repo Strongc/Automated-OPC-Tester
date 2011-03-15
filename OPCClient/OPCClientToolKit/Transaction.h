@@ -53,8 +53,6 @@ public:
 	*/
 	CTransaction(CAtlArray<COPCItem *>&items, ITransactionComplete * completeCB);
 
-	virtual ~CTransaction();
-
 
 	
 	void setItemError(COPCItem *item, HRESULT error);

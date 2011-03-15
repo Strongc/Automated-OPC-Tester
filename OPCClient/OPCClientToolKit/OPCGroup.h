@@ -106,13 +106,6 @@ private:
 	*/
 	OPCHANDLE * buildServerHandleList(CAtlArray<COPCItem *>& items);
 
-	/**
-	* returns the number of failed item creates
-	* itemsCreated[x] will be null if could not create and will contain error code in corresponding error entry
-	*/
-	int addItems(CAtlArray<CString>& itemName, CAtlArray<COPCItem *>& itemsCreated, CAtlArray<HRESULT>& errors, bool active);
-
-
 public:
 	COPCGroup(const CString & groupName, bool active, unsigned long reqUpdateRate_ms, unsigned long &revisedUpdateRate_ms, float deadBand, COPCServer &server);
 
@@ -120,6 +113,13 @@ public:
 
 
 	COPCItem * addItem(CString &itemName, bool active);
+
+	/**
+	* returns the number of failed item creates
+	* itemsCreated[x] will be null if could not create and will contain error code in corresponding error entry
+	*/
+	int addItems(CAtlArray<CString>& itemName, CAtlArray<COPCItem *>& itemsCreated, CAtlArray<HRESULT>& errors, bool active);
+
 
 	/**
 	* enable Asynch IO

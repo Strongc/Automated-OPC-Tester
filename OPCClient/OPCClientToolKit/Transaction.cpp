@@ -1,17 +1,8 @@
 #include ".\transaction.h"
 
-#include <pantheios/pantheios.hpp>
-#include <pantheios/inserters/integer.hpp>
-
-using namespace pantheios;
-
-static int transactionInstances = 0;
-
 
 CTransaction::CTransaction(ITransactionComplete * completeCB)
 :completed(FALSE), cancelID(0xffffffff), completeCallBack(completeCB){
-	transactionInstances++;
-	log_NOTICE("Created transaction, count [", pantheios::integer(transactionInstances),"]");
 }
 
 
@@ -21,15 +12,6 @@ CTransaction::CTransaction(CAtlArray<COPCItem *>&items, ITransactionComplete * c
 	for (unsigned i = 0; i < items.GetCount(); i++){
 		opcData.SetAt(items[i],NULL);
 	}
-	transactionInstances++;
-	log_NOTICE("Created transaction (multi item), count [", pantheios::integer(transactionInstances),"]");
-
-}
-
-CTransaction::~CTransaction()
-{
-	transactionInstances--;
-	log_NOTICE("deleted transaction, count [", pantheios::integer(transactionInstances),"]");
 }
 
 
