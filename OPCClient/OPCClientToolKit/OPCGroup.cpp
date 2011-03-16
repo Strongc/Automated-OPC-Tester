@@ -234,6 +234,13 @@ opcServer(server)
 
 COPCGroup::~COPCGroup()
 {
+	while(!items.IsEmpty())
+	{
+		COPCItem* pItem = items[0];
+		items.RemoveAt(0);
+		delete pItem;
+	}
+
 	opcServer.getServerInterface()->RemoveGroup(groupHandle, FALSE);
 }
 
@@ -338,7 +345,11 @@ COPCItem * COPCGroup::addItem(CString &itemName, bool active)
 	if (addItems(names, itemsCreated, errors, active)!= 0){
 		throw OPCException("Failed to add item");
 	}
-	return itemsCreated[0];
+
+	COPCItem* pNewItem = itemsCreated[0];
+	items.Add(pNewItem);
+
+	return pNewItem;
 }
 
 
