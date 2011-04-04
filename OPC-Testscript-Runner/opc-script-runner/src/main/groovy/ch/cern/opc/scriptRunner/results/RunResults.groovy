@@ -9,7 +9,7 @@ import ch.cern.opc.common.Log
 
 import org.w3c.dom.*;
 import javax.xml.parsers.*
-import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult;
+import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult
 import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 
 @Mixin(Log)

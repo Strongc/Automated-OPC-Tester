@@ -12,6 +12,7 @@ import ch.cern.opc.client.ClientApi
 import ch.cern.opc.client.ClientInstance
 import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 import ch.cern.opc.scriptRunner.AsyncUpdateHandler
+import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult
 
 import static ch.cern.opc.scriptRunner.results.RunResults.NULL_MSG
 import static ch.cern.opc.scriptRunner.results.RunResults.EMPTY_MSG
@@ -43,6 +44,7 @@ class RunResultsTest
 		stubAsyncManager.demand.startTicking(100) {isAsyncManagerTicking = true}
 		stubAsyncManager.demand.stopTicking(100) {isAsyncManagerTicking = false}
 		stubAsyncManager.demand.timeoutAllRemainingAsyncConditions(100) {asyncManagerTimedOutRemainingAsyncConditions = true}
+		stubAsyncManager.demand.registerAsyncCondition(100){}
 		
 		def stubAsyncUpdater = new StubFor(AsyncUpdateHandler)
 		stubAsyncUpdater.demand.register(100) {isAsyncUpdateHandlerRegistered = true}
@@ -119,4 +121,31 @@ class RunResultsTest
 		assertTrue(isAsyncUpdateHandlerRegistered)
 		assertTrue(isAsyncManagerTicking)
 	}
+	
+	@Test
+	void testAssertAsyncEquals_RegistersAsyncAssertObjectWithAsyncManager()
+	{
+		def isAsyncAssertRunResultRegisteredWithAsyncManager = false
+		
+		def stubAsyncAssert = new StubFor(AssertAsyncEqualsRunResult)
+		stubAsyncAssert.demand.registerWithManager(100) {isAsyncAssertRunResultRegisteredWithAsyncManager = true}
+
+		stubAsyncAssert.use 
+		{
+			testee.assertAsyncEquals(null, null, null, null)	
+		}
+		
+		assertTrue(isAsyncAssertRunResultRegisteredWithAsyncManager)
+	}
+	
+	@Test
+	void testAssertAsyncEquals_AddsAsyncAssertObjectToResults()
+	{
+		assertEquals(0, testee.results.size)
+
+		testee.assertAsyncEquals(null, null, null, null)
+		
+		assertEquals(1, testee.results.size)
+	}
+	
 }
