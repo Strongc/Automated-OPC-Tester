@@ -5,12 +5,14 @@ import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 import ch.cern.opc.client.ClientInstance
 import ch.cern.opc.scriptRunner.AsyncUpdateHandler
+import ch.cern.opc.common.Log
 
 import org.w3c.dom.*;
 import javax.xml.parsers.*
 import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult;
-import ch.cern.opc.scriptRunner.results.async.AssertAsynchManager
+import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 
+@Mixin(Log)
 class RunResults 
 {
 	private static final def PING_PERIOD_FOR_ASYNC_COMPLETION = 2000
@@ -19,10 +21,11 @@ class RunResults
 	def results = []	
 	private final def asyncManager
 	private final def asyncUpdater
+	protected def maxWait = MAX_WAIT_FOR_ASYNC_COMPLETION_MS
 	
 	def RunResults()
 	{
-		asyncManager = new AssertAsynchManager()
+		asyncManager = new AsyncConditionManager()
 		asyncUpdater = new AsyncUpdateHandler(asyncManager)
 	}
 	
@@ -77,14 +80,14 @@ class RunResults
 	def onScriptEnd()
 	{
 		logInfo('onScriptEnd called')
-		if(asyncManager.registeredAsyncAssertsCount > 0)
+		if(asyncManager.registeredAsyncConditionsCount > 0)
 		{
-			for(def elapsedWait = 0; elapsedWait < MAX_WAIT_FOR_ASYNC_COMPLETION_MS && asyncManager.registeredAsyncAssertsCount > 0; elapsedWait += PING_PERIOD_FOR_ASYNC_COMPLETION)
+			for(def elapsedWait = 0; elapsedWait < maxWait && asyncManager.registeredAsyncConditionsCount > 0; elapsedWait += PING_PERIOD_FOR_ASYNC_COMPLETION)
 			{
-				logInfo("waiting for [${asyncManager.registeredAsyncAssertsCount}] asynchronous asserts to complete... waiting for [${MAX_WAIT_FOR_ASYNC_COMPLETION_MS-elapsedWait}]")
+				logInfo("waiting for [${asyncManager.registeredAsyncConditionsCount}] asynchronous asserts to complete... waiting for [${maxWait-elapsedWait}]")
 				sleep(PING_PERIOD_FOR_ASYNC_COMPLETION)
 			}   
-			asyncManager.timeoutAllRemainingAsyncAsserts()
+			asyncManager.timeoutAllRemainingAsyncConditions()
 		}
 		asyncManager.stopTicking()
 	}

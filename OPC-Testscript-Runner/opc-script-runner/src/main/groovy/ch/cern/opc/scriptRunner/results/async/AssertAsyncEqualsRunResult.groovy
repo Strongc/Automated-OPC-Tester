@@ -96,6 +96,6 @@ protected class AssertAsyncEqualsRunResult implements RunResult
 	protected def registerWithManager(def manager)
 	{
 		state = ASYNC_STATE.WAITING
-		manager.registerAsyncAssert(this)
+		manager.registerAsyncCondition(this)
 	}
 }

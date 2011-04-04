@@ -102,15 +102,15 @@ class AssertAsyncEqualsRunResultTest
 	}
 	
 	@Test
-	void testRegisterAsyncAssertSetsStatusToWaiting()
+	void testRegisterAsyncConditionSetsStatusToWaiting()
 	{
 		def actualRegisteredWithManager = null
-		def mockManager = new MockFor(AssertAsynchManager)
-		mockManager.demand.registerAsyncAssert{actualRegisteredWithManager = it}
+		def mockManager = new MockFor(AsyncConditionManager)
+		mockManager.demand.registerAsyncCondition{actualRegisteredWithManager = it}
 		
 		mockManager.use 
 		{
-			testee.registerWithManager(new AssertAsynchManager())	
+			testee.registerWithManager(new AsyncConditionManager())	
 		}
 
 		assertEquals(testee, actualRegisteredWithManager)		

@@ -13,6 +13,7 @@
 #include <pantheios/pantheios.hpp>
 #include <pantheios/backends/bec.file.h>
 #include <pantheios/inserters/integer.hpp>
+#include <pantheios/frontends/fe.simple.h>
 
 using namespace pantheios;
 using namespace std;
@@ -74,6 +75,8 @@ void InitialiseLogging()
 		logputs(pantheios::emergency, "Unexpected unknown error occurred whilst initialising logging");
 		std::cout << "logging failed" << std::endl;
 	}
+
+	//pantheios_fe_simple_setSeverityCeiling(PANTHEIOS_SEV_WARNING);
 }
 
 extern "C"
