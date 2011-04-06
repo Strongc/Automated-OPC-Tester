@@ -12,8 +12,11 @@ group('test_group').with
 		assertAsyncEquals('checking async update value', 30, 'a')
 		
 		sleep(2500)		
+		logInfo('setting value of opc item to [a] now')
 		syncValue = 'a'
 	}	
+	
+	
 }
 
 logInfo('end of script')

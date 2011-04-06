@@ -13,6 +13,7 @@ import ch.cern.opc.client.ClientInstance
 import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 import ch.cern.opc.scriptRunner.AsyncUpdateHandler
 import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult
+import ch.cern.opc.scriptRunner.results.async.AssertAsyncNotEqualsRunResult
 
 import static ch.cern.opc.scriptRunner.results.RunResults.NULL_MSG
 import static ch.cern.opc.scriptRunner.results.RunResults.EMPTY_MSG
@@ -48,19 +49,19 @@ class RunResultsTest
 		
 		def stubAsyncUpdater = new StubFor(AsyncUpdateHandler)
 		stubAsyncUpdater.demand.register(100) {isAsyncUpdateHandlerRegistered = true}
-
+		
 		/*
-		* Non-obvious code: The testee.asyncManager and testee.asyncUpdater
-		* fields we want to mock are final, thus cannot be set with object.field
-		* (final fields must be initialised by the ctor).
-		*
-		* Create the testee within the use{} block of the stubbed classes. The
-		* testee's ctor calls 'new AsyncConditionManager()' and 'new AsyncUpdateHandler'.
-		* Since this is within the scope of the stubs use{} blocks stubbed object
-		* instance are created.
-		*
-		* Sorry.
-		*/
+		 * Non-obvious code: The testee.asyncManager and testee.asyncUpdater
+		 * fields we want to mock are final, thus cannot be set with object.field
+		 * (final fields must be initialised by the ctor).
+		 *
+		 * Create the testee within the use{} block of the stubbed classes. The
+		 * testee's ctor calls 'new AsyncConditionManager()' and 'new AsyncUpdateHandler'.
+		 * Since this is within the scope of the stubs use{} blocks stubbed object
+		 * instance are created.
+		 *
+		 * Sorry.
+		 */
 		stubAsyncManager.use 
 		{
 			stubAsyncUpdater.use 
@@ -127,10 +128,10 @@ class RunResultsTest
 	{
 		def isAsyncAssertRunResultRegisteredWithAsyncManager = false
 		
-		def stubAsyncAssert = new StubFor(AssertAsyncEqualsRunResult)
-		stubAsyncAssert.demand.registerWithManager(100) {isAsyncAssertRunResultRegisteredWithAsyncManager = true}
-
-		stubAsyncAssert.use 
+		def stubAsyncAssertEquals = new StubFor(AssertAsyncEqualsRunResult)
+		stubAsyncAssertEquals.demand.registerWithManager {isAsyncAssertRunResultRegisteredWithAsyncManager = true}
+		
+		stubAsyncAssertEquals.use 
 		{
 			testee.assertAsyncEquals(null, null, null, null)	
 		}
@@ -142,8 +143,34 @@ class RunResultsTest
 	void testAssertAsyncEquals_AddsAsyncAssertObjectToResults()
 	{
 		assertEquals(0, testee.results.size)
-
+		
 		testee.assertAsyncEquals(null, null, null, null)
+		
+		assertEquals(1, testee.results.size)
+	}
+	
+	@Test
+	void testAssertAsyncNotEquals_RegistersAsyncAssertObjectWithManager()
+	{
+		def isAsyncAssertNotEqualsRegisteredWithAsyncManager = false
+		
+		def stubAsyncAssertNotEquals = new StubFor(AssertAsyncNotEqualsRunResult)
+		stubAsyncAssertNotEquals.demand.registerWithManager {isAsyncAssertNotEqualsRegisteredWithAsyncManager = true}
+		
+		stubAsyncAssertNotEquals.use 
+		{
+			testee.assertAsyncNotEquals(null, null, null, null)	
+		}
+		
+		assertTrue(isAsyncAssertNotEqualsRegisteredWithAsyncManager)
+	}
+	
+	@Test
+	void testAssertAsyncNotEquals_AddsAsyncAssertObjectToResults()
+	{
+		assertEquals(0, testee.results.size)
+		
+		testee.assertAsyncNotEquals(null, null, null, null)
 		
 		assertEquals(1, testee.results.size)
 	}

@@ -1,6 +1,6 @@
 package ch.cern.opc.scriptRunner.results
 
-interface RunResult 
+public interface RunResult 
 {
 	def toXml(xmlBuilder)
 }

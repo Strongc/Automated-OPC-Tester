@@ -46,4 +46,9 @@ class Item
 	{
 		ScriptContext.instance.assertAsyncEquals(message, timeout, expectedValue, path)
 	}
+	
+	def assertAsyncNotEquals(message, timeout, antiExpectedValue)
+	{
+		ScriptContext.instance.assertAsyncNotEquals(message, timeout, antiExpectedValue, path)
+	}
 }

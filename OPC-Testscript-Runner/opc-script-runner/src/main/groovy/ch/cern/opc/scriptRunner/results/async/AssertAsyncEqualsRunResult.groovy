@@ -1,37 +1,29 @@
 package ch.cern.opc.scriptRunner.results.async
 
-import ch.cern.opc.scriptRunner.results.RunResult
 import static ch.cern.opc.scriptRunner.results.RunResultUtil.formatMessage
 
-protected class AssertAsyncEqualsRunResult implements RunResult
+protected class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 {
-	public static enum ASYNC_STATE {CREATED, WAITING, TIMED_OUT, PASSED}
-	
 	public static final def TITLE = 'assertAsyncEquals' 
 	
-	final def timeout
-	final def itemPath
 	final def expectedValue
 	final def message
 	
-	private ASYNC_STATE state = ASYNC_STATE.CREATED
-	private def elapsedWait = 0
-	
 	def AssertAsyncEqualsRunResult(message, timeout, itemPath, expectedValue)
 	{
+		super(timeout, itemPath)
 		this.message = formatMessage(message)
-		this.timeout = timeout
-		this.itemPath = itemPath
 		this.expectedValue = expectedValue
 	}
 	
+	@Override
 	def toXml(xmlBuilder)
 	{
 		def element
 		
 		switch(state)
 		{
-			case ASYNC_STATE.PASSED:
+			case ASYNC_STATE.MATCHED:
 				element = xmlBuilder.testcase(name:"${TITLE} passed: ${message}")
 				{
 					success(message:"item [${itemPath}] obtained expected value [${expectedValue}] in [${elapsedWait}] seconds")
@@ -55,47 +47,22 @@ protected class AssertAsyncEqualsRunResult implements RunResult
 		return element
 	}
 	
-	def getState()
-	{
-		return state
-	}
-	
-	def getElapsedWait()
-	{
-		return elapsedWait
-	}
-	
 	@Override
 	String toString()
 	{
-		return "item [${itemPath}] expected value [${expectedValue}]"	
+		return "AssertAsyncEqualsRunResult: item [${itemPath}] expected value [${expectedValue}]"	
 	}
 	
-	protected def checkUpdate(itemPath, actualValue)
+	@Override
+	def checkUpdate(itemPath, actualValue)
 	{
 		if(this.itemPath.equals(itemPath))
 		{
 			if(this.expectedValue.equals(actualValue))
 			{
-				state = ASYNC_STATE.PASSED
+				state = ASYNC_STATE.MATCHED
 			}
 		}
 		println("AssertAsyncEqualsRunResult.checkUpdate - state [${state}] checked input [item:${itemPath} actual:${actualValue}] against this: ${this}")
-	}
-	
-	protected def onTick()
-	{
-		elapsedWait++
-		if(elapsedWait >= timeout)
-		{
-			state = ASYNC_STATE.TIMED_OUT
-		}
-		println("AssertAsyncEqualsRunResult.onTick - state [${state}] for this: ${this}")
-	}
-	
-	protected def registerWithManager(def manager)
-	{
-		state = ASYNC_STATE.WAITING
-		manager.registerAsyncCondition(this)
 	}
 }

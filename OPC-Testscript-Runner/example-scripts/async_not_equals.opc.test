@@ -1,0 +1,41 @@
+init('', 'Matrikon.OPC.Simulation')
+
+logInfo('script demonstrates aysnchronous not equals method')
+
+def theGroup = group('test_group')
+
+logInfo('\ntest #1 - deliberate fail')
+
+theGroup.with
+{
+	item('testGroup.myString').with
+	{
+		syncValue = 'b'
+		assertEquals('expected value is b', 'b')
+		
+		assertAsyncNotEquals("deliberate fail item [${path}] will be set to value a in next 5 seconds", 5, 'a')
+		
+		sleep(2500)		
+		logInfo('setting value of opc item to [a] now - causing the async assertion to fail')
+		syncValue = 'a'
+	}	
+	
+	
+}
+
+
+sleep(1000)
+
+logInfo('\ntest#2 - deliberate pass')
+theGroup.with
+{
+	item('testGroup.myString').with
+	{
+			syncValue = 'b'
+			assertEquals('expected value reset to b', 'b')
+			
+			assertAsyncNotEquals("item [${path}] should not have value a in next 5 seconds", 5, 'a')			
+	}	
+}
+
+logInfo('\nend of script')

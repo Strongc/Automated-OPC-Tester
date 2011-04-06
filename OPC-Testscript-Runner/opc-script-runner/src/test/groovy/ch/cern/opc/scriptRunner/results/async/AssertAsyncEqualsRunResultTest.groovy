@@ -3,13 +3,17 @@ package ch.cern.opc.scriptRunner.results.async
 import static org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import groovy.mock.interceptor.*
 
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult.ASYNC_STATE.*
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 
-class AssertAsyncEqualsRunResultTest 
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.CREATED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.WAITING
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.TIMED_OUT
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.MATCHED
+
+
+class AssertAsyncEqualsRunResultTest
 {
 	private static final def TIMEOUT = 10
 	private static final def ITEM_PATH = 'path.to.item'
@@ -31,107 +35,38 @@ class AssertAsyncEqualsRunResultTest
 	}
 	
 	@Test
-	void testCtorCreatesObjectInCreatedState()
-	{
-		assertEquals(CREATED, testee.state)
-	}
-	
-	@Test
-	void testSetStateGetState()
-	{
-		testee.state = WAITING
-		assertEquals(WAITING, testee.state) 
-		
-		testee.state = TIMED_OUT
-		assertEquals(TIMED_OUT, testee.state)
-		
-		testee.state = PASSED
-		assertEquals(PASSED, testee.state)	
-	}
-	
-	@Test
-	void testElapsedWaitInitialisedToZero()
-	{
-		assertEquals(0, testee.elapsedWait)
-	}
-	
-	@Test
-	void testElapsedWaitIncremenetedOnEachTick()
-	{
-		assertEquals(0, testee.elapsedWait)
-		
-		for(i in 1..10)
-		{
-			testee.onTick()
-			assertEquals(i, testee.elapsedWait)
-		}
-	}
-	
-	@Test
-	void testCheckUpdateSetsStatusToPassedIfUpdateMatchesExpected()
+	void testCheckUpdateSetsStatusToMatchedIfUpdateMatchesExpected()
 	{
 		testee.checkUpdate(ITEM_PATH, EXPECTED_VALUE)
-		assertEquals(PASSED, testee.state)
+		assertEquals(MATCHED, testee.state)
 	}
 	
 	@Test
-	void testCheckUpdateDoesNotSetStatusToPassedIfUpdateForDifferentItem()
+	void testCheckUpdateDoesNotSetStatusToMatchedIfUpdateForDifferentItem()
 	{
 		testee.checkUpdate('different.item.path', EXPECTED_VALUE)
-		assertFalse(PASSED == testee.state)
+		assertFalse(MATCHED == testee.state)
 	}
 	
 	@Test
-	void testCheckUpdateDoesNotSetStausToPassedIfUpdateHasNonExpectedValue()
+	void testCheckUpdateDoesNotSetStausToMatchedIfUpdateHasNonExpectedValue()
 	{
 		testee.checkUpdate(ITEM_PATH, 'but not the expected value')
-		assertFalse(PASSED == testee.state)
+		assertFalse(MATCHED == testee.state)
 	}
 	
 	@Test
-	void testOnTickDoesNotSetStatusToTimedOutIfElapsedTimeIsLessThanTimeout()
-	{
-		for(i in 1..testee.timeout - 1)
-		{
-			testee.onTick()
-			assertFalse('timeout should not have been reached', TIMED_OUT == testee.state)
-		}
-		
-		testee.onTick()
-		assertEquals('timeout reached', TIMED_OUT, testee.state)
-	}
-	
-	@Test
-	void testRegisterAsyncConditionSetsStatusToWaiting()
-	{
-		def actualRegisteredWithManager = null
-		def mockManager = new MockFor(AsyncConditionManager)
-		mockManager.demand.registerAsyncCondition{actualRegisteredWithManager = it}
-		
-		mockManager.use 
-		{
-			testee.registerWithManager(new AsyncConditionManager())	
-		}
-
-		assertEquals(testee, actualRegisteredWithManager)		
-		assertEquals(WAITING, testee.state)
-	}
-	
-	@Test
-	void testToXmlForPassed()
+	void testToXmlForMatched()
 	{
 		testee.elapsedWait = TIMEOUT - 1
-		testee.state = PASSED
+		testee.state = MATCHED
 
 		def testcaseElement = testee.toXml(xmlBuilder)
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement)
 		
 		assertTrue(testcaseElement.'@name'.contains('passed'))
-		assertTrue(testcaseElement.'@name'.contains(MESSAGE))
 		
-		assertEquals(1, testcaseElement.size())
 		def successElement = testcaseElement.success[0]
-		
 		assertEquals("item [${ITEM_PATH}] obtained expected value [${EXPECTED_VALUE}] in [${testee.elapsedWait}] seconds".toString(), successElement.'@message')
 	}
 	
@@ -145,11 +80,8 @@ class AssertAsyncEqualsRunResultTest
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement)
 		
 		assertTrue(testcaseElement.'@name'.contains('failed'))
-		assertTrue(testcaseElement.'@name'.contains(MESSAGE))
 		
-		assertEquals(1, testcaseElement.size())
 		def failureElement = testcaseElement.failure[0]
-		
 		assertEquals("item [${ITEM_PATH}] failed to obtain expected value [${EXPECTED_VALUE}] in [${testee.elapsedWait}] seconds".toString(), failureElement.'@message')
 	}
 	
@@ -163,18 +95,31 @@ class AssertAsyncEqualsRunResultTest
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement)
 		
 		assertTrue(testcaseElement.'@name'.contains('incomplete'))
-		assertTrue(testcaseElement.'@name'.contains(MESSAGE))
-
-		assertEquals(1, testcaseElement.size())
-		def incompleteElement = testcaseElement.incomplete[0]
 		
+		def incompleteElement = testcaseElement.incomplete[0]
 		assertEquals("item [${ITEM_PATH}] waiting to obtain expected value [${EXPECTED_VALUE}], elapsed wait [${testee.elapsedWait}] seconds".toString(), incompleteElement.'@message')
 	}
 	
-	private static def assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement)
+	@Test (expected=IllegalStateException.class)
+	void testToXMLForInvalidState()
 	{
-		assertEquals('testcase', testcaseElement.name)
-		assertTrue(testcaseElement.'@name'.contains(AssertAsyncEqualsRunResult.TITLE))
+		testee.state = CREATED
+		testee.toXml(xmlBuilder)
+	}
+	
+	private static def assertTestCaseElementPresentAndNameAttributeIsCorrect(xml)
+	{
+		assertEquals('testcase root element should be called -testcase-',
+			'testcase', xml.name)
+		
+		assertTrue('testcase root element name attribute should contain the test type',
+			xml.'@name'.contains(AssertAsyncEqualsRunResult.TITLE))
+		
+		assertTrue('testcase root element name attribute shoudl contain the user message',
+			xml.'@name'.contains(MESSAGE))
+		
+		assertEquals('Should be a single child element detailing the testcase outcome: pass/fail etc',
+			1, xml.size())
 	}
 	
 }

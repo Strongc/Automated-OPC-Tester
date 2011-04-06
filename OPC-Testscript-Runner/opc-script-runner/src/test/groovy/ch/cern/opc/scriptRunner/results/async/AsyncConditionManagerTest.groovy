@@ -1,6 +1,8 @@
 package ch.cern.opc.scriptRunner.results.async;
 
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult.ASYNC_STATE.*
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.WAITING
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.MATCHED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.TIMED_OUT
 
 import static org.junit.Assert.*;
 import org.junit.Test
@@ -43,7 +45,7 @@ class AsyncConditionManagerTest
 		def actualItem
 		def actualValue
 		
-		def mockAsyncAssert = createMockAsyncAssert({return PASSED}, null, {item, value-> actualItem = item; actualValue=value})
+		def mockAsyncAssert = createMockAsyncAssert({return MATCHED}, null, {item, value-> actualItem = item; actualValue=value})
 		testee.registerAsyncCondition(mockAsyncAssert)
 		
 		testee.asyncUpdate(ITEM_PATH, EXPECTED_VALUE)
@@ -52,12 +54,12 @@ class AsyncConditionManagerTest
 	}
 	
 	@Test
-	void testAsyncUpdateClearsPassedAsyncConditions()
+	void testAsyncUpdateClearsMatchedAsyncConditions()
 	{
 		testee.with 
 		{
-			registerAsyncCondition(createMockAsyncAssert({return PASSED}, null, {item, value->}))
-			registerAsyncCondition(createMockAsyncAssert({return PASSED}, null, {item, value->}))
+			registerAsyncCondition(createMockAsyncAssert({return MATCHED}, null, {item, value->}))
+			registerAsyncCondition(createMockAsyncAssert({return MATCHED}, null, {item, value->}))
 			registerAsyncCondition(createMockAsyncAssert({return WAITING}, null, {item, value->}))
 			registerAsyncCondition(createMockAsyncAssert({return WAITING}, null, {item, value->}))
 		}
@@ -73,7 +75,7 @@ class AsyncConditionManagerTest
 	{
 		def tickCalled = false
 		
-		testee.registerAsyncCondition(createMockAsyncAssert({return PASSED}, {tickCalled=true}, null))
+		testee.registerAsyncCondition(createMockAsyncAssert({return MATCHED}, {tickCalled=true}, null))
 		
 		testee.onTick()
 		
@@ -126,7 +128,7 @@ class AsyncConditionManagerTest
 		testee.registerAsyncCondition(asyncAssert)
 		
 		testee.startTicking()
-		sleep(3500) //3 should be sufficient - .5 extra margin for error
+		sleep(3500) //3s should be sufficient - .5 extra margin for error
 		testee.stopTicking()
 		
 		assertEquals('4 - immediately, then on each subsequent second', 4, tickCalledCounter)

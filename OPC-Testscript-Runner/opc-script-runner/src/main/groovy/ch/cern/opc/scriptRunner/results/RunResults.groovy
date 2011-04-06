@@ -10,6 +10,7 @@ import ch.cern.opc.common.Log
 import org.w3c.dom.*;
 import javax.xml.parsers.*
 import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult
+import ch.cern.opc.scriptRunner.results.async.AssertAsyncNotEqualsRunResult
 import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 
 @Mixin(Log)
@@ -51,10 +52,18 @@ class RunResults
 	
 	def assertAsyncEquals(message, timeoutMs, expected, itemPath)
 	{
-		def assertAsync = new AssertAsyncEqualsRunResult(message, timeoutMs, itemPath, expected)
-		assertAsync.registerWithManager(asyncManager)
-		
-		results.add(assertAsync)
+		addAsyncAssertion(new AssertAsyncEqualsRunResult(message, timeoutMs, itemPath, expected))
+	}
+	
+	def assertAsyncNotEquals(message, timeoutMs, antiExpected, itemPath)
+	{
+		addAsyncAssertion(new AssertAsyncNotEqualsRunResult(message, timeoutMs, itemPath, antiExpected))
+	}
+	
+	private def addAsyncAssertion(def asyncAssertion)
+	{
+		asyncAssertion.registerWithManager(asyncManager)
+		results.add(asyncAssertion)
 	}
 	
 	def getXML()
