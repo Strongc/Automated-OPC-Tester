@@ -3,7 +3,7 @@ package ch.cern.opc.scriptRunner.results.async
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.WAITING
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.TIMED_OUT
 
-protected class AsyncConditionManager 
+class AsyncConditionManager 
 {
 	private final def asyncConditions = []
 	private final AsyncTicker ticker = new AsyncTicker()
@@ -28,6 +28,20 @@ protected class AsyncConditionManager
 		return asyncConditions.size() 
 	}
 	
+	def synchronized getMaxConditionTimeout()
+	{
+		def result = 0
+		asyncConditions.each
+		{
+			if(it.state == WAITING)
+			{
+				result = it.timeout > result? it.timeout: result
+			}
+		}
+		
+		return result
+	}
+	
 	def synchronized onTick()
 	{
 		asyncConditions.each
@@ -38,21 +52,12 @@ protected class AsyncConditionManager
 		removeNonWaitingAsyncConditions()
 	}
 	
-	def synchronized timeoutAllRemainingAsyncConditions()
-	{
-		asyncConditions.each
-		{
-			it.state = TIMED_OUT
-		}
-		removeNonWaitingAsyncConditions()
-	}
-	
-	def startTicking()
+	def synchronized startTicking()
 	{
 		ticker.start(this)
 	}
 	
-	def stopTicking()
+	def synchronized stopTicking()
 	{
 		ticker.stop()	
 	}

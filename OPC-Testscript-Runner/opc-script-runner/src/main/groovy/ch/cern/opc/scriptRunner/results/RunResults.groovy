@@ -16,13 +16,11 @@ import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 @Mixin(Log)
 class RunResults 
 {
-	private static final def PING_PERIOD_FOR_ASYNC_COMPLETION = 2000
-	private static final def MAX_WAIT_FOR_ASYNC_COMPLETION_MS = 60000
-	
 	def results = []	
 	private final def asyncManager
 	private final def asyncUpdater
-	protected def maxWait = MAX_WAIT_FOR_ASYNC_COMPLETION_MS
+	
+	private def pingPeriod = 10 //seconds
 	
 	def RunResults()
 	{
@@ -60,6 +58,11 @@ class RunResults
 		addAsyncAssertion(new AssertAsyncNotEqualsRunResult(message, timeoutMs, itemPath, antiExpected))
 	}
 	
+	def setPingPeriodInSeconds(pingPeriod)
+	{
+		this.pingPeriod = pingPeriod
+	}
+
 	private def addAsyncAssertion(def asyncAssertion)
 	{
 		asyncAssertion.registerWithManager(asyncManager)
@@ -88,17 +91,17 @@ class RunResults
 	
 	def onScriptEnd()
 	{
-		logInfo('onScriptEnd called')
-		if(asyncManager.registeredAsyncConditionsCount > 0)
+		logInfo("onScriptEnd called")
+		
+		for(def i = asyncManager.registeredAsyncConditionsCount; i>0; i = asyncManager.registeredAsyncConditionsCount)
 		{
-			for(def elapsedWait = 0; elapsedWait < maxWait && asyncManager.registeredAsyncConditionsCount > 0; elapsedWait += PING_PERIOD_FOR_ASYNC_COMPLETION)
-			{
-				logInfo("waiting for [${asyncManager.registeredAsyncConditionsCount}] asynchronous asserts to complete... waiting for [${maxWait-elapsedWait}]")
-				sleep(PING_PERIOD_FOR_ASYNC_COMPLETION)
-			}   
-			asyncManager.timeoutAllRemainingAsyncConditions()
+			def snoozeTm = Math.min(asyncManager.maxConditionTimeout, pingPeriod) 
+			logInfo("waiting for [${i}] asynchronous asserts to complete... max wait[${asyncManager.maxConditionTimeout}s], check again in [${snoozeTm}s]")
+			sleep(snoozeTm*1000)
 		}
+
 		asyncManager.stopTicking()
+		logInfo('onScriptEnd complete')
 	}
 
 }

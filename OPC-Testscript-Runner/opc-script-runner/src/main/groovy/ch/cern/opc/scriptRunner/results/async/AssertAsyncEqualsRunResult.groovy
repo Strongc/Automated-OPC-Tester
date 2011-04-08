@@ -2,7 +2,7 @@ package ch.cern.opc.scriptRunner.results.async
 
 import static ch.cern.opc.scriptRunner.results.RunResultUtil.formatMessage
 
-protected class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
+class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 {
 	public static final def TITLE = 'assertAsyncEquals' 
 	

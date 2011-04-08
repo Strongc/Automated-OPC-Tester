@@ -3,6 +3,7 @@ package ch.cern.opc.scriptRunner.results.async;
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.WAITING
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.MATCHED
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.TIMED_OUT
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.CREATED
 
 import static org.junit.Assert.*;
 import org.junit.Test
@@ -101,25 +102,6 @@ class AsyncConditionManagerTest
 	}
 	
 	@Test
-	void testTimeoutAllRemainingAsyncConditions()
-	{
-		def allAsyncConditions = []
-		
-		for(i in 1..3)
-		{
-			allAsyncConditions << new AssertAsyncEqualsRunResult(null, null, null, null)
-		}
-		allAsyncConditions.each{testee.registerAsyncCondition(it)}
-
-		assertEquals(3, testee.registeredAsyncConditionsCount)
-		
-		testee.timeoutAllRemainingAsyncConditions()
-		
-		assertEquals(0, testee.registeredAsyncConditionsCount)
-		allAsyncConditions.each{assertEquals(TIMED_OUT, it.state)}
-	}
-	
-	@Test
 	void testStartTickingAndStopTicking()
 	{
 		def tickCalledCounter = 0
@@ -132,6 +114,43 @@ class AsyncConditionManagerTest
 		testee.stopTicking()
 		
 		assertEquals('4 - immediately, then on each subsequent second', 4, tickCalledCounter)
+	}
+	
+	@Test
+	void testMaxConditionTimeout_isZeroForNoRegisteredAsyncConditions()
+	{
+		assertEquals(0, testee.registeredAsyncConditionsCount)
+		assertEquals(0, testee.maxConditionTimeout)
+	}
+	
+	@Test
+	void testMaxTimeout_returnsMaxTimeoutOfAllConditions()
+	{
+		addAsyncCondition(2, WAITING)
+		addAsyncCondition(3, WAITING)
+		addAsyncCondition(1, WAITING)
+		
+		assertEquals(3, testee.registeredAsyncConditionsCount)
+		assertEquals(3, testee.maxConditionTimeout)
+	}
+	
+	@Test
+	void testMaxTimeout_returnsMaxTimeoutOfOnlyWaitingConditions()
+	{
+		addAsyncCondition(2, CREATED)
+		addAsyncCondition(3, TIMED_OUT)
+		addAsyncCondition(1, WAITING)
+		addAsyncCondition(4, MATCHED)
+		
+		assertEquals(4, testee.registeredAsyncConditionsCount)
+		assertEquals(1, testee.maxConditionTimeout)
+	}
+	
+	private def addAsyncCondition(timeout, state)
+	{
+		def condition =  new AssertAsyncEqualsRunResult(null, timeout, null, null)
+		condition.registerWithManager(testee)
+		condition.state = state
 	}
 	
 	private def createMockAsyncAssert(getStateClosure, onTickClosure, checkUpdateClosure)

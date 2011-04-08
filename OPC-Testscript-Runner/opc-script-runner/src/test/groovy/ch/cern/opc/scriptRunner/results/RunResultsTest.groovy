@@ -22,9 +22,9 @@ class RunResultsTest
 {
 	private def asyncManagerRegisteredConditionsCount = 0
 	private def isAsyncManagerTicking = false
-	private def asyncManagerTimedOutRemainingAsyncConditions = false
 	
 	private def isAsyncUpdateHandlerRegistered = false
+	private def maxConditionTimeout = 10
 	
 	def testee
 	
@@ -41,11 +41,15 @@ class RunResultsTest
 		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
 		
 		def stubAsyncManager = new StubFor(AsyncConditionManager)
-		stubAsyncManager.demand.getRegisteredAsyncConditionsCount(100) {return asyncManagerRegisteredConditionsCount}
+		stubAsyncManager.demand.getRegisteredAsyncConditionsCount(100) 
+		{
+			println('note - decrementing registered conditions count...')
+			return asyncManagerRegisteredConditionsCount > 0? asyncManagerRegisteredConditionsCount-- :0 
+		}
 		stubAsyncManager.demand.startTicking(100) {isAsyncManagerTicking = true}
 		stubAsyncManager.demand.stopTicking(100) {isAsyncManagerTicking = false}
-		stubAsyncManager.demand.timeoutAllRemainingAsyncConditions(100) {asyncManagerTimedOutRemainingAsyncConditions = true}
 		stubAsyncManager.demand.registerAsyncCondition(100){}
+		stubAsyncManager.demand.getMaxConditionTimeout(100){return maxConditionTimeout}
 		
 		def stubAsyncUpdater = new StubFor(AsyncUpdateHandler)
 		stubAsyncUpdater.demand.register(100) {isAsyncUpdateHandlerRegistered = true}
@@ -69,6 +73,8 @@ class RunResultsTest
 				testee = new RunResults()
 			}
 		}
+		
+		testee.pingPeriod = 1//s
 	}	
 	
 	@Test
@@ -100,16 +106,59 @@ class RunResultsTest
 	}
 	
 	@Test
+	void testOnScriptEnd_StopsAsyncTicker()
+	{
+		asyncManagerRegisteredConditionsCount = 0
+		isAsyncManagerTicking = true
+
+		testee.onScriptEnd()
+		assertFalse(isAsyncManagerTicking)
+	}
+	
+	@Test
 	void testOnScriptEnd_WaitsForRegisteredAsyncConditionsToBeRemoved()
 	{
 		asyncManagerRegisteredConditionsCount = 1
 		isAsyncManagerTicking = true
-		testee.maxWait = 100
 		
-		assertFalse(asyncManagerTimedOutRemainingAsyncConditions)
 		testee.onScriptEnd()
-		assertTrue(asyncManagerTimedOutRemainingAsyncConditions)
+		
+		assertEquals("ticker should wait for active condition count to reach 0", 0, asyncManagerRegisteredConditionsCount)
 	}
+
+	
+	@Test
+	void testOnScriptEnd_WaitsForMinimumAmountOfTimeWithLongConditionTimeout()
+	{
+		testee.pingPeriod = 1
+		maxConditionTimeout = 100
+		
+		asyncManagerRegisteredConditionsCount = 1
+		
+		def before = new Date().getTime()
+		testee.onScriptEnd()
+		def after = new Date().getTime()
+		
+		assertTrue(after-before >= testee.pingPeriod*1000)
+		assertTrue(after-before < maxConditionTimeout*1000)
+	}
+	
+	@Test
+	void testOnScriptEnd_WaitsForMinimumAmountOfTimeWithShortConditionTimeout()
+	{
+		testee.pingPeriod = 100
+		maxConditionTimeout = 1
+		
+		asyncManagerRegisteredConditionsCount = 1
+		
+		def before = new Date().getTime()
+		testee.onScriptEnd()
+		def after = new Date().getTime()
+		
+		assertTrue(after-before >= maxConditionTimeout*1000)
+		assertTrue(after-before < testee.pingPeriod*1000)
+	}
+
 	
 	@Test
 	void testOnScriptStart_RegistersAsyncUpdaterAndStartsTicker()

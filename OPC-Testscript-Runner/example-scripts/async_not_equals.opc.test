@@ -38,4 +38,19 @@ theGroup.with
 	}	
 }
 
+
+/*
+* At the end of a script the runner will wait for pending async conditions. Async conditions cease pending 
+* once either
+* a) the item under scrutiny matches its conditional value
+* b) the async condition times out
+*
+* During this waiting state the main thread sleeps, waking up periodically to check whether there are still
+* pending async conditions. You can alter the ping period from the script. If your script has extremely long
+* async condition timeouts (for example you use asyncAssertNotEquals to watch an item for a fault value) then
+* you can set the pingPeriod to some long value to avoid filling your log with dross (i.e. log 'woke up, 
+* no change...')
+*/
+setPingPeriod(30000)
+
 logInfo('\nend of script')
