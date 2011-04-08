@@ -33,6 +33,8 @@ public class LogTest
 	{
 		assertTrue(textComponent.getText().isEmpty());
 		
+		//logLevel(LogLevel.TRACE.name());
+		
 		logError("error");
 		assertLoggedContent("error\n");
 		
