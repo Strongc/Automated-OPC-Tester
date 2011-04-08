@@ -6,7 +6,7 @@ import ch.cern.opc.client.ClientInstance
 
 class ScriptRunner 
 {
-	static def context = null
+	private def context = null
 	
 	def Element runScript(scriptFile)
 	{
