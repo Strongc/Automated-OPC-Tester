@@ -42,6 +42,16 @@ class Item
 		ScriptContext.instance.assertEquals(message, expectedValue, syncValue)
 	}
 	
+	def assertTrue(message)
+	{
+		ScriptContext.instance.assertTrue(message, syncValue)
+	}
+	
+	def assertFalse(message)
+	{
+		ScriptContext.instance.assertFalse(message, syncValue)
+	}
+	
 	def assertAsyncEquals(message, timeout, expectedValue)
 	{
 		ScriptContext.instance.assertAsyncEquals(message, timeout, expectedValue, path)

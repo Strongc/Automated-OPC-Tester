@@ -52,9 +52,22 @@ class ItemTest
 		}
 	}
 	
+	class AssertTrueFalseValues
+	{
+		final def message
+		final def value
+		
+		def AssertTrueFalseValues(message, value)
+		{
+			this.message = message
+			this.value = value
+		}
+	}
+	
 	def requestedSetSyncValueParameters
 	def requestedSetAsyncValueParameters
 	def requestedAssertAsyncParameters
+	def requestedAssertTrueFalseValues
 	
 	@Before
 	void setup()
@@ -157,6 +170,7 @@ class ItemTest
 		assertEquals('a', requestedAssertAsyncParameters.value)
 		assertEquals(TESTEE_ITEM_PATH, requestedAssertAsyncParameters.path)
 	}
+	
 	@Test
 	void testAssertAsyncNotEquals_callsScriptContextWithCorrectParams()
 	{
@@ -165,6 +179,24 @@ class ItemTest
 		assertEquals(ASYNC_TIMEOUT, requestedAssertAsyncParameters.timeout)
 		assertEquals('a', requestedAssertAsyncParameters.value)
 		assertEquals(TESTEE_ITEM_PATH, requestedAssertAsyncParameters.path)
+	}
+	
+	@Test
+	void testAssertTrue_passesMessageAndValue()
+	{
+		testee.assertTrue(MESSAGE)
+		
+		assertEquals(MESSAGE, requestedAssertTrueFalseValues.message)
+		assertEquals(TESTEE_ITEM_VALUE, requestedAssertTrueFalseValues.value)
+	}
+	
+	@Test
+	void testAssertFalse_passesMessageAndValue()
+	{
+		testee.assertFalse(MESSAGE)
+		
+		assertEquals(MESSAGE, requestedAssertTrueFalseValues.message)
+		assertEquals(TESTEE_ITEM_VALUE, requestedAssertTrueFalseValues.value)
 	}
 	
 	/**
@@ -213,6 +245,14 @@ class ItemTest
 		
 		instance.metaClass.assertAsyncNotEquals{message, timeout, value, path->
 			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, value, path)
+		}
+		
+		instance.metaClass.assertTrue{message, value ->
+			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, value)
+		}
+		
+		instance.metaClass.assertFalse{message, value ->
+			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, value)
 		}
 	}
 	

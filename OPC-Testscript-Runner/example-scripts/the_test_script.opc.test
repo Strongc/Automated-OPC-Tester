@@ -27,9 +27,9 @@ for(i in 1..10)
 			syncValue = "${togglingBool}"
 			logInfo("boolean value read from OPCS is [${syncValue}]")
 			if(togglingBool)
-				assertTrue("check boolean is true", syncValue)
+				assertTrue("check boolean is true")
 			else
-				assertFalse("check boolean is false", syncValue)
+				assertFalse("check boolean is false")
 		}
 		
 		item('testGroup.myString').with
