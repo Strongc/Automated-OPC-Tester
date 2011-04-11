@@ -13,10 +13,9 @@ import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult
 import ch.cern.opc.scriptRunner.results.async.AssertAsyncNotEqualsRunResult
 import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 
-@Mixin(Log)
-class RunResults 
+@Mixin([Log, RunResultsArray])
+class RunResults
 {
-	def results = []	
 	private final def asyncManager
 	private final def asyncUpdater
 	
@@ -30,22 +29,24 @@ class RunResults
 	
 	def assertTrue(message, value)
 	{
-		results.add(new AssertTrueRunResult(message, value))
+		println 'calling RunResults.add'
+		add(new AssertTrueRunResult(message, value))
+		println 'called RunResults.add'
 	}
 	
 	def assertFalse(message, value)
 	{
-		results.add(new AssertFalseRunResult(message, value))
+		add(new AssertFalseRunResult(message, value))
 	}
 	
 	def assertEquals(message, expected, actual)
 	{
-		results.add(new AssertEqualsRunResult(message, expected, actual))
+		add(new AssertEqualsRunResult(message, expected, actual))
 	}
 	
 	def addException(exception)
 	{
-		results.add(new ExceptionRunResult(exception))
+		add(new ExceptionRunResult(exception))
 	}
 	
 	def assertAsyncEquals(message, timeoutMs, expected, itemPath)
@@ -66,7 +67,7 @@ class RunResults
 	private def addAsyncAssertion(def asyncAssertion)
 	{
 		asyncAssertion.registerWithManager(asyncManager)
-		results.add(asyncAssertion)
+		add(asyncAssertion)
 	}
 	
 	def getXML()

@@ -2,6 +2,7 @@ package ch.cern.opc.scriptRunner.results
 import ch.cern.opc.scriptRunner.results.RunResults;
 
 import static org.junit.Assert.*;
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test;
 import org.junit.Before;
 
@@ -222,6 +223,36 @@ class RunResultsTest
 		testee.assertAsyncNotEquals(null, null, null, null)
 		
 		assertEquals(1, testee.results.size)
+	}
+	
+	@Test
+	void testAddingAssertTrueUpdatesObserver()
+	{
+		def updateInfo = null
+		
+		def observer = {Object[] args -> updateInfo = args[1]} as Observer
+		testee.addObserver(observer)
+		
+		testee.assertTrue(null, null)
+		
+		assertTrue(updateInfo instanceof RunResult)
+	}
+	
+	@Test
+	void testAddingRunResultUpdatesObserver()
+	{
+		def updateInfo = null
+		
+		def observer = {Object[] args ->
+			updateInfo = args[1]
+		} as Observer
+		
+		testee.addObserver(observer)
+
+		def newRunResult = {throw new NotImplementedException('do not call impl')} as RunResult
+		testee.add(newRunResult)
+		
+		assertSame(newRunResult, updateInfo)
 	}
 	
 }
