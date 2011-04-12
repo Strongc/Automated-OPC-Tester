@@ -1,5 +1,6 @@
 package ch.cern.opc.scriptRunner.results
 
+import groovy.lang.MissingMethodException;
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 

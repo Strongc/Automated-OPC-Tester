@@ -3,7 +3,7 @@ package ch.cern.opc.scriptRunner.results
 import ch.cern.opc.client.ClientInstance
 import static RunResultUtil.formatMessage
 
-protected class AssertEqualsRunResult implements RunResult 
+protected class AssertEqualsRunResult extends ObservableRunResult 
 {
 	static final def TITLE = 'assertEquals'
 	

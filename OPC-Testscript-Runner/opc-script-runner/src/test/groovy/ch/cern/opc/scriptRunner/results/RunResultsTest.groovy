@@ -1,10 +1,13 @@
 package ch.cern.opc.scriptRunner.results
-import ch.cern.opc.scriptRunner.results.RunResults;
 
-import static org.junit.Assert.*;
-import org.apache.commons.lang.NotImplementedException;
-import org.junit.Test;
-import org.junit.Before;
+import java.beans.PropertyChangeListener
+
+import ch.cern.opc.scriptRunner.results.RunResults
+
+import static org.junit.Assert.*
+import org.apache.commons.lang.NotImplementedException
+import org.junit.Test
+import org.junit.Before
 
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
@@ -254,5 +257,4 @@ class RunResultsTest
 		
 		assertSame(newRunResult, updateInfo)
 	}
-	
 }

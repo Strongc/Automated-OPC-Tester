@@ -4,7 +4,7 @@ import static RunResultUtil.formatMessage
 import static RunResultUtil.toBoolean
 import static RunResultUtil.AnalyzedBooleanType
 
-protected class AssertTrueRunResult implements RunResult
+protected class AssertTrueRunResult extends ObservableRunResult
 {
 	static final def TITLE = 'assertTrue'
 	final def message

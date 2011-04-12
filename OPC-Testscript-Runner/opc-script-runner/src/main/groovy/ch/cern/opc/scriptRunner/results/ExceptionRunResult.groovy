@@ -1,6 +1,6 @@
 package ch.cern.opc.scriptRunner.results
 
-protected class ExceptionRunResult implements RunResult
+protected class ExceptionRunResult extends ObservableRunResult
 {
 	static final def TITLE = 'Exception'
 	private final def Exception e

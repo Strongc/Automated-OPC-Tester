@@ -5,14 +5,16 @@ import java.awt.Component
 import java.awt.Color
 import javax.swing.tree.DefaultMutableTreeNode as TreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
+import java.util.*
 
+import org.apache.commons.lang.NotImplementedException;
 import org.w3c.dom.Element;
 import groovy.xml.dom.DOMCategory
 
 import static java.awt.Color.GREEN
 import static java.awt.Color.RED
 
-class ResultsTree 
+class ResultsTree implements Observer
 {
 	def tree
 	def root
@@ -62,6 +64,12 @@ class ResultsTree
 		
 		nodeToStringClosure(root, 0)
 		return result
+	}
+	
+	@Override
+	void update(Observable observable, Object updateInfo)
+	{
+		throw new NotImplementedException('I aint got nobody')
 	}
 	
 	private class RedGreenRenderer extends DefaultTreeCellRenderer

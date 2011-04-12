@@ -3,7 +3,7 @@ package ch.cern.opc.scriptRunner.results
 import static RunResultUtil.formatMessage
 import static RunResultUtil.toBoolean
 
-protected class AssertFalseRunResult implements RunResult
+protected class AssertFalseRunResult extends ObservableRunResult
 {
 	static final def TITLE = 'assertFalse'
 	final def message
