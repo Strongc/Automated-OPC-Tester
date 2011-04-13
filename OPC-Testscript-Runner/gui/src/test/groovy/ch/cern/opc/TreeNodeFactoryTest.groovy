@@ -1,8 +1,10 @@
 package ch.cern.opc
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.Before;
+import ch.cern.opc.scriptRunner.results.RunResult
+
+import static org.junit.Assert.*
+import org.junit.Test
+import org.junit.Before
 import groovy.xml.DOMBuilder
 
 import java.util.regex.Matcher
@@ -22,14 +24,32 @@ class TreeNodeFactoryTest
 	}
 	
 	@Test
-	void testCreateTestcaseNodeForSuccessfulTestcase()
+	void testCreateNode_CreatesTestcaseNodeForAssertTrueRunResult()
 	{
-		def testcaseElement = xmlBuilder.testcase(name:'someAssertionType')
+		def xml = xmlBuilder.testcase(name:"some nm")
+		{
+			success(message:"some msg")
+		}
+		
+		def runResult = {Object[] args -> return xml} as RunResult
+		def node = testee.createNode(runResult)
+		
+		assertEquals('some nm', node.toString())
+		assertEquals(ResultTreeNodeColour.GREEN, node.colour)
+		
+		def childNode = node.getChildAt(0)
+		assertEquals('message: some msg', childNode.toString())
+	}
+	
+	@Test
+	void testCreateNode_ForSuccessfulTestcase()
+	{
+		def xml = xmlBuilder.testcase(name:'someAssertionType')
 		{
 			success(message:'well done, you passed')
 		}
-		
-		def node = testee.createTestcaseNode(testcaseElement)
+		def runResult = {Object[] args -> return xml} as RunResult
+		def node = testee.createNode(runResult)
 		
 		assertEquals('someAssertionType', node.toString())
 		assertEquals(ResultTreeNodeColour.GREEN, node.colour)
@@ -41,13 +61,14 @@ class TreeNodeFactoryTest
 	@Test
 	void testCreateTestcaseNodeForFailedTestcase()
 	{
-		def testcaseElement = xmlBuilder.testcase(name:'thisAssertionFails')
+		def xml = xmlBuilder.testcase(name:'thisAssertionFails')
 		{
 			failure(message:'fool, you failed')
 		}
 		
-		def node = testee.createTestcaseNode(testcaseElement)
-
+		def runResult = {Object[] args -> return xml} as RunResult
+		def node = testee.createNode(runResult)
+		
 		assertEquals('thisAssertionFails', node.toString())
 		assertEquals(ResultTreeNodeColour.RED, node.colour)
 		
@@ -60,23 +81,31 @@ class TreeNodeFactoryTest
 	@Test(expected = IllegalArgumentException.class)
 	void testCreateTestcaseNodeForNonTestCaseElement()
 	{
-		testee.createTestcaseNode(xmlBuilder.nonTestCase())
+		def xml = xmlBuilder.someNonTestCase()
+		def runResult = {Object[] args -> return xml} as RunResult
+		
+		testee.createNode(runResult)
 	}
 	
 	@Test(expected = IllegalStateException.class)
 	void testCreateTestcaseNodeForElementWithNoChildren()
 	{
-		testee.createTestcaseNode(xmlBuilder.testcase())
+		def xml = xmlBuilder.testcase()
+		def runResult = {Object[] args -> return xml} as RunResult
+		
+		testee.createNode(runResult)
 	}
 	
 	@Test(expected = IllegalStateException.class)
 	void testCreateTestcaseNodeForElementWithInvalidChildren()
 	{
-		testee.createTestcaseNode(xmlBuilder.testcase()
-			{
-				invalidChild()	
-			}
-		)
+		def xml = xmlBuilder.testcase()
+		{
+			invalidChild()	
+		}
+		def runResult = {Object[] args -> return xml} as RunResult
+
+		testee.createNode(runResult)
 	}
 	
 	@Test
@@ -88,28 +117,43 @@ class TreeNodeFactoryTest
 			line(line:'stack trace line 2')
 			line(line:'stack trace line 3')
 		}
+		def runResult = {Object[] args -> return xml} as RunResult
 		
-		def node = testee.createExceptionNode(xml)
+		def node = testee.createNode(runResult)
 		
 		assertEquals('exception message: aaargh', node.toString())
 		assertEquals(ResultTreeNodeColour.RED, node.colour)
 		assertEquals(3, node.childCount)
 	}
-
+	
 	@Test(expected = IllegalArgumentException.class)
 	void testCreateExceptionNodeWithInvalidArgument()
 	{
-		testee.createExceptionNode(xmlBuilder.notAnExceptionElement())
+		def xml = xmlBuilder.notAnExceptionElement()
+		def runResult = {Object[] args -> return xml} as RunResult
+		
+		testee.createNode(runResult)
+	}
+	
+	@Test
+	void testCreateTestsuiteNode()
+	{
+		def node = testee.createTestsuiteNode()
+		
+		assertEquals('testsuite', node.toString())
+		assertTrue(node.leaf)
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	void testCreateExceptionNodeWithInvalidChildren()
 	{
-		testee.createExceptionNode(xmlBuilder.exception(message:'OK')
-			{
-				anythingExceptLine()
-			}
-		)
+		def xml = xmlBuilder.exception(message:'barf')
+		{
+			anythingExceptLine()
+		}
+		def runResult = {Object[] args -> return xml} as RunResult
+		
+		testee.createNode(runResult)
 	}
 	
 	@Test
@@ -148,6 +192,23 @@ class TreeNodeFactoryTest
 	}
 	
 	@Test
+	void testCreateTestcaseNodeForIncompleteAsyncAssert()
+	{
+		def xml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		{
+			incomplete(message:'some user message for incomplete asynchronous test')	
+		}
+		
+		def runResult = {Object[] args -> return xml} as RunResult
+		
+		def node = testee.createNode(runResult)
+		println(node)
+		assertEquals('assertAsyncNotEquals', node.toString())
+		assertEquals(ResultTreeNodeColour.ORANGE, node.colour)
+		assertEquals(1, node.childCount)
+	}
+	
+	@Test
 	void testRegexp()
 	{
 		def patternText = '[a-zA-Z\\ ]*end_of_line'
@@ -183,6 +244,6 @@ class TreeNodeFactoryTest
 		treeNodesGetterClosure(rootTreeNode)
 		return result
 	}
-
+	
 	
 }

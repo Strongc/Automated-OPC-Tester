@@ -1,43 +1,29 @@
-package ch.cern.opc.scriptRunner;
+package ch.cern.opc.scriptRunner
 
 import ch.cern.opc.client.ClientApi
 import ch.cern.opc.client.ClientInstance
+import ch.cern.opc.scriptRunner.results.ObservableRunResult
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.Before;
+import static org.junit.Assert.*
+import org.junit.Test
+import org.junit.Before
+import org.junit.After
 
 class ScriptRunner_ScriptExecutionTest 
 {
 	def testee
-	def scriptDelegate
-	
-	def createdGroupName
-	def createdGroupRefreshRate
-	def addedItemGroupName
-	def addedItemPath
-	def readItemSyncGroup
-	def readItemSyncPath
+	def file
 	
 	@Before
 	void setup()
 	{
-		createdGroupName = null
-		createdGroupRefreshRate = null
-		addedItemGroupName = null
-		addedItemPath= null
-		
 		def theClientInstance = [
 			createGroup: {groupName, refreshRate ->
 				println "createGroup: name [${groupName}] refresh rate[${refreshRate}]"
-				createdGroupName = groupName
-				createdGroupRefreshRate = refreshRate
 				return true
 			},
 			addItem: {groupName, path ->
 				println "addItem: group [${groupName}] item [${path}]"
-				addedItemGroupName = groupName
-				addedItemPath = path
 				return true
 			},
 			readItemSync: {groupName, path ->
@@ -45,31 +31,38 @@ class ScriptRunner_ScriptExecutionTest
 				return 'someValue'
 			},
 			destroy: {},
-			registerAsyncUpdate: {}
+			registerAsyncUpdate: {},
+			end:{}
 		] as ClientApi
 	
 		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
 		
+		file = new File('temp_script_file.txt')
+		
 		testee = new ScriptRunner()
-		scriptDelegate = new ScriptContext()
+	}
+	
+	@After
+	void teardown()
+	{
+		file.delete()
 	}
 
 	@Test
 	void testRunScriptCreateGroup()
 	{
-		def script = {
-			createGroup('group.1')
-		}
+		file << 'createGroup(\'group.1\')'
 		
-		testee.runScriptClosure(script, scriptDelegate)
+		testee.runScript(file)
 		
-		assertEquals(1, scriptDelegate.groups.size())
+		assertEquals(1, testee.context.groups.size())
 	}
 	
 	@Test
 	void testRunScriptCreateGroupAndAddItems()
 	{
-		def script = {
+		
+		file << """\
 			group('group.1').with{
 				
 				item('item.1')
@@ -80,36 +73,66 @@ class ScriptRunner_ScriptExecutionTest
 				println item('item.2').syncValue
 				println item('item.2').syncValue
 			}
-		}
+		"""
+
+		testee.runScript(file)
 		
-		testee.runScriptClosure(script, scriptDelegate)
-		
-		assertEquals(3, scriptDelegate.group('group.1').items.size())
+		assertEquals(3, testee.context.group('group.1').items.size())
 	}
 	
 	@Test
 	void testRunScriptFromStringCreatesGroup()
 	{
-		def scriptClosure = Eval.me("{->group('group.1').with{g->g.item('item.1');g.item('item.2');println g.item('item.3').syncValue}}")
+		file << """\
+			group('group.1').with
+			{
+				g->g.item('item.1');
+				g.item('item.2');
+				println g.item('item.3').syncValue
+			}
+		"""
 		
-		testee.runScriptClosure(scriptClosure, scriptDelegate)
+		testee.runScript(file)
 		
-		assertEquals(1, scriptDelegate.groups.size())
-		assertNotNull(scriptDelegate.group('group.1'))
+		assertEquals(1, testee.context.groups.size())
+		assertNotNull(testee.context.group('group.1'))
 	}
 	
 	@Test
 	void testScriptCanLogmessages()
 	{
-		def script = Eval.me("{->logError('error text');logWarning('warn text');logInfo('info text');logDebug('debug text')}")
+		file << """\
+			logError('error text')
+			logWarning('warn text')
+			logInfo('info text')
+			logDebug('debug text')
+		"""
 		
 		try
 		{
-			testee.runScriptClosure(script, scriptDelegate)
+			testee.runScript(file)
 		}
 		catch(MissingMethodException e)
 		{
 			fail('log* methods missing')
 		}
+	}
+	
+	@Test
+	void testAddingAssertionUpdatesResultsObserver()
+	{
+		def updateInfo = null
+		
+		def observer = {Object[] args ->
+			updateInfo = args[1]
+		} as Observer
+		
+		file << """\
+			assertTrue('I am a success', true)
+		"""
+
+		testee.runScript(file, observer)
+		
+		assertTrue(updateInfo instanceof ObservableRunResult)
 	}
 }

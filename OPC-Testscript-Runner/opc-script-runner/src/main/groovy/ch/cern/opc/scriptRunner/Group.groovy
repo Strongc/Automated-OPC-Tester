@@ -20,7 +20,6 @@ class Group
 		
 		this.name = name.toString()
 		ClientInstance.instance.createGroup(name, 1000)
-		println "group [${name}] created"
 	}
 	
 	private def addItem(path)

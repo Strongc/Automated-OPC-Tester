@@ -1,8 +1,10 @@
 package ch.cern.opc;
 
 import org.w3c.dom.Element
+import groovy.xml.DOMBuilder
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
+import com.sun.org.apache.bcel.internal.generic.NEW
+import java.lang.IllegalArgumentException
 
 import groovy.xml.dom.DOMCategory
 import javax.swing.tree.DefaultMutableTreeNode as TreeNode
@@ -12,6 +14,8 @@ public class TreeNodeFactory extends DOMCategory
 	public static final def TESTCASE_ELM = 'testcase'
 	public static final def EXCEPTION_ELM = 'exception'
 	public static final def LINE_ELM = 'line'
+	
+	private def xmlBuilder = DOMBuilder.newInstance()
 	
 	def createNodes(element)
 	{
@@ -51,16 +55,40 @@ public class TreeNodeFactory extends DOMCategory
 			}
 			
 			nodeCreationClosure(root, element)
-//			element.children().each
-//			{child->
-//				nodeCreationClosure(root, child)
-//			}
-			
+
 			return root
 		}
 	}
 	
-	protected def createTestcaseNode(element)
+	def createTestsuiteNode()
+	{
+		return new ResultTreeNode('testsuite', ResultTreeNodeColour.GREEN)
+	}
+	
+	def createNode(runResult)
+	{
+		def xml = runResult.toXml(xmlBuilder)
+		def treeNode = null
+		
+		use(DOMCategory)
+		{
+			switch(xml.name())
+			{
+				case TESTCASE_ELM:
+					treeNode = createTestcaseNode(xml)
+					break;
+				case EXCEPTION_ELM:
+					treeNode = createExceptionNode(xml)
+					break;
+				default:
+					throw new IllegalArgumentException('failed to create tree node from runResult [${runResult}]')
+			}
+		}
+		
+		return treeNode
+	}
+	
+	private def createTestcaseNode(element)
 	{
 		use(DOMCategory)
 		{
@@ -83,12 +111,19 @@ public class TreeNodeFactory extends DOMCategory
 				result.add(new ResultTreeNode("message: ${element.failure[0].'@message'}", ResultTreeNodeColour.RED))
 				return result
 			}
+			else if(element.incomplete.size() == 1)
+			{
+				def result = new ResultTreeNode(element.'@name', ResultTreeNodeColour.ORANGE)
+				result.add(new ResultTreeNode("message: ${element.incomplete[0].'@message'}", ResultTreeNodeColour.ORANGE))
+				return result
+
+			}
 			
-			throw new IllegalStateException('testcase elements should always have exactly one child, either success or failure')
+			throw new IllegalStateException("unrecognised testcase child element found [${element[0].name}]")
 		}
 	}
 	
-	protected def createExceptionNode(element)
+	private def createExceptionNode(element)
 	{
 		use(DOMCategory)
 		{

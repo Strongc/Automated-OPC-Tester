@@ -13,11 +13,13 @@ import ch.cern.opc.scriptRunner.results.async.AssertAsyncEqualsRunResult
 import ch.cern.opc.scriptRunner.results.async.AssertAsyncNotEqualsRunResult
 import ch.cern.opc.scriptRunner.results.async.AsyncConditionManager
 
-@Mixin([Log, RunResultsArray])
-class RunResults
+@Mixin(Log)
+class RunResults extends Observable
 {
 	private final def asyncManager
 	private final def asyncUpdater
+	
+	private final def results = []
 	
 	private def pingPeriod = 10 //seconds
 	
@@ -29,9 +31,7 @@ class RunResults
 	
 	def assertTrue(message, value)
 	{
-		println 'calling RunResults.add'
 		add(new AssertTrueRunResult(message, value))
-		println 'called RunResults.add'
 	}
 	
 	def assertFalse(message, value)
@@ -104,5 +104,16 @@ class RunResults
 		asyncManager.stopTicking()
 		logInfo('onScriptEnd complete')
 	}
-
+	
+	private def add(result)
+	{
+		results.add(result)
+		updateObservers(result)
+	}
+	
+	private def updateObservers(result)
+	{
+		setChanged()
+		notifyObservers(result)
+	}
 }

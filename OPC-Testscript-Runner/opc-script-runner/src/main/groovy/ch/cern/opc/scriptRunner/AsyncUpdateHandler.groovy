@@ -31,7 +31,7 @@ class AsyncUpdateHandler implements AsyncUpdateCallback
 	{
 		if(itemPath == null || value == null)
 		{
-			System.out.println("WARNING onUpdate called with null - item null [${itemPath==null?'Y':'N'}] value null [${value==null?'Y':'N'}]")
+			logWarning("WARNING onUpdate called with null - item null [${itemPath==null?'Y':'N'}] value null [${value==null?'Y':'N'}]")
 			return 0
 		}
 		else

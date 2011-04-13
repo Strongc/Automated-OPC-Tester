@@ -8,13 +8,17 @@ class ScriptRunner
 {
 	private def context = null
 	
-	def Element runScript(scriptFile)
+	def Element runScript(scriptFile, resultsObserver = null)
 	{
 		def scriptClosure = Eval.me("{->\ntry{${scriptFile.text}}catch(e){addException(e);logError('exception thrown')}\n}")
+		
 		context = new ScriptContext()
+		if(resultsObserver != null)
+		{
+			context.addObserver(resultsObserver)
+		}
 
 		runScriptClosure(scriptClosure, context)
-		println "ClientInstance.instance [${(ClientInstance.instance == null)?'NULL':'NON NULL'}]"
 		ClientInstance.instance.end();
 		
 		return context.XML

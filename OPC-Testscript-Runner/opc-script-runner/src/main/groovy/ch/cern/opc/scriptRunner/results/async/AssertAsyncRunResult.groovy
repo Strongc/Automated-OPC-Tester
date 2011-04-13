@@ -2,7 +2,7 @@ package ch.cern.opc.scriptRunner.results.async
 
 import ch.cern.opc.scriptRunner.results.RunResult;
 
-abstract protected class AssertAsyncRunResult implements AsyncRunResult 
+abstract class AssertAsyncRunResult implements AsyncRunResult 
 {
 	public static enum ASYNC_STATE {CREATED, WAITING, TIMED_OUT, MATCHED}
 	

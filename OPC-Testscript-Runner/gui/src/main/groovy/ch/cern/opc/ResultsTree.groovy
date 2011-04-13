@@ -1,14 +1,21 @@
 package ch.cern.opc
 
 import javax.swing.JTree
+import javax.swing.SwingUtilities
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel
+import javax.swing.tree.TreePath
+import javax.swing.JPanel
+
 import java.awt.Component
 import java.awt.Color
-import javax.swing.tree.DefaultMutableTreeNode as TreeNode
-import javax.swing.tree.DefaultTreeCellRenderer
-import java.util.*
+import java.awt.GridLayout
 
-import org.apache.commons.lang.NotImplementedException;
-import org.w3c.dom.Element;
+import javax.swing.text.BadLocationException
+import javax.swing.tree.DefaultTreeCellRenderer
+
+import org.apache.commons.lang.NotImplementedException
+import org.w3c.dom.Element
 import groovy.xml.dom.DOMCategory
 
 import static java.awt.Color.GREEN
@@ -16,28 +23,54 @@ import static java.awt.Color.RED
 
 class ResultsTree implements Observer
 {
-	def tree
-	def root
+	protected def tree
 	
-	static final def ROOT_NAME = 'test results'
+	private def rootNode
+	private def treeModel
+	private def factory 
 	
 	def ResultsTree()
 	{
-		root = new ResultTreeNode(ROOT_NAME, ResultTreeNodeColour.GREEN)
-		tree = new JTree(root)
+		factory = new TreeNodeFactory()
+		
+		rootNode = new ResultTreeNode('root node', ResultTreeNodeColour.GREEN)
+		treeModel = new DefaultTreeModel(rootNode)
+		
+		tree = new JTree(treeModel)
+		tree.setEditable(true)
+		tree.setShowsRootHandles(true)
 		tree.setCellRenderer(new RedGreenRenderer())
 	}
 	
-	def addResults(Element xml)
+	def initTree()
 	{
-		root.add(new TreeNodeFactory().createNodes(xml))
-		tree.treeModel.reload()
+		addNode(rootNode, factory.createTestsuiteNode())
 	}
 	
 	def clearResults()
 	{
-		root.removeAllChildren()
-		tree.treeModel.reload()
+		rootNode.removeAllChildren();
+		treeModel.reload();
+	}
+	
+	private def addNode(parent, child)
+	{
+		treeModel.insertNodeInto(child, parent, parent.childCount)
+		tree.scrollPathToVisible(new TreePath(child.path))
+	}
+	
+	private def getTestsuiteNode()
+	{
+		return rootNode.children[0]
+	}
+	
+	@Override
+	void update(Observable observable, Object newResult)
+	{
+		SwingUtilities.invokeLater 
+		{
+			addNode(testsuiteNode, factory.createNode(newResult))
+		}
 	}
 	
 	@Override
@@ -62,14 +95,8 @@ class ResultsTree implements Observer
 			}
 		}
 		
-		nodeToStringClosure(root, 0)
+		nodeToStringClosure(rootNode, 0)
 		return result
-	}
-	
-	@Override
-	void update(Observable observable, Object updateInfo)
-	{
-		throw new NotImplementedException('I aint got nobody')
 	}
 	
 	private class RedGreenRenderer extends DefaultTreeCellRenderer
@@ -105,7 +132,7 @@ class ResultsTree implements Observer
 					failedChildren << currentNode
 				}	
 				
-				currentNode.children.each
+				currentNode.children.each 
 				{childNode ->
 					failureCheckerClosure(childNode)
 				}

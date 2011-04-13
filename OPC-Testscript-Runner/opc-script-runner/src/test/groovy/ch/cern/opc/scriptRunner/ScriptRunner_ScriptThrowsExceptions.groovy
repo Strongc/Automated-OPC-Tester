@@ -2,6 +2,9 @@ package ch.cern.opc.scriptRunner;
 
 import ch.cern.opc.client.ClientApi
 import ch.cern.opc.client.ClientInstance
+import ch.cern.opc.scriptRunner.results.ExceptionRunResult;
+
+import ch.cern.opc.client.results.*
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -16,7 +19,6 @@ class ScriptRunner_ScriptThrowsExceptions
 	@Before
 	void setup()
 	{
-		testee = new ScriptRunner()
 		file = new File('temp_script_file.txt')
 		
 		def theClientInstance = [
@@ -25,6 +27,7 @@ class ScriptRunner_ScriptThrowsExceptions
 		] as ClientApi
 	
 		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
+		testee = new ScriptRunner()
 	}
 	
 	@After
@@ -32,11 +35,11 @@ class ScriptRunner_ScriptThrowsExceptions
 	{
 		file.delete()
 	}
-
+	
 	@Test
 	void testRunScriptWithExceptions()
 	{
-		def script = 'throw new Exception(e)' 
+		def script = 'throw new Exception()' 
 		file << script
 		
 		testee.runScript(file)
