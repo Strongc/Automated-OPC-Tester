@@ -88,6 +88,42 @@ public class TreeNodeFactory extends DOMCategory
 		return treeNode
 	}
 	
+	/**
+	 * This factory also does repairs - method changes existing node according to the XML
+	 * passed in here.
+	 * @param treeNode
+	 * @param resultXml
+	 * @return
+	 */
+	def updateNode(treeNode, resultXml)
+	{
+		setNodeAndChildNodesColour(treeNode, getNodeColourFromXml(resultXml))
+		use(DOMCategory)
+		{
+
+		resultXml.children().eachWithIndex
+		{childElement, i ->
+			treeNode.getChildAt(i).userObject = getTestcaseChildNodeText(childElement)
+		}
+		}
+	}
+	
+	private def setNodeAndChildNodesColour(treeNode, colour)
+	{
+		def setTreeNodeColourClosure
+		
+		setTreeNodeColourClosure =
+		{node ->
+			node.colour = colour
+			node.children.each
+			{childNode ->
+				setTreeNodeColourClosure(childNode)
+			}
+		}
+		
+		setTreeNodeColourClosure(treeNode)
+	}
+	
 	private def createTestcaseNode(element)
 	{
 		use(DOMCategory)
@@ -98,25 +134,68 @@ public class TreeNodeFactory extends DOMCategory
 			{
 				throw new IllegalStateException('testcase elements should always have exactly one child')
 			}
+
+			def result = new ResultTreeNode(element.'@name', getNodeColourFromXml(element))
+			element.children().each
+			{childElement ->
+				result.add(createTestcaseChildNode(childElement))
+			}
 			
+			return result
+		}
+	}
+	
+	private def createTestcaseChildNode(childElement)
+	{
+		use(DOMCategory)
+		{
+			switch(childElement.name())
+			{
+				case 'success':
+					return new ResultTreeNode(getTestcaseChildNodeText(childElement), ResultTreeNodeColour.GREEN)
+				case 'failure':
+					return new ResultTreeNode(getTestcaseChildNodeText(childElement), ResultTreeNodeColour.RED)
+				case 'incomplete':
+					return new ResultTreeNode(getTestcaseChildNodeText(childElement), ResultTreeNodeColour.ORANGE)
+				default:
+					throw new IllegalArgumentException('failed to create tree node chind from element [${element}]')
+			}
+		}
+	}
+	
+	private def getTestcaseChildNodeText(childElement)
+	{
+		use(DOMCategory)
+		{
+			switch(childElement.name())
+			{
+				case 'success':
+					return "message: ${childElement.'@message'}"
+				case 'failure':
+					return "message: ${childElement.'@message'}"
+				case 'incomplete':
+					return "message: ${childElement.'@message'}"
+				default:
+					throw new IllegalArgumentException('unrecognised element [${childElement}]')
+			}
+		}
+	}
+	
+	private def getNodeColourFromXml(element)
+	{
+		use(DOMCategory)
+		{
 			if(element.success.size() == 1)
 			{
-				def result = new ResultTreeNode(element.'@name', ResultTreeNodeColour.GREEN)
-				result.add(new ResultTreeNode("message: ${element.success[0].'@message'}", ResultTreeNodeColour.GREEN))
-				return result 
+				return ResultTreeNodeColour.GREEN
 			}
 			else if(element.failure.size() == 1)
 			{
-				def result = new ResultTreeNode(element.'@name', ResultTreeNodeColour.RED)
-				result.add(new ResultTreeNode("message: ${element.failure[0].'@message'}", ResultTreeNodeColour.RED))
-				return result
+				return ResultTreeNodeColour.RED
 			}
 			else if(element.incomplete.size() == 1)
 			{
-				def result = new ResultTreeNode(element.'@name', ResultTreeNodeColour.ORANGE)
-				result.add(new ResultTreeNode("message: ${element.incomplete[0].'@message'}", ResultTreeNodeColour.ORANGE))
-				return result
-
+				return ResultTreeNodeColour.ORANGE
 			}
 			
 			throw new IllegalStateException("unrecognised testcase child element found [${element[0].name}]")

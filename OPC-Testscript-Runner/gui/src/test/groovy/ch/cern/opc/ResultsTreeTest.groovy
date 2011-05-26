@@ -25,6 +25,9 @@ class ResultsTreeTest
 		def countBefore = treeNodeCount
 		
 		testee.update(null, createRunResult())
+		
+		// tiny sleep - swing adds nodes later. 
+		sleep 10
 		println testee
 		
 		assertEquals('expected to see test node and test message child node', countBefore+2, treeNodeCount)

@@ -1,8 +1,8 @@
 package ch.cern.opc
 
-class Main 
+public class Main 
 {
-	static main(args) 
+	public static main(args) 
 	{
 		new ScriptRunnerGui().show();
 	}

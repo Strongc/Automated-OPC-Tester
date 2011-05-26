@@ -217,6 +217,77 @@ class TreeNodeFactoryTest
 		assertTrue(pattern.matcher('a a a end_of_line').matches())
 	}
 	
+	@Test
+	void testUpdateNode_ChangesColourFromOrangeToGreenForSuccessfulTest()
+	{
+		def node = createTreeNodeForIncompleteAsyncTest()
+		
+		def resultXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		{
+			success(message:'yay - the async text completed after some time.')	
+		}
+		
+		def successfulAsyncResult = {Object[] args -> return resultXml} as RunResult
+		
+		testee.updateNode(node, successfulAsyncResult.toXml())
+		
+		assertEquals(ResultTreeNodeColour.GREEN, node.colour)
+		assertEquals(ResultTreeNodeColour.GREEN, node.getChildAt(0).colour)
+	}
+	
+	@Test
+	void testUpdateNode_ChangesColourFromOrangeToRedForFailedTest()
+	{
+		def node = createTreeNodeForIncompleteAsyncTest()
+		
+		def resultXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		{
+			failure(message:'baws - the async text failed after some time.')
+		}
+		
+		def failedAsyncResult = {Object[] args -> return resultXml} as RunResult
+		
+		testee.updateNode(node, failedAsyncResult.toXml())
+		
+		assertEquals(ResultTreeNodeColour.RED, node.colour)
+		assertEquals(ResultTreeNodeColour.RED, node.getChildAt(0).colour)
+	}
+	
+	@Test
+	void testUpdateNode_ChangesTextOfChildNodeFromIncompleteToSuccessForSuccessfulTest()
+	{
+		def node = createTreeNodeForIncompleteAsyncTest()
+		assertFalse('message: yay - the async text completed after some time.'.equals(node.getChildAt(0).toString()))
+		
+		def resultXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		{
+			success(message:'yay - the async text completed after some time.')
+		}
+		
+		def successfulAsyncResult = {Object[] args -> return resultXml} as RunResult
+		
+		testee.updateNode(node, successfulAsyncResult.toXml())
+		assertTrue('message: yay - the async text completed after some time.'.equals(node.getChildAt(0).toString()))
+	}
+	
+	private def createTreeNodeForIncompleteAsyncTest()
+	{
+		def xml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		{
+			incomplete(message:'some user message for incomplete asynchronous test')
+		}
+		
+		def runResult = {Object[] args -> return xml} as RunResult
+		
+		def node = testee.createNode(runResult)
+		
+		assertEquals(ResultTreeNodeColour.ORANGE, node.colour)
+		assertEquals(1, node.childCount)
+		assertEquals('message: some user message for incomplete asynchronous test', node.getChildAt(0).toString())
+		
+		return node
+	}
+	
 	private def getTreeNodeCountWithPattern(rootTreeNode, patternText)
 	{
 		return getTreeNodesWithPattern(rootTreeNode, patternText).size()
@@ -244,6 +315,4 @@ class TreeNodeFactoryTest
 		treeNodesGetterClosure(rootTreeNode)
 		return result
 	}
-	
-	
 }

@@ -25,7 +25,7 @@ enum ResultTreeNodeColour
 
 class ResultTreeNode extends DefaultMutableTreeNode 
 {
-	private final ResultTreeNodeColour colour
+	private ResultTreeNodeColour colour
 	 
 	def ResultTreeNode(text, ResultTreeNodeColour colour)
 	{
