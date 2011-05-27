@@ -222,14 +222,12 @@ class TreeNodeFactoryTest
 	{
 		def node = createTreeNodeForIncompleteAsyncTest()
 		
-		def resultXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		def successXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
 		{
 			success(message:'yay - the async text completed after some time.')	
 		}
 		
-		def successfulAsyncResult = {Object[] args -> return resultXml} as RunResult
-		
-		testee.updateNode(node, successfulAsyncResult.toXml())
+		testee.updateNode(node, successXml)
 		
 		assertEquals(ResultTreeNodeColour.GREEN, node.colour)
 		assertEquals(ResultTreeNodeColour.GREEN, node.getChildAt(0).colour)
@@ -240,17 +238,32 @@ class TreeNodeFactoryTest
 	{
 		def node = createTreeNodeForIncompleteAsyncTest()
 		
-		def resultXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		def failureXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
 		{
 			failure(message:'baws - the async text failed after some time.')
 		}
 		
-		def failedAsyncResult = {Object[] args -> return resultXml} as RunResult
-		
-		testee.updateNode(node, failedAsyncResult.toXml())
+		testee.updateNode(node, failureXml)
 		
 		assertEquals(ResultTreeNodeColour.RED, node.colour)
 		assertEquals(ResultTreeNodeColour.RED, node.getChildAt(0).colour)
+	}
+	
+	@Test
+	void testUpdateNode_ChangesTextOfNodeToMatchXml()
+	{
+		def node = createTreeNodeForIncompleteAsyncTest()
+		println "Before [${node.toString()}]"
+		assertFalse('new node text'.equals(node.toString()))
+		
+		def successXml = xmlBuilder.testcase(name:'new node text')
+		{
+			success(message:'yay - the async text completed after some time.')
+		}
+		
+		testee.updateNode(node, successXml)
+		println "After [${node.toString()}]"
+		assertTrue('new node text'.equals(node.toString()))
 	}
 	
 	@Test
@@ -259,14 +272,12 @@ class TreeNodeFactoryTest
 		def node = createTreeNodeForIncompleteAsyncTest()
 		assertFalse('message: yay - the async text completed after some time.'.equals(node.getChildAt(0).toString()))
 		
-		def resultXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		def successXml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
 		{
 			success(message:'yay - the async text completed after some time.')
 		}
 		
-		def successfulAsyncResult = {Object[] args -> return resultXml} as RunResult
-		
-		testee.updateNode(node, successfulAsyncResult.toXml())
+		testee.updateNode(node, successXml)
 		assertTrue('message: yay - the async text completed after some time.'.equals(node.getChildAt(0).toString()))
 	}
 	

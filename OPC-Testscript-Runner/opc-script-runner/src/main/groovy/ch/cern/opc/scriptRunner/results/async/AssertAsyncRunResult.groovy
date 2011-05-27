@@ -2,6 +2,7 @@ package ch.cern.opc.scriptRunner.results.async
 
 import ch.cern.opc.scriptRunner.results.RunResult;
 import ch.cern.opc.scriptRunner.results.ObservableRunResult;
+import groovy.xml.DOMBuilder
 
 abstract class AssertAsyncRunResult extends ObservableRunResult implements AsyncRunResult 
 {
@@ -32,7 +33,7 @@ abstract class AssertAsyncRunResult extends ObservableRunResult implements Async
 			if(countObservers() > 0)
 			{
 				setChanged()
-				notifyObservers(this.toXml())
+				notifyObservers(this.toXml(DOMBuilder.newInstance()))
 			}
 		}
 	}

@@ -41,7 +41,7 @@ class ResultsTree implements Observer
 		tree = new JTree(treeModel)
 		tree.setEditable(true)
 		tree.setShowsRootHandles(true)
-		tree.setCellRenderer(new RedGreenRenderer())
+		tree.setCellRenderer(new RedOrangeGreenRenderer())
 	}
 	
 	def initTree()
@@ -111,7 +111,7 @@ class ResultsTree implements Observer
 		return result
 	}
 	
-	private class RedGreenRenderer extends DefaultTreeCellRenderer
+	private class RedOrangeGreenRenderer extends DefaultTreeCellRenderer
 	{
 		@Override
 		public Component getTreeCellRendererComponent(
@@ -123,36 +123,47 @@ class ResultsTree implements Observer
 		int row,
 		boolean hasFocus) 
 		{
-			
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus)
-			
-			def colour = (containsFailures(value)? Color.RED: Color.GREEN)
-			backgroundNonSelectionColor = colour
-			
+			backgroundNonSelectionColor = getNodeColour(value)
 			return this
 		}
 		
-		private def containsFailures(ResultTreeNode node)
+		private def getNodeColour(ResultTreeNode node)
 		{
-			def failedChildren = []
+			if(containsNodesWithColour(node, ResultTreeNodeColour.RED))
+			{
+				return Color.RED
+			}
 			
-			def failureCheckerClosure
-			failureCheckerClosure = 
+			if(containsNodesWithColour(node, ResultTreeNodeColour.ORANGE))
+			{
+				return Color.ORANGE
+			}
+			
+			return Color.GREEN
+		}
+		
+		private def containsNodesWithColour(ResultTreeNode node, ResultTreeNodeColour targetColour)
+		{
+			def colouredNodes = []
+			
+			def colourCheckerClosure
+			colourCheckerClosure = 
 			{currentNode->
-				if(ResultTreeNodeColour.RED == currentNode.colour)
+				if(targetColour == currentNode.colour)
 				{
-					failedChildren << currentNode
+					colouredNodes << currentNode
 				}	
 				
 				currentNode.children.each 
 				{childNode ->
-					failureCheckerClosure(childNode)
+					colourCheckerClosure(childNode)
 				}
 			}
 			
-			failureCheckerClosure(node)
+			colourCheckerClosure(node)
 			
-			return failedChildren.size > 0
+			return colouredNodes.size > 0
 		}
 	} 
 }

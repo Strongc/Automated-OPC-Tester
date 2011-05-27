@@ -102,6 +102,8 @@ public class TreeNodeFactory extends DOMCategory
 		setNodeAndChildNodesColour(treeNode, getNodeColourFromXml(resultXml))
 		use(DOMCategory)
 		{
+			treeNode.userObject = resultXml.'@name'
+			
 			resultXml.children().eachWithIndex
 			{childElement, i ->
 				if(i < treeNode.childCount)
