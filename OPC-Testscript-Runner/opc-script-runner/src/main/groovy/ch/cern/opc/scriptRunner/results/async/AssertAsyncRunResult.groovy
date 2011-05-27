@@ -1,12 +1,13 @@
 package ch.cern.opc.scriptRunner.results.async
 
 import ch.cern.opc.scriptRunner.results.RunResult;
+import ch.cern.opc.scriptRunner.results.ObservableRunResult;
 
-abstract class AssertAsyncRunResult implements AsyncRunResult 
+abstract class AssertAsyncRunResult extends ObservableRunResult implements AsyncRunResult 
 {
 	public static enum ASYNC_STATE {CREATED, WAITING, TIMED_OUT, MATCHED}
 	
-	protected ASYNC_STATE state = ASYNC_STATE.CREATED
+	private ASYNC_STATE state = ASYNC_STATE.CREATED
 	protected def elapsedWait = 0
 	
 	protected final def timeout
@@ -21,6 +22,19 @@ abstract class AssertAsyncRunResult implements AsyncRunResult
 	def getState()
 	{
 		return state
+	}
+	
+	protected setState(newState)
+	{
+		if(newState != state)
+		{
+			state = newState
+			if(countObservers() > 0)
+			{
+				setChanged()
+				notifyObservers(this.toXml())
+			}
+		}
 	}
 	
 	def getElapsedWait()

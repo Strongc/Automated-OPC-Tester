@@ -17,10 +17,12 @@ import javax.swing.tree.DefaultTreeCellRenderer
 import org.apache.commons.lang.NotImplementedException
 import org.w3c.dom.Element
 import groovy.xml.dom.DOMCategory
+import ch.cern.opc.common.Log
 
 import static java.awt.Color.GREEN
 import static java.awt.Color.RED
 
+@Mixin(Log)
 class ResultsTree implements Observer
 {
 	protected def tree
@@ -54,7 +56,13 @@ class ResultsTree implements Observer
 	}
 	
 	private def addNode(parent, child)
-	{
+	{		
+		if(parent == null)
+		{
+			logError("Attempt to insert node into tree without a parent - tree should be initialised before adding any nodes")
+			return
+		}
+		
 		treeModel.insertNodeInto(child, parent, parent.childCount)
 		tree.scrollPathToVisible(new TreePath(child.path))
 	}
@@ -69,7 +77,11 @@ class ResultsTree implements Observer
 	{
 		SwingUtilities.invokeLater 
 		{
-			addNode(testsuiteNode, factory.createNode(newResult))
+			// create tree node, have it watch for updates to run result (esp. for async run results: updated later)
+			def treeNode = factory.createNode(newResult)
+			newResult.addObserver(treeNode)
+			
+			addNode(testsuiteNode, treeNode)
 		}
 	}
 	

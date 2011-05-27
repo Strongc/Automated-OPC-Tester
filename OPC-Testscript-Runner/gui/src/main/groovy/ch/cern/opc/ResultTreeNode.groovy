@@ -23,7 +23,7 @@ enum ResultTreeNodeColour
 	}
 }
 
-class ResultTreeNode extends DefaultMutableTreeNode 
+class ResultTreeNode extends DefaultMutableTreeNode implements Observer
 {
 	private ResultTreeNodeColour colour
 	 
@@ -31,5 +31,13 @@ class ResultTreeNode extends DefaultMutableTreeNode
 	{
 		super(text)
 		this.colour = colour
+	}
+	
+	@Override
+	void update(Observable observable, Object newResult)
+	{
+		TreeNodeFactory t = new TreeNodeFactory()
+		t.updateNode(this, newResult)
+		println("treenode [${this}] updated with value [${newResult}]")
 	}
 }

@@ -97,7 +97,7 @@ class AssertAsyncRunResultTest
 		@Override
 		def toXml(xmlBuilder)
 		{
-			throw NotImplementedException('toXml called for test stub - no implementation')
+			return null
 		}
 		
 		@Override

@@ -8,7 +8,9 @@ import java.lang.IllegalArgumentException
 
 import groovy.xml.dom.DOMCategory
 import javax.swing.tree.DefaultMutableTreeNode as TreeNode
+import ch.cern.opc.common.Log
 
+@Mixin(Log)
 public class TreeNodeFactory extends DOMCategory
 {
 	public static final def TESTCASE_ELM = 'testcase'
@@ -100,11 +102,17 @@ public class TreeNodeFactory extends DOMCategory
 		setNodeAndChildNodesColour(treeNode, getNodeColourFromXml(resultXml))
 		use(DOMCategory)
 		{
-
-		resultXml.children().eachWithIndex
-		{childElement, i ->
-			treeNode.getChildAt(i).userObject = getTestcaseChildNodeText(childElement)
-		}
+			resultXml.children().eachWithIndex
+			{childElement, i ->
+				if(i < treeNode.childCount)
+				{
+					treeNode.getChildAt(i).userObject = getTestcaseChildNodeText(childElement)
+				}
+				else
+				{
+					logError("Mismatched XML and tree node, XML expects a child at index [${i}] under parent [${treeNode}]: XML\n${resultXml}")
+				}
+			}
 		}
 	}
 	

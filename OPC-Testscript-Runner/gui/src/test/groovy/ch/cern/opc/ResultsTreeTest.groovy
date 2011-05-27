@@ -1,6 +1,7 @@
 package ch.cern.opc
 
 import ch.cern.opc.scriptRunner.results.RunResult
+import ch.cern.opc.scriptRunner.results.ObservableRunResult
 
 import static org.junit.Assert.*
 import org.junit.Test;
@@ -27,10 +28,25 @@ class ResultsTreeTest
 		testee.update(null, createRunResult())
 		
 		// tiny sleep - swing adds nodes later. 
-		sleep 10
+		sleep 100
 		println testee
 		
 		assertEquals('expected to see test node and test message child node', countBefore+2, treeNodeCount)
+	}
+	
+	@Test
+	void testTreeNodesForRunResultsObserveTheRunResult()
+	{
+		def runResult = createRunResult()
+		assertEquals(0, runResult.countObservers())
+		
+		testee.update(null, runResult)
+		
+		// tiny sleep - swing adds nodes later in another thread.
+		sleep 100
+		println testee
+		
+		assertEquals(1, runResult.countObservers())
 	}
 
 	@Test
@@ -59,9 +75,9 @@ class ResultsTreeTest
 		{
 			success(message:"some msg")
 		}
-		return {Object[] args -> return xml} as RunResult
+		return [toXml: {arg-> println('result.toXml called'); return xml}] as ObservableRunResult
 	}
-
+	
 	private def getTreeNodeCount()
 	{
 		def result = 0
@@ -81,4 +97,5 @@ class ResultsTreeTest
 		
 		return result
 	}
+	
 }

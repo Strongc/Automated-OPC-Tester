@@ -270,6 +270,21 @@ class TreeNodeFactoryTest
 		assertTrue('message: yay - the async text completed after some time.'.equals(node.getChildAt(0).toString()))
 	}
 	
+	@Test
+	void testUpdateNode_HandlesMismatchedTreeNodesAndXml()
+	{
+		def treeNodeWithNoChildren = new ResultTreeNode(
+			'I have no success, failure or incomplete child nodes. I probably should though',
+			ResultTreeNodeColour.ORANGE)
+		
+		def xmlWithSuccessChildElement = xmlBuilder.testcase(name:'assertAsyncNotEquals')
+		{
+			success(message:'I have no corresponding treenode')
+		} 
+		
+		testee.updateNode(treeNodeWithNoChildren, xmlWithSuccessChildElement)
+	}
+	
 	private def createTreeNodeForIncompleteAsyncTest()
 	{
 		def xml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
