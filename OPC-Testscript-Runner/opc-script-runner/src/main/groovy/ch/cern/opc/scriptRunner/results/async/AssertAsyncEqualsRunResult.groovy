@@ -2,6 +2,8 @@ package ch.cern.opc.scriptRunner.results.async
 
 import static ch.cern.opc.scriptRunner.results.RunResultUtil.formatMessage
 
+import org.apache.commons.lang.NotImplementedException;
+
 class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 {
 	public static final def TITLE = 'assertAsyncEquals' 
@@ -23,13 +25,13 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 		
 		switch(state)
 		{
-			case ASYNC_STATE.MATCHED:
+			case ASYNC_STATE.PASSED:
 				element = xmlBuilder.testcase(name:"${TITLE} passed: ${message}")
 				{
 					success(message:"item [${itemPath}] obtained expected value [${expectedValue}] in [${elapsedWait}] seconds")
 				}
 				break;
-			case ASYNC_STATE.TIMED_OUT:
+			case ASYNC_STATE.FAILED:
 				element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 				{
 					failure(message:"item [${itemPath}] failed to obtain expected value [${expectedValue}] in [${elapsedWait}] seconds")
@@ -54,13 +56,19 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 	}
 	
 	@Override
+	def timedOut()
+	{
+		state = ASYNC_STATE.FAILED
+	}
+	
+	@Override
 	def checkUpdate(itemPath, actualValue)
 	{
 		if(this.itemPath.equals(itemPath))
 		{
 			if(this.expectedValue.equals(actualValue))
 			{
-				state = ASYNC_STATE.MATCHED
+				state = ASYNC_STATE.PASSED
 			}
 		}
 		println("AssertAsyncEqualsRunResult.checkUpdate - state [${state}] checked input [item:${itemPath} actual:${actualValue}] against this: ${this}")

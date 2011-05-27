@@ -3,6 +3,7 @@ package ch.cern.opc
 import javax.swing.tree.DefaultMutableTreeNode
 import groovy.xml.dom.DOMCategory
 import java.awt.Color
+import javax.swing.SwingUtilities
 
 enum ResultTreeNodeColour 
 {
@@ -36,8 +37,11 @@ class ResultTreeNode extends DefaultMutableTreeNode implements Observer
 	@Override
 	void update(Observable observable, Object newResult)
 	{
-		TreeNodeFactory t = new TreeNodeFactory()
-		t.updateNode(this, newResult)
 		println("treenode [${this}] updated with value [${newResult}]")
+		SwingUtilities.invokeLater
+		{
+			new TreeNodeFactory().updateNode(this, newResult)
+		}
+
 	}
 }

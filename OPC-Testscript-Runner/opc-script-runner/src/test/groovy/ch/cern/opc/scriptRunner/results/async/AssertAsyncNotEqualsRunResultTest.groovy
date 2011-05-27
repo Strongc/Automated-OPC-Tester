@@ -9,8 +9,8 @@ import groovy.xml.dom.DOMCategory
 
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.CREATED as CREATED
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.WAITING as WAITING
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.TIMED_OUT as TIMED_OUT
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.MATCHED as MATCHED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.PASSED as PASSED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.FAILED as FAILED
 
 
 class AssertAsyncNotEqualsRunResultTest 
@@ -35,28 +35,35 @@ class AssertAsyncNotEqualsRunResultTest
 	void testCheckUpdate_withActualValueNotMatchingAntiExpectedValue()
 	{
 		testee.checkUpdate(ITEM_PATH, ANTI_EXPECTED_VALUE + 'and then some')
-		assertFalse(MATCHED == testee.state)
+		assertFalse(FAILED == testee.state)
 	}
 	
 	@Test
 	void testCheckUpdate_withActualValueMatchingAntiExpectedValue()
 	{
 		testee.checkUpdate(ITEM_PATH, ANTI_EXPECTED_VALUE)
-		assertEquals(MATCHED, testee.state)
+		assertEquals(FAILED, testee.state)
 	}
 	
 	@Test
 	void testCheckUpdate_withPathNotEqualToItemPath()
 	{
 		testee.checkUpdate(ITEM_PATH+'and.then.some', ANTI_EXPECTED_VALUE)
-		assertFalse(MATCHED == testee.state)
+		assertFalse(FAILED == testee.state)
 	}
 	
 	@Test
-	void testToXml_withStateMatched()
+	void testTimedOutSetsStateToPassed()
+	{
+		testee.timedOut()
+		assertEquals(PASSED, testee.state)
+	}
+	
+	@Test
+	void testToXml_withStateFailed()
 	{
 		testee.elapsedWait = 100
-		testee.state = MATCHED
+		testee.state = FAILED
 		
 		def result = testee.toXml(xmlBuilder)
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(result)
@@ -68,10 +75,10 @@ class AssertAsyncNotEqualsRunResultTest
 	}
 	
 	@Test
-	void testToXml_withStateTimedOut()
+	void testToXml_withStatePassed()
 	{
 		testee.elapsedWait = 100
-		testee.state = TIMED_OUT
+		testee.state = PASSED
 
 		def result = testee.toXml(xmlBuilder)
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(result)

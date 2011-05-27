@@ -25,13 +25,13 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 		
 		switch(state)
 		{
-			case ASYNC_STATE.MATCHED:
+			case ASYNC_STATE.FAILED:
 				element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 				{
 					failure(message:"item [${itemPath}] matched anti-expected value [${antiExpectedValue}] in [${elapsedWait}] seconds")
 				}
 				break;
-			case ASYNC_STATE.TIMED_OUT:
+			case ASYNC_STATE.PASSED:
 				element = xmlBuilder.testcase(name:"${TITLE} success: ${message}")
 				{
 					success(message:"item [${itemPath}] did not match anti-expected value [${antiExpectedValue}] in [${elapsedWait}] seconds")
@@ -47,7 +47,12 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 				throw new IllegalStateException("programming error: asynchronous assertions should not be asked for their XML in current state [${state}]")
 		}
 		return element
-
+	}
+	
+	@Override
+	def timedOut()
+	{
+		state = ASYNC_STATE.PASSED
 	}
 	
 	@Override
@@ -57,7 +62,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 		{
 			if(antiExpectedValue.equals(actualValue))
 			{
-				state = ASYNC_STATE.MATCHED
+				state = ASYNC_STATE.FAILED
 			}
 		}
 	}

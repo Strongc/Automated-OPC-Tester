@@ -6,7 +6,7 @@ import groovy.xml.DOMBuilder
 
 abstract class AssertAsyncRunResult extends ObservableRunResult implements AsyncRunResult 
 {
-	public static enum ASYNC_STATE {CREATED, WAITING, TIMED_OUT, MATCHED}
+	public static enum ASYNC_STATE {CREATED, WAITING, PASSED, FAILED}
 	
 	private ASYNC_STATE state = ASYNC_STATE.CREATED
 	protected def elapsedWait = 0
@@ -48,7 +48,7 @@ abstract class AssertAsyncRunResult extends ObservableRunResult implements Async
 		elapsedWait++
 		if(elapsedWait >= timeout)
 		{
-			state = ASYNC_STATE.TIMED_OUT
+			timedOut()
 		}
 		println("AssertAsyncEqualsRunResult.onTick - state [${state}] for this: ${this}")
 	}

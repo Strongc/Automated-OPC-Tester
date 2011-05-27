@@ -8,8 +8,8 @@ import groovy.mock.interceptor.*
 
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.CREATED as CREATED
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.WAITING as WAITING
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.TIMED_OUT as TIMED_OUT
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.MATCHED as MATCHED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.PASSED as PASSED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.FAILED as FAILED
 
 class AssertAsyncRunResultTest 
 {
@@ -33,11 +33,11 @@ class AssertAsyncRunResultTest
 		testee.state = WAITING
 		assertEquals(WAITING, testee.state)
 		
-		testee.state = TIMED_OUT
-		assertEquals(TIMED_OUT, testee.state)
+		testee.state = PASSED
+		assertEquals(PASSED, testee.state)
 		
-		testee.state = MATCHED
-		assertEquals(MATCHED, testee.state)
+		testee.state = FAILED
+		assertEquals(FAILED, testee.state)
 	}
 
 	@Test
@@ -59,16 +59,16 @@ class AssertAsyncRunResultTest
 	}
 	
 	@Test
-	void testOnTickDoesNotSetStatusToTimedOutIfElapsedTimeIsLessThanTimeout()
+	void testOnTickDoesNotCallTimedOutIfElapsedTimeIsLessThanTimeout()
 	{
 		for(i in 1..testee.timeout - 1)
 		{
 			testee.onTick()
-			assertFalse('timeout should not have been reached', TIMED_OUT == testee.state)
+			assertFalse('timeout should not have been reached', testee.isTimedOut)
 		}
 		
 		testee.onTick()
-		assertEquals('timeout reached', TIMED_OUT, testee.state)
+		assertTrue('timeout reached', testee.isTimedOut)
 	}
 
 	@Test
@@ -89,6 +89,8 @@ class AssertAsyncRunResultTest
 
 	private class NonAbstractAssertAsyncRunResult extends AssertAsyncRunResult
 	{
+		public def isTimedOut = false
+		 
 		NonAbstractAssertAsyncRunResult(timeout, itemPath)
 		{
 			super(timeout, itemPath)
@@ -98,6 +100,12 @@ class AssertAsyncRunResultTest
 		def toXml(xmlBuilder)
 		{
 			return null
+		}
+		
+		@Override
+		def timedOut()
+		{
+			isTimedOut = true
 		}
 		
 		@Override

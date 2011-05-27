@@ -36,6 +36,7 @@ class ResultTreeNodeTest
 		}
 		
 		testee.update(null, xml)
+		sleep(1000)
 
 		assertEquals(ResultTreeNodeColour.GREEN, testee.colour)
 	}
@@ -51,6 +52,7 @@ class ResultTreeNodeTest
 		}
 		
 		testee.update(null, xml)
+		sleep(1000)
 
 		assertEquals(ResultTreeNodeColour.RED, testee.colour)
 	}
@@ -67,6 +69,7 @@ class ResultTreeNodeTest
 		}
 		
 		testee.update(null, xml)
+		sleep(1000)
 
 		assertEquals(ResultTreeNodeColour.GREEN, testee.colour)
 		assertEquals(ResultTreeNodeColour.GREEN, testee.getChildAt(0).colour)
@@ -87,6 +90,7 @@ class ResultTreeNodeTest
 		}
 		
 		testee.update(null, xml)
+		sleep(1000)
 
 		assertEquals(ResultTreeNodeColour.RED, testee.colour)
 		assertEquals(ResultTreeNodeColour.RED, testee.getChildAt(0).colour)

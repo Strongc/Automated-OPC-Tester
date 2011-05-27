@@ -2,8 +2,8 @@ package ch.cern.opc.scriptRunner.results.async;
 
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.CREATED as CREATED
 import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.WAITING as WAITING
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.TIMED_OUT as TIMED_OUT
-import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.MATCHED as MATCHED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.PASSED as PASSED
+import static ch.cern.opc.scriptRunner.results.async.AssertAsyncRunResult.ASYNC_STATE.FAILED as FAILED
 
 import static org.junit.Assert.*;
 import org.junit.Test
@@ -46,7 +46,7 @@ class AsyncConditionManagerTest
 		def actualItem
 		def actualValue
 		
-		def mockAsyncAssert = createMockAsyncAssert({return MATCHED}, null, {item, value-> actualItem = item; actualValue=value})
+		def mockAsyncAssert = createMockAsyncAssert({return WAITING}, null, {item, value-> actualItem = item; actualValue=value})
 		testee.registerAsyncCondition(mockAsyncAssert)
 		
 		testee.asyncUpdate(ITEM_PATH, EXPECTED_VALUE)
@@ -55,12 +55,12 @@ class AsyncConditionManagerTest
 	}
 	
 	@Test
-	void testAsyncUpdateClearsMatchedAsyncConditions()
+	void testAsyncUpdateClearsPassedAsyncConditions()
 	{
 		testee.with 
 		{
-			registerAsyncCondition(createMockAsyncAssert({return MATCHED}, null, {item, value->}))
-			registerAsyncCondition(createMockAsyncAssert({return MATCHED}, null, {item, value->}))
+			registerAsyncCondition(createMockAsyncAssert({return PASSED}, null, {item, value->}))
+			registerAsyncCondition(createMockAsyncAssert({return PASSED}, null, {item, value->}))
 			registerAsyncCondition(createMockAsyncAssert({return WAITING}, null, {item, value->}))
 			registerAsyncCondition(createMockAsyncAssert({return WAITING}, null, {item, value->}))
 		}
@@ -70,13 +70,13 @@ class AsyncConditionManagerTest
 		
 		assertEquals(2, testee.registeredAsyncConditionsCount)
 	}
-	
+
 	@Test
 	void testOnTickCallsOnTickOfRegisteredAsyncConditions()
 	{
 		def tickCalled = false
 		
-		testee.registerAsyncCondition(createMockAsyncAssert({return MATCHED}, {tickCalled=true}, null))
+		testee.registerAsyncCondition(createMockAsyncAssert({return WAITING}, {tickCalled=true}, null))
 		
 		testee.onTick()
 		
@@ -85,13 +85,13 @@ class AsyncConditionManagerTest
 	}	
 	
 	@Test
-	void testOnTickClearsTimedOutAsyncConditions()
+	void testOnTickClearsFailedAsyncConditions()
 	{
 		testee.with 
 		{
-			registerAsyncCondition(createMockAsyncAssert({return TIMED_OUT}, {}, null))
+			registerAsyncCondition(createMockAsyncAssert({return FAILED}, {}, null))
 			registerAsyncCondition(createMockAsyncAssert({return WAITING}, {}, null))
-			registerAsyncCondition(createMockAsyncAssert({return TIMED_OUT}, {}, null))
+			registerAsyncCondition(createMockAsyncAssert({return FAILED}, {}, null))
 			registerAsyncCondition(createMockAsyncAssert({return WAITING}, {}, null))
 		}
 		assertEquals(4, testee.registeredAsyncConditionsCount)
@@ -115,7 +115,53 @@ class AsyncConditionManagerTest
 		
 		assertEquals('4 - immediately, then on each subsequent second', 4, tickCalledCounter)
 	}
+
+	@Test
+	void testStopTickingTimesoutRemainingWaitingAsyncConditions()
+	{
+		def isFirstConditionTimedOut = false
+		def firstCondition = createMockAsyncAssert({return WAITING}, null, null, {->isFirstConditionTimedOut = true})
+		
+		def isSecondConditionTimedOut = false
+		def secondCondition = createMockAsyncAssert({return WAITING}, null, null, {->isSecondConditionTimedOut = true})
+
+		testee.registerAsyncCondition(firstCondition)
+		testee.registerAsyncCondition(secondCondition)
+		
+		testee.stopTicking()
+		
+		assertTrue(isFirstConditionTimedOut)
+		assertTrue(isSecondConditionTimedOut)
+	}
 	
+	@Test
+	void testStopTickingOnlyTimesoutRemainingAsyncConditionsInWaitingState()
+	{
+		def isPassedConditionTimedOut = false
+		def passedCondition = createMockAsyncAssert({return PASSED}, null, null, {->isPassedConditionTimedOut = true})
+		
+		def isFailedConditionTimedOut = false
+		def failedCondition = createMockAsyncAssert({return FAILED}, null, null, {->isFailedConditionTimedOut = true})
+		
+		def isWaitingConditionTimedOut = false
+		def waitingCondition = createMockAsyncAssert({return WAITING}, null, null, {->isWaitingConditionTimedOut = true})
+
+		def isCreatedConditionTimedOut = false
+		def createdCondition = createMockAsyncAssert({return CREATED}, null, null, {->isCreatedConditionTimedOut = true})
+
+		testee.registerAsyncCondition(passedCondition)
+		testee.registerAsyncCondition(failedCondition)
+		testee.registerAsyncCondition(waitingCondition)
+		testee.registerAsyncCondition(createdCondition)
+		
+		testee.stopTicking()
+		
+		assertFalse(isPassedConditionTimedOut)
+		assertFalse(isFailedConditionTimedOut)
+		assertTrue(isWaitingConditionTimedOut)
+		assertFalse(isCreatedConditionTimedOut)
+	}
+
 	@Test
 	void testMaxConditionTimeout_isZeroForNoRegisteredAsyncConditions()
 	{
@@ -138,9 +184,9 @@ class AsyncConditionManagerTest
 	void testMaxTimeout_returnsMaxTimeoutOfOnlyWaitingConditions()
 	{
 		addAsyncCondition(2, CREATED)
-		addAsyncCondition(3, TIMED_OUT)
+		addAsyncCondition(3, PASSED)
 		addAsyncCondition(1, WAITING)
-		addAsyncCondition(4, MATCHED)
+		addAsyncCondition(4, FAILED)
 		
 		assertEquals(4, testee.registeredAsyncConditionsCount)
 		assertEquals(1, testee.maxConditionTimeout)
@@ -151,16 +197,22 @@ class AsyncConditionManagerTest
 		def condition =  new AssertAsyncEqualsRunResult(null, timeout, null, null)
 		condition.registerWithManager(testee)
 		condition.state = state
+		
+		return condition
 	}
 	
-	private def createMockAsyncAssert(getStateClosure, onTickClosure, checkUpdateClosure)
+	private def createMockAsyncAssert(getStateClosure, onTickClosure, checkUpdateClosure, timedOutClosure = null)
 	{
+		def defaultTimedOutClosure = {->println "timedOut called for async condition"}
+		
 		def mockAsyncAssert = new StubFor(AssertAsyncEqualsRunResult)
 		mockAsyncAssert.with 
 		{
 			demand.getState(0..5, getStateClosure)
+			demand.setState(0..5, {newState->println "setState called, new state [${newState}]"})
 			demand.onTick(0..5, onTickClosure)
-			demand.checkUpdate(0..5, checkUpdateClosure) 
+			demand.checkUpdate(0..5, checkUpdateClosure)
+			demand.timedOut(0..5, timedOutClosure == null? defaultTimedOutClosure: timedOutClosure) 
 		}
 
 		def result
