@@ -43,12 +43,31 @@ public class ClientInstance implements ClientApi
 	{
 		logInfo("Initialising instance for host ["+host+"] server ["+server+"]");
 		boolean initialised = client.init(host, server);
+		
+		sleepToAllowOpcServerToBuildAddressSpace(10);
 
 		opcAddressSpace.clear();
 		opcAddressSpace.addAll(client.getItemNames());
 		logInfo("Retrieved opc server address space, ["+opcAddressSpace.size()+"] items");
 		
 		return initialised && !opcAddressSpace.isEmpty();
+	}
+
+	private void sleepToAllowOpcServerToBuildAddressSpace(final int durationSecs) {
+		try 
+		{
+			logInfo("Sleeping for ["+durationSecs+"] seconds to allow OPC Server to build address space...");
+			for(int i=0; i<durationSecs; i++)
+			{
+				logInfo((i%2==0?"tick":"tock"));
+				Thread.sleep(1000);
+			}
+			logInfo("OK, ready for business");
+		} 
+		catch (InterruptedException e) 
+		{
+			throw new RuntimeException("Failed to wait for OPC Server to start up");
+		}
 	}
 
 	@Override

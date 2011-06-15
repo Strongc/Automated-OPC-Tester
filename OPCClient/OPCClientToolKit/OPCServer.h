@@ -86,6 +86,13 @@ private:
 		return iOpcProperties;
 	}
 
+	std::string COPCServer::narrow(const WCHAR* utf8String) const;
+
+	void browseNamespace(CAtlArray<CAtlString>* opcItemNames);	
+	void browseFlatNamespace(CAtlArray<CAtlString>* opcItemNames);
+	void browseBranch(WCHAR* branchName, CAtlArray<CAtlString>* opcItemNames);
+	void browseLeaves(WCHAR* branchName, CAtlArray<CAtlString>* opcItemNames);
+
 public:
 
 	/**
