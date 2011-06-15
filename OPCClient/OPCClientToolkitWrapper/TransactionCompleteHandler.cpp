@@ -19,11 +19,7 @@ TransactionCompleteHandler::~TransactionCompleteHandler(void)
 
 void TransactionCompleteHandler::complete(CTransaction &transaction)
 {
-	char idBuff[64];
-	memset(idBuff, 64, 0);
-	sprintf_s(idBuff, 64, "%d", transaction.getCancelId());
-
-	log_NOTICE("complete called, affected items count [", pantheios::integer(transaction.opcData.GetCount()),"] trs id [", idBuff,"]");
+	log_NOTICE("complete called, affected items count [", pantheios::integer(transaction.opcData.GetCount()),"] trs id [",pantheios::integer(transaction.getCancelId()),"]");
 
 	for(POSITION pos = transaction.opcData.GetStartPosition(); pos != NULL; )
 	{

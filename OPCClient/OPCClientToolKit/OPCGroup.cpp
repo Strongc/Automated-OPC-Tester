@@ -22,8 +22,10 @@ Boston, MA  02111-1307, USA.
 #include "OPCGroup.h"
 #include "OPCItem.h"
 
+#include <pantheios/pantheios.hpp>
+#include <pantheios/inserters/integer.hpp>
 
-
+using namespace pantheios;
 
 
 /**
@@ -97,6 +99,7 @@ public:
 		VARIANT * values, WORD * quality, FILETIME  * time,
 		HRESULT * errors)
 	{
+		log_NOTICE("CAsynchDataCallback.OnDataChange called, trans id [",pantheios::integer(Transid),"]");
 		IAsynchDataCallback * usrHandler = callbacksGroup.getUsrAsynchHandler();
 
 		if (Transid != 0){

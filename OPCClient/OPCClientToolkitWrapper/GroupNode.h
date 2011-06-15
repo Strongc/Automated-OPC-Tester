@@ -51,8 +51,8 @@ struct GroupNode
 						if(isAsync)
 						{
 							log_NOTICE("starting async write");
-							pItem->writeAsynch(varValue, &transactionHandler);
-							log_NOTICE("completed async write");
+							CTransaction* pTransaction = pItem->writeAsynch(varValue, &transactionHandler);
+							log_NOTICE("completed async write: item [",pItemName,"] transaction id [",pantheios::integer(pTransaction->getCancelId()),"]");
 						}
 						else
 						{
