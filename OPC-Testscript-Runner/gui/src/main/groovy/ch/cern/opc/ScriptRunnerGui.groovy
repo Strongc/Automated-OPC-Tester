@@ -26,6 +26,9 @@ class ScriptRunnerGui
 	private def outputTextArea
 	private def resultsTree = new ResultsTree()
 	
+	private def exportScriptResultXmlFile = null
+	private def scriptResultXml = null
+	
 	def show()
 	{
 		mainFrame = builder.frame(title:'OPC Script Runner', defaultCloseOperation:JFrame.EXIT_ON_CLOSE, pack:true, show:true, JMenuBar:menu()) {
@@ -48,6 +51,7 @@ class ScriptRunnerGui
 			{
 				menuItem(text:'Open Script', mnemonic:'O', actionPerformed:{openScript()})
 				menuItem(text:'Run Script', mnemonic:'R', actionPerformed:{runScript()})
+				menuItem(text:'Export Script Result (XML)', mnemonic:'E', actionPerformed:{exportScriptResultXml()})
 			}
 		}
 	}
@@ -89,6 +93,7 @@ class ScriptRunnerGui
 	private def runScript()
 	{
 		outputTextArea.text = ''
+		scriptResultXml = null
 		
 		if(scriptFile == null)
 		{
@@ -102,9 +107,36 @@ class ScriptRunnerGui
 		def thread = Thread.start{
 			resultsTree.clearResults()
 			resultsTree.initTree()
-			def results = new ScriptRunner().runScript(scriptFile, resultsTree)
-			println(results)
-			//resultsTree.addResults(results)
+			scriptResultXml = new ScriptRunner().runScript(scriptFile, resultsTree)
+			println(scriptResultXml)
 		}
+	}
+	
+	private def exportScriptResultXml()
+	{
+		if(scriptResultXml == null)
+		{
+			scriptTextArea.text = 'no results to export...'
+			return
+		}
+		else
+		{
+			def currentDirectory = (exportScriptResultXmlFile != null? new File(exportScriptResultXmlFile.parent): null)
+			def scriptResultChooser = builder.fileChooser(id:'fileChooser', fileSelectionMode: FILES_ONLY, currentDirectory: currentDirectory)
+			
+			if(scriptResultChooser.showSaveDialog(mainFrame) == APPROVE_OPTION)
+			{
+				exportScriptResultXmlFile = scriptResultChooser.selectedFile
+				logInfo("Exporting script results (XML) to [${exportScriptResultXmlFile.path}}]")
+				
+				new File(exportScriptResultXmlFile.path).with 
+				{
+					append("\n<!--script runner results for script [${scriptFile.path}] -->\n\n")
+					append(scriptResultXml)
+				}
+			}
+	
+		}
+		
 	}
 }
