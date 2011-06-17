@@ -1,0 +1,76 @@
+<?xml version = '1.0'?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>OPC DA Client Toolkit</name>
+    <groupId>cern.opc</groupId>
+    <artifactId>opc-da-client-toolkit</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>nar</packaging>
+
+    <description>OPC DA Client library (Static library)</description>
+
+    <dependencies>
+
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-nar-plugin</artifactId>
+                <version>2.1-SNAPSHOT</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <libraries>
+                        <library>
+                            <type>static</type>
+                        </library>
+                    </libraries>
+                            <c>
+                            </c>
+                            <cpp>
+                                <clearDefaultOptions>true</clearDefaultOptions>
+ 
+
+                                <defines>
+                                    <define>WIN32</define>
+                                    <define>NDEBUG</define>
+                                    <define>_WIN32_DCOM</define>
+                                    <define>_LIB</define>
+                                    <define>_MBCS</define>
+                                </defines>
+                                <options>
+                                    <option>/nologo</option>
+                                    <option>/FD</option>
+                                    <option>/MD</option>
+                                    <option>/EHsc</option>
+                                    <option>/ZI</option>
+                                    <option>/Od</option>
+                                    <option>/W3</option>
+                                    <option>/ZI</option>
+                                    <option>/TP</option>
+                                    <option>/c</option>
+                                    <option>/IC:\3rdParty\CPP\pantheios-1.0.1-beta196\include</option>
+                                    <option>/IC:\3rdParty\CPP\stlsoft-1.9.98\include</option>
+                                </options>
+                            </cpp>
+                            <linker>
+                                <clearDefaultOptions>true</clearDefaultOptions>
+                                <options>
+                                  <option>/LIBPATH:"C:/3rdParty/CPP/pantheios-1.0.1-beta196/lib"</option>
+                                </options>
+                                  
+                                <sysLibs>
+                                    <sysLib><name>wsock32</name></sysLib>
+                                </sysLibs>
+                            </linker>
+
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>
+

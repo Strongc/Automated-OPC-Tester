@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)src\main\include&quot;;&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)/include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_WIN32_DCOM"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -107,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)src\main\include&quot;;&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_WIN32_DCOM"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -154,112 +154,122 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\OPCClient.cpp"
+			<Filter
+				Name="c"
 				>
-			</File>
-			<File
-				RelativePath=".\opccomn_i.c"
+				<File
+					RelativePath=".\src\main\c\opccomn_i.c"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\c\opcda_i.c"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\c\OpcEnum_i.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\opcda_i.c"
+				<File
+					RelativePath=".\src\main\cpp\OPCClient.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\OPCGroup.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\OPCHost.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\OPCItem.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\OPCItemData.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\OPCProperties.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\OPCServer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\Pantheios_implicit_link.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\stdafx.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\cpp\Transaction.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="include"
 				>
-			</File>
-			<File
-				RelativePath=".\OpcEnum_i.c"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCGroup.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCHost.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCItem.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCItemData.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCProperties.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCServer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Pantheios_implicit_link.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Transaction.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-			<File
-				RelativePath=".\OPCClient.h"
-				>
-			</File>
-			<File
-				RelativePath=".\opccomn.h"
-				>
-			</File>
-			<File
-				RelativePath=".\opcda.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OpcEnum.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCGroup.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCHost.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCItem.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCItemData.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCProperties.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OPCServer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Transaction.h"
-				>
-			</File>
+				<File
+					RelativePath=".\src\main\include\OPCClient.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OPCClientToolKitDLL.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\opccomn.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\opcda.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OpcEnum.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OPCGroup.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OPCHost.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OPCItem.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OPCItemData.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OPCProperties.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\OPCServer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\stdafx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\main\include\Transaction.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
