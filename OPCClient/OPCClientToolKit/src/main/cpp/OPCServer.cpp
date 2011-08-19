@@ -140,7 +140,7 @@ void COPCServer::browseBranch(WCHAR* branchName, CAtlArray<CAtlString>* opcItemN
 {
 	USES_CONVERSION; 	
 
-	log_NOTICE("browsing branch [", narrow(branchName),"]");
+	log_NOTICE("browsing branch [", narrow(branchName),"], changing browse position to [", narrow(branchName),"] direction [DOWN]");
 	iOpcNamespace->ChangeBrowsePosition(OPC_BROWSE_DOWN, branchName); 
     
 	browseLeaves(branchName, opcItemNames);
@@ -162,7 +162,8 @@ void COPCServer::browseBranch(WCHAR* branchName, CAtlArray<CAtlString>* opcItemN
 		browseBranch(str, opcItemNames);		
 	} 
 
-	iOpcNamespace->ChangeBrowsePosition(OPC_BROWSE_UP, branchName); 
+	log_NOTICE("branch browsed, browsing up - direction [UP]");
+	iOpcNamespace->ChangeBrowsePosition(OPC_BROWSE_UP, emptyString);
 }
 
 
