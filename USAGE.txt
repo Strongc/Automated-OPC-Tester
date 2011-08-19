@@ -1,0 +1,27 @@
+The script runner consists of 2 main components:
+a) The script runner gui and logic for executing scripts. This is contained in file 'gui-0.1-jar-with-dependencies.jar'
+b) The OPC client dll (which is driven by the script runner). This is contained in file 'AutomatedOpcTester.dll'
+
+
+Before running the script runner please ensure:
+a) Both gui-0.1-jar-with-dependencies.jar and AutomatedOpcTester.dll are in the same directory.
+b) That there does not exist another AutomatedOpcTester.dll on your machine.
+c) Ensure that you have a C:\temp directory - the OPC client dll logs to this directory (a new file on each run - these files can be deleted as you see fit)
+
+
+To run the script runner: 
+a) start a windows cmd window 
+b) cd to this directory (the directory containing the jar and dll file) 
+c) issue command 'start.bat' to run the script runner. The script runner GUI should appear, if not check your java installation. Any problems please send me the contents of the cmd window.
+
+
+Running scripts:
+a) Use the script runner gui: 'File>Open Script' to select the script (there is no presecribed directory for scripts - anywhere is fine).
+b) Use 'File>Run Script' to run the selected script.
+c) As the script runs the results of the assertions made within the script body appear in the tree control on the left pane. Green leaves indicate test assertions that were met, red indicate failed assertions, orange indicate assertions that have not been met yet (i.e. asynchronous assertions where the OPC item is given a specific time limit in which to achieve a value and the time limit has not been reached yet).
+d) (Optional) Once the script is complete you can export the results (displayed in the tree) to an XML file using 'File>Export Script Result (XML)'
+
+
+Logging:
+The script runner itself logs to a file called 'script_runner.log' in this directory
+The OPC client logs to files (called something like '2011_07_05___17_35_31___OPC-JNI-DLL.log' in C:\temp, a new file is created for each script run)
