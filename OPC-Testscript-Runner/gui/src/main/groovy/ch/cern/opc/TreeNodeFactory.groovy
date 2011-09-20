@@ -19,49 +19,6 @@ public class TreeNodeFactory extends DOMCategory
 	
 	private def xmlBuilder = DOMBuilder.newInstance()
 	
-	def createNodes(element)
-	{
-		use(DOMCategory)
-		{
-			def root = null
-			
-			def nodeCreationClosure
-			nodeCreationClosure = 
-			{parentTreeNode, xmlNode ->
-				def newNode
-				switch(xmlNode.name())
-				{
-					case TESTCASE_ELM:
-						newNode = createTestcaseNode(xmlNode)
-						break;
-					case EXCEPTION_ELM:
-						newNode = createExceptionNode(xmlNode)
-						break;
-					default:
-						newNode = new ResultTreeNode(xmlNode.name(), ResultTreeNodeColour.GREEN)
-						xmlNode.children().each
-						{xmlChildNode->
-							nodeCreationClosure(newNode, xmlChildNode)
-						}
-						break;
-				}
-
-				if(parentTreeNode == null)
-				{
-					root = newNode
-				}
-				else
-				{
-					parentTreeNode.add(newNode)
-				}
-			}
-			
-			nodeCreationClosure(root, element)
-
-			return root
-		}
-	}
-	
 	def createTestsuiteNode()
 	{
 		return new ResultTreeNode('testsuite', ResultTreeNodeColour.GREEN)
