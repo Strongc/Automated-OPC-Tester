@@ -157,41 +157,6 @@ class TreeNodeFactoryTest
 	}
 	
 	@Test
-	void testCreateNodes()
-	{
-		def xml = xmlBuilder.testsuites(name:'OPC Test Script Runner', tests:'2', failures:'1', disabled:'0', errors:'0', time:'0')
-		{
-			testsuite(name:'Tests', tests:'2', failures:'1', disabled:'0', errors:'0', time:'0')
-			{
-				testcase(name:'assertSomething, passed')
-				{
-					success(message:'good')
-				}
-				testcase(name:'assertSomethingElse, failure')
-				{
-					failure(message:'bad')
-				}
-				exception(message:'baaarf')
-				{
-					line(line:'exception line 1')
-					line(line:'exception line 2')
-					line(line:'exception line 3')
-				}
-			}
-		}
-		
-		def result = testee.createNodes(xml)
-		
-		assertEquals(1, getTreeNodeCountWithPattern(result, 'testsuites'))
-		assertEquals(1, getTreeNodeCountWithPattern(result, 'testsuite'))
-		assertEquals(1, getTreeNodeCountWithPattern(result, 'assertSomething, passed'))
-		assertEquals(1, getTreeNodeCountWithPattern(result, 'assertSomethingElse, failure'))
-		assertEquals(1, getTreeNodeCountWithPattern(result, 'message: bad'))
-		assertEquals(1, getTreeNodeCountWithPattern(result, 'exception message: [a-zA-Z\\ ]*'))
-		assertEquals(3, getTreeNodeCountWithPattern(result, 'exception line [0-9]'))
-	}
-	
-	@Test
 	void testCreateTestcaseNodeForIncompleteAsyncAssert()
 	{
 		def xml = xmlBuilder.testcase(name:'assertAsyncNotEquals')
