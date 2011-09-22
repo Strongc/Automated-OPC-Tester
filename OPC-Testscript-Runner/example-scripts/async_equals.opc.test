@@ -1,0 +1,38 @@
+init('', 'Matrikon.OPC.Simulation')
+
+logInfo('script demonstrates aysnchronous equals assertions being gradually satisified, tree control should update accordingly')
+
+// note all the sleeps below are for dramatic effect
+
+group('test.body').with
+{
+	def item = item('testGroup.myString')
+	
+	item.syncValue='xxx'
+	
+	def values = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
+	
+	values.each
+	{value ->
+		logInfo("creating asynchronous expectations for item [${item.path}] value [${value}]")	
+		item.assertAsyncEquals("expect [${item.path}] to have value [${value}]", 25, value)	
+		sleep(200)
+	}
+	
+	sleep(2000)
+	
+	while(!values.empty)
+	{
+		// choose random value
+		value = values.remove( randomInt(0, values.size()) )
+		
+		sleep(1250)
+		logInfo("setting item [${item.path}] to value [${value}]")	
+		item.syncValue = value
+	}
+}
+
+// sets the checker timeout for async assertions
+setPingPeriod(500)
+
+logInfo('end of script')

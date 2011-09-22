@@ -4,6 +4,39 @@ logInfo('script demonstrates aysnchronous writing then reading for an item')
 
 group('test_group').with
 {
+	for(i in 1..3)
+	{
+		item('testGroup.myBigFloat').with
+		{
+			syncValue = "${i}"
+			assertEquals("check big float is written correctly", i, syncValue)
+		}
+
+		item('testGroup.myBool').with		
+		{
+			def togglingBool = (i.mod(2) == 0)
+			syncValue = "${togglingBool}"
+			logInfo("boolean value read from OPCS is [${syncValue}]")
+			if(togglingBool)
+				assertTrue("check boolean is true")
+			else
+				assertFalse("check boolean is false")
+		}
+
+		item('testGroup.myString').with
+		{
+			syncValue = "${i}"
+			assertEquals("check string value is written correctly", i, syncValue)
+		}
+
+		item('testGroup.myShortInt').with
+		{
+			syncValue = "${i}"
+			assertEquals("check short int value is written correctly", i, syncValue)
+		}		
+	}
+
+
 	item('testGroup.myString').with
 	{
 		syncValue = 'b'
@@ -11,12 +44,14 @@ group('test_group').with
 		
 		assertAsyncEquals('checking async update value', 30, 'a')
 		
-		sleep(2500)		
+		sleep(5000)		
 		logInfo('setting value of opc item to [a] now')
 		syncValue = 'a'
 	}	
 	
 	
 }
+
+assertTrue('deliberate fail', false)
 
 logInfo('end of script')

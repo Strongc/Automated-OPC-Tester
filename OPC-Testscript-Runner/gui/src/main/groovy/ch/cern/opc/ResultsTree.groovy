@@ -35,8 +35,10 @@ class ResultsTree implements Observer
 	{
 		factory = new TreeNodeFactory()
 		
-		rootNode = new ResultTreeNode('root node', ResultTreeNodeColour.GREEN)
+		//rootNode = new ResultTreeNode('root node', ResultTreeNodeColour.GREEN)
+		rootNode = new RootNode()
 		treeModel = new DefaultTreeModel(rootNode)
+		rootNode.treeModel = treeModel
 		
 		tree = new JTree(treeModel)
 		tree.setEditable(true)
@@ -128,7 +130,7 @@ class ResultsTree implements Observer
 			return this
 		}
 		
-		private def getNodeColour(ResultTreeNode node)
+		private def getNodeColour(node)
 		{
 			if(containsNodesWithColour(node, ResultTreeNodeColour.RED))
 			{
@@ -143,7 +145,7 @@ class ResultsTree implements Observer
 			return Color.GREEN
 		}
 		
-		private def containsNodesWithColour(ResultTreeNode node, ResultTreeNodeColour targetColour)
+		private def containsNodesWithColour(node, ResultTreeNodeColour targetColour)
 		{
 			def colouredNodes = []
 			

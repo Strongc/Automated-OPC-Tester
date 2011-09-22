@@ -41,6 +41,8 @@ class ResultTreeNode extends DefaultMutableTreeNode implements Observer
 		SwingUtilities.invokeLater
 		{
 			new TreeNodeFactory().updateNode(this, newResult)
+			RootNode root = getRoot()
+			root.nodeChanged(this)
 		}
 
 	}

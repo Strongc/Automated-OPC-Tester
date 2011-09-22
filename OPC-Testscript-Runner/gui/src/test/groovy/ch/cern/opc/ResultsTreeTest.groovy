@@ -27,8 +27,8 @@ class ResultsTreeTest
 		
 		testee.update(null, createRunResult())
 		
-		// tiny sleep - swing adds nodes later. 
-		sleep 100
+		// tiny sleep - swing adds nodes in seperate thread. 
+		sleep 250
 		println testee
 		
 		assertEquals('expected to see test node and test message child node', countBefore+2, treeNodeCount)
@@ -42,8 +42,8 @@ class ResultsTreeTest
 		
 		testee.update(null, runResult)
 		
-		// tiny sleep - swing adds nodes later in another thread.
-		sleep 100
+		// tiny sleep - swing adds nodes in seperate thread. 
+		sleep 250
 		println testee
 		
 		assertEquals(1, runResult.countObservers())

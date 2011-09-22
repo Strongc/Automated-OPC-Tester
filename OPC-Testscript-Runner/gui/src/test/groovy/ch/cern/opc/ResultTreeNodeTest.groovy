@@ -10,17 +10,19 @@ class ResultTreeNodeTest
 {
 	def testee
 	def xmlBuilder;
+	def rootNode
 	
 	@Before
 	void setup()
 	{
 		xmlBuilder = DOMBuilder.newInstance()
+		rootNode = new RootNode()
 	}
 	
 	@Test
 	void testToString()
-	{
-		testee = new ResultTreeNode('my red node', ResultTreeNodeColour.RED)
+	{		
+		testee = createNodeOnRoot('my red node', ResultTreeNodeColour.RED)
 		assertEquals('my red node', testee.toString())
 		assertEquals(testee.colour, ResultTreeNodeColour.RED)
 	}
@@ -28,7 +30,7 @@ class ResultTreeNodeTest
 	@Test
 	void testSuccessUpdateXmlMessageFromRunResultChangesTreeNodeToGreen()
 	{
-		testee = new ResultTreeNode('async assert run tree node', ResultTreeNodeColour.ORANGE)
+		testee = createNodeOnRoot('async assert run tree node', ResultTreeNodeColour.ORANGE)
 		
 		def xml = xmlBuilder.testcase(name:'async assert run tree node')
 		{
@@ -44,7 +46,7 @@ class ResultTreeNodeTest
 	@Test
 	void testFailureUpdateXmlMessageFromRunResultChangesTreeNodeToRed()
 	{
-		testee = new ResultTreeNode('async assert run tree node', ResultTreeNodeColour.ORANGE)
+		testee = createNodeOnRoot('async assert run tree node', ResultTreeNodeColour.ORANGE)
 		
 		def xml = xmlBuilder.testcase(name:'async assert run tree node')
 		{
@@ -60,7 +62,7 @@ class ResultTreeNodeTest
 	@Test
 	void testSuccessUpdateXmlMessageFromRunResultChangesChildTreeNodeColourAndText()
 	{
-		testee = new ResultTreeNode('async assert run tree node', ResultTreeNodeColour.ORANGE)
+		testee = createNodeOnRoot('async assert run tree node', ResultTreeNodeColour.ORANGE)
 		testee.add(new ResultTreeNode('message: incomplete, waiting for update', ResultTreeNodeColour.ORANGE))
 		
 		def xml = xmlBuilder.testcase(name:'async assert run tree node')
@@ -81,7 +83,7 @@ class ResultTreeNodeTest
 	@Test
 	void testFailureUpdateXmlMessageFromRunResultChangesChildTreeNodeColourAndText()
 	{
-		testee = new ResultTreeNode('async assert run tree node', ResultTreeNodeColour.ORANGE)
+		testee = createNodeOnRoot('async assert run tree node', ResultTreeNodeColour.ORANGE)
 		testee.add(new ResultTreeNode('message: incomplete, waiting for update', ResultTreeNodeColour.ORANGE))
 		
 		def xml = xmlBuilder.testcase(name:'async assert run tree node')
@@ -98,5 +100,12 @@ class ResultTreeNodeTest
 			'message: I am asynchronous, I eventually failed',
 			testee.getChildAt(0).toString())
 	}
-
+	
+	def createNodeOnRoot(text, colour)
+	{
+		def node = new ResultTreeNode(text, colour)
+		rootNode.add(node)
+		
+		return node
+	}
 }
