@@ -173,11 +173,13 @@ void COPCServer::browseNamespace(CAtlArray<CAtlString>* opcItemNames)
    HRESULT result = iOpcNamespace->QueryOrganization(&nameSpaceType); 
 
    if (nameSpaceType == OPC_NS_FLAT) 
-   { 
+   {
+	   log_NOTICE("Browsing flat namespace");
 	   browseFlatNamespace(opcItemNames);
    } 
    else if (nameSpaceType == OPC_NS_HIERARCHIAL) 
    { 
+	   log_NOTICE("Browsing hierarchical namespace");
 	   browseBranch(emptyString/*root*/, opcItemNames);
    } 
 } 
