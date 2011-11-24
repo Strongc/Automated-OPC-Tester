@@ -7,8 +7,6 @@ import static ch.cern.opc.common.Log.*
 
 class AsyncUpdateHandler implements OPCDAAsyncUpdateCallback 
 {
-	private def monitor = new Object()
-	
 	final UpdateHandler genericHandler
 	
 	def AsyncUpdateHandler(UpdateHandler genericHandler)
