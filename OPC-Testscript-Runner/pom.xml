@@ -13,5 +13,7 @@
     <module>opc-common-dsl</module>
     <module>opc-da-dsl</module>
     <module>opc-ua-dsl</module>
+    <module>opc-ua-client</module>
+    <module>opc-ua-client-testdriver</module>
   </modules>
 </project>
