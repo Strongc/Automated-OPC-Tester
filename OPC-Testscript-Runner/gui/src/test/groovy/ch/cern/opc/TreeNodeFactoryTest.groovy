@@ -1,6 +1,6 @@
 package ch.cern.opc
 
-import ch.cern.opc.scriptRunner.results.RunResult
+import ch.cern.opc.dsl.common.results.RunResult
 
 import static org.junit.Assert.*
 import org.junit.Test

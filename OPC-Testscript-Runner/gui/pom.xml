@@ -33,6 +33,11 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.cern.opc</groupId>
+			<artifactId>opc-common-dsl</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.cern.opc</groupId>
 			<artifactId>opc-script-runner</artifactId>
 			<version>0.1</version>
 		</dependency> 

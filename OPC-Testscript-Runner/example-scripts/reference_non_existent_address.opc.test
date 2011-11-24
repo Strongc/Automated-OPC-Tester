@@ -1,0 +1,8 @@
+assertTrue("intialisation test", true)
+
+init('', 'Matrikon.OPC.Simulation')
+
+group('test.group').with
+{
+	def value = item('I.do.not.exist').syncValue
+}

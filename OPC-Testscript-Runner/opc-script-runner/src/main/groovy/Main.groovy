@@ -1,6 +1,5 @@
-import ch.cern.opc.scriptRunner.ScriptContext;
 import ch.cern.opc.scriptRunner.ScriptRunner
-import ch.cern.opc.client.ClientInstance
+import ch.cern.opc.client.OPCDAClientInstance
 import static ch.cern.opc.common.Log.*
 
 class Main 

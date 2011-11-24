@@ -10,7 +10,7 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.NativeLong;
 
-class Client implements ClientApi 
+class Client implements OPCDAClientApi 
 {
 	private final static String DLL_NM = "AutomatedOpcTester.dll"; 
 	private final static int MAX_BUFF_SZ = 1000;
@@ -37,6 +37,9 @@ class Client implements ClientApi
 	{
 		// disconnect client session
 		INSTANCE.end();
+		
+		// remove mapping from dll to class
+		Native.unregister(DllInterface.class);
 		
 		// drop DLL
 		NativeLibrary.getInstance(DLL_NM).dispose();
@@ -177,7 +180,7 @@ class Client implements ClientApi
 	}
 
 	@Override
-	public void registerAsyncUpdate(AsyncUpdateCallback callback) 
+	public void registerAsyncUpdate(OPCDAAsyncUpdateCallback callback) 
 	{
 		INSTANCE.registerAsyncUpdate(callback);
 	}

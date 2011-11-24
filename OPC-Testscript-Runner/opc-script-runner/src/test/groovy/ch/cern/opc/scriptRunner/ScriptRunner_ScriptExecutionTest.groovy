@@ -1,8 +1,9 @@
 package ch.cern.opc.scriptRunner
 
-import ch.cern.opc.client.ClientApi
-import ch.cern.opc.client.ClientInstance
-import ch.cern.opc.scriptRunner.results.ObservableRunResult
+import ch.cern.opc.client.OPCDAClientApi
+import ch.cern.opc.client.OPCDAClientInstance
+import ch.cern.opc.da.dsl.ScriptContext
+import ch.cern.opc.dsl.common.results.ObservableRunResult
 
 import static org.junit.Assert.*
 import org.junit.Test
@@ -33,9 +34,9 @@ class ScriptRunner_ScriptExecutionTest
 			destroy: {},
 			registerAsyncUpdate: {},
 			end:{}
-		] as ClientApi
+		] as OPCDAClientApi
 	
-		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
+		OPCDAClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
 		
 		file = new File('temp_script_file.txt')
 		

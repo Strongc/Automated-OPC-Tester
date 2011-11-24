@@ -1,8 +1,8 @@
 package ch.cern.opc.scriptRunner;
 import groovy.lang.Closure;
 
-import ch.cern.opc.client.ClientApi
-import static ch.cern.opc.client.ClientApi.State.*
+import ch.cern.opc.client.OPCDAClientApi
+import static ch.cern.opc.client.OPCDAClientApi.State.*
 import static groovy.lang.Closure.*
 
 import static org.junit.Assert.*;

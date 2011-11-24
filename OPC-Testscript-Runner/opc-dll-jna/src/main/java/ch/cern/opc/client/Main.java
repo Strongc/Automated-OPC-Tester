@@ -9,9 +9,9 @@ public class Main
     public static void main(String[] args) throws InterruptedException 
     {
     	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
-    	ClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
+    	OPCDAClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
     	
-    	ClientApi opcClient = ClientInstance.getInstance();
+    	OPCDAClientApi opcClient = OPCDAClientInstance.getInstance();
     	opcClient.init("", "Matrikon.OPC.Simulation");
     	
     	for(int i=0; i<1000; i++)
@@ -24,7 +24,7 @@ public class Main
     		
     		opcClient.destroyGroup(groupName);
 /*    	
-    	ClientInstance.getInstance().registerAsyncUpdate(new AsyncUpdateCallback() 
+    	OPCDAClientInstance.getInstance().registerAsyncUpdate(new OPCDAAsyncUpdateCallback() 
     	{
 			@Override
 			public int onUpdate(String itemPath, String value) 
@@ -34,17 +34,17 @@ public class Main
 			}
 		});
     	
-    	ClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
+    	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
     	
     	
     	for(int i=0; i<100; i++)
     	{
-    		ClientInstance.getInstance().writeItemAsync(GROUP_NM, "testGroup.myString", "loop_"+i);
+    		OPCDAClientInstance.getInstance().writeItemAsync(GROUP_NM, "testGroup.myString", "loop_"+i);
     		System.out.println("written async");
     		
     		Thread.sleep(500);
     		
-    		ClientInstance.getInstance().readItemAsync(GROUP_NM, "testGroup.myString");
+    		OPCDAClientInstance.getInstance().readItemAsync(GROUP_NM, "testGroup.myString");
     		System.out.println("read async");
     		
     		Thread.sleep(100);
@@ -58,7 +58,7 @@ public class Main
     
 	private static void readAndDisplayItemValue(String itemName) 
 	{
-		ClientApi opcClient = ClientInstance.getInstance();
+		OPCDAClientApi opcClient = OPCDAClientInstance.getInstance();
 		
 		opcClient.addItem(GROUP_NM, itemName);
     	String value = opcClient.readItemSync(GROUP_NM, itemName);

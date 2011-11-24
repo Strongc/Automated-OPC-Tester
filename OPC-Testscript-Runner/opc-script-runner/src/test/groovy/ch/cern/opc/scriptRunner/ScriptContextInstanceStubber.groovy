@@ -1,5 +1,7 @@
 package ch.cern.opc.scriptRunner
 
+import ch.cern.opc.da.dsl.ScriptContext
+
 class ScriptContextInstanceStubber 
 {
 	def static getInstance()

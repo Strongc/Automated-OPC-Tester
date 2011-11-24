@@ -29,7 +29,7 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.cern.opc</groupId>
-			<artifactId>opc-dll-jna</artifactId>
+			<artifactId>opc-da-dsl</artifactId>
 			<version>0.1</version>
 		</dependency> 	
 		<dependency>

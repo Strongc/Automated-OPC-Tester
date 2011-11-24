@@ -1,8 +1,10 @@
 package ch.cern.opc.scriptRunner
 
 import static ch.cern.opc.common.Log.*
+import ch.cern.opc.da.dsl.ScriptContext
 import org.w3c.dom.Element;
-import ch.cern.opc.client.ClientInstance
+
+import ch.cern.opc.client.OPCDAClientInstance
 
 class ScriptRunner 
 {
@@ -19,7 +21,7 @@ class ScriptRunner
 		}
 
 		runScriptClosure(scriptClosure, context)
-		ClientInstance.instance.end();
+		OPCDAClientInstance.instance.end();
 		
 		return context.XML
 	}

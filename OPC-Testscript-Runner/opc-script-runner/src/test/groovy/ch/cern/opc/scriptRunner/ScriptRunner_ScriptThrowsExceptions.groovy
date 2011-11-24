@@ -1,9 +1,8 @@
 package ch.cern.opc.scriptRunner;
 
-import ch.cern.opc.client.ClientApi
-import ch.cern.opc.client.ClientInstance
-import ch.cern.opc.scriptRunner.results.ExceptionRunResult;
 
+import ch.cern.opc.client.OPCDAClientApi
+import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.client.results.*
 
 import static org.junit.Assert.*;
@@ -24,9 +23,9 @@ class ScriptRunner_ScriptThrowsExceptions
 		def theClientInstance = [
 			registerAsyncUpdate: {},
 			end:{}
-		] as ClientApi
+		] as OPCDAClientApi
 	
-		ClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
+		OPCDAClientInstance.metaClass.'static'.getInstance = {-> return theClientInstance}
 		testee = new ScriptRunner()
 	}
 	
