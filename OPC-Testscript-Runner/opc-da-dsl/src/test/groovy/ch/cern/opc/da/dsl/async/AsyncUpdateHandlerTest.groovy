@@ -31,16 +31,15 @@ class AsyncUpdateHandlerTest
 				rcvdValue = value}
 			] as UpdateHandler;
 		
-		testee = new AsyncUpdateHandler(updateHandler)
-		
 		registeredHandlerForUpdatesFromDll = null
 		def theClientInstance = [
 			registerAsyncUpdate: {registeredHandler ->
 				registeredHandlerForUpdatesFromDll = registeredHandler
 			}
 		] as OPCDAClientApi
-		setSingletonStubInstance(OPCDAClientInstance, theClientInstance)
+		setSingletonStubInstance(OPCDAClientInstance.class, theClientInstance)
 		
+		testee = new AsyncUpdateHandler(updateHandler)
 	}
 	
 	@Test
