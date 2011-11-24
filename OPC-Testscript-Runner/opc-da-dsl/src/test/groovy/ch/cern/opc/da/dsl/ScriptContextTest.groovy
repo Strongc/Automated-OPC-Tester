@@ -5,7 +5,7 @@ import ch.cern.opc.client.OPCDAAsyncUpdateCallback;
 import ch.cern.opc.client.OPCDAClientApi
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.da.dsl.ScriptContext;
-import static ch.cern.opc.dsl.common.testing.utils.TestingUtilities.setSingletonStubInstance
+import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
 
 import static org.junit.Assert.*;
 import org.junit.Test;

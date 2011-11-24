@@ -1,6 +1,6 @@
-package ch.cern.opc.dsl.common.testing.utils
+package ch.cern.opc.da.dsl
 
-class TestingUtilities 
+abstract class TestingUtilities 
 {
 	static void setSingletonStubInstance(singletonClass, singletonInstance)
 	{

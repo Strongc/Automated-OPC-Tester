@@ -5,7 +5,7 @@ import ch.cern.opc.client.OPCDAClientApi
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.da.dsl.client.OPCDAClient;
 import ch.cern.opc.dsl.common.client.UpdateHandler
-import static ch.cern.opc.dsl.common.testing.utils.TestingUtilities.setSingletonStubInstance
+import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
 import org.junit.Test
 import org.junit.Before
 
