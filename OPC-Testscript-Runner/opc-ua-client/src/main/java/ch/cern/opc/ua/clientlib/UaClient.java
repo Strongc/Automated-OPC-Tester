@@ -7,6 +7,7 @@ import java.net.URI;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.opcfoundation.ua.application.Client;
+import org.opcfoundation.ua.builtintypes.DataValue;
 import org.opcfoundation.ua.common.ServiceFaultException;
 import org.opcfoundation.ua.common.ServiceResultException;
 import org.opcfoundation.ua.core.EndpointDescription;
@@ -14,6 +15,7 @@ import org.opcfoundation.ua.transport.security.Cert;
 import org.opcfoundation.ua.transport.security.KeyPair;
 import org.opcfoundation.ua.transport.security.PrivKey;
 
+import static ch.cern.opc.common.Log.logError;
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
 import ch.cern.opc.ua.clientlib.session.Session;
@@ -21,12 +23,13 @@ import ch.cern.opc.ua.clientlib.subscription.Subscription;
 import static ch.cern.opc.ua.clientlib.EndpointSummary.toEndpointSummaries;
 import static ch.cern.opc.ua.clientlib.EndpointSummary.matchEndpoint;
 
-public class UaClient 
+public class UaClient implements UaClientInterface 
 {
 	private final static Class<?>[] INVALID_DATA_TYPE = new Class<?>[0];
 	
 	private static UaClient instance = new UaClient();
-	public static UaClient instance() 
+	
+	public static UaClientInterface instance() 
 	{
 		return instance;
 	}
@@ -39,6 +42,10 @@ public class UaClient
 	{
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#setCertificate(java.io.File, java.io.File, java.lang.String)
+	 */
+	@Override
 	public void setCertificate(final File publicKeyFile, final File privateKeyFile, final String password)
 	{
 		if (publicKeyFile == null) throw new IllegalArgumentException("certificate must be non-null");
@@ -63,6 +70,10 @@ public class UaClient
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#getEndpoints(java.net.URI)
+	 */
+	@Override
 	public EndpointSummary[] getEndpoints(URI serverURI) throws IllegalStateException
 	{
 		endpoints = new EndpointDescription[]{};
@@ -83,6 +94,10 @@ public class UaClient
 		throw new IllegalStateException("Failed to connect to server at ["+serverURI+"]");
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#startSession(ch.cern.opc.ua.clientlib.EndpointSummary)
+	 */
+	@Override
 	public void startSession(final EndpointSummary endpoint)
 	{
 		System.out.println("starting session with endpoint:\n"+endpoint);
@@ -106,6 +121,10 @@ public class UaClient
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#stopSession()
+	 */
+	@Override
 	public void stopSession()
 	{
 		if(session != null)
@@ -119,6 +138,10 @@ public class UaClient
 		session = null;
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#browseNamespace()
+	 */
+	@Override
 	public String[] browseNamespace()
 	{
 		if(session != null)
@@ -129,6 +152,10 @@ public class UaClient
 		return new String[] {"Cannot browse namespace until a client/server session has been established"};
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#browseAddressspace()
+	 */
+	@Override
 	public AddressSpace browseAddressspace()
 	{
 		if(session != null)
@@ -139,17 +166,26 @@ public class UaClient
 		return null;
 	}
 
-	public String[] readNodeValue(final String nodeId)
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#readNodeValue(java.lang.String)
+	 */
+	@Override
+	public DataValue[] readNodeValue(final String nodeId)
 	{
 		if(session != null)
 		{
 			NodeDescription node = session.getAddressspace().findNodeById(nodeId);
 			return session.getReader().readNodeValue(node);
 		}
-		
-		return new String[]{"Failed to read node ["+nodeId+"] - session was not created"};
+
+		logError("Failed to read node ["+nodeId+"] - session was not created");
+		return new DataValue[]{};
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#readNodeDataTypes(java.lang.String)
+	 */
+	@Override
 	public Class<?>[] readNodeDataTypes(final String nodeId)
 	{
 		if(session == null)
@@ -174,6 +210,10 @@ public class UaClient
 		return node.getDataTypes();
 	}
 
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#writeNodeValue(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public boolean writeNodeValue(final String nodeId, String... values)
 	{
 		System.out.println("Writing to node ["+nodeId+"], values: "+ArrayUtils.toString(values));
@@ -189,6 +229,10 @@ public class UaClient
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#startSubscription(java.lang.String)
+	 */
+	@Override
 	public boolean startSubscription(final String subscriptionName)
 	{
 		Subscription subscription = session.createSubscription(subscriptionName);
@@ -200,6 +244,10 @@ public class UaClient
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#monitorNodeValues(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public boolean monitorNodeValues(final String subscriptionName, final String... nodeIds)
 	{
 		final Subscription subscription = session.createSubscription(subscriptionName);
@@ -221,5 +269,14 @@ public class UaClient
 		System.out.println("Added ["+nodeIds.length+"] items to subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"], result ["+result+"]");
 		
 		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#getLastError()
+	 */
+	@Override
+	public String getLastError() 
+	{
+		return "getLastError not implemented yet in opc-ua client";
 	}
 }

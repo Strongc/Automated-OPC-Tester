@@ -20,13 +20,6 @@ class ToReadyState implements StateChanger
 			System.err.println("Failed to read server addressspace");
 			return ERROR;
 		}
-		
-		if(!session.startPublicationThread())
-		{
-			System.err.println("Failed to start publication handling thread");
-			return ERROR;
-		}
-		
 		return READY;
 	}
 

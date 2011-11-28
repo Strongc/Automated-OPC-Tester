@@ -47,6 +47,8 @@ class OPCDAClientTest
 		assertFalse(isCallbackRegistered)
 		
 		def handler = [onUpdate:{itemId, attributeId, value->println "handled update"}] as UpdateHandler
-		testee.updateHandler = handler 
+		testee.updateHandler = handler
+		
+		assertTrue(isCallbackRegistered) 
 	}
 }

@@ -21,3 +21,6 @@ Release
 
 # ignore VC++ test output
 test_detail.xml
+
+# ignore temporary certificate files
+*temporary*File.der

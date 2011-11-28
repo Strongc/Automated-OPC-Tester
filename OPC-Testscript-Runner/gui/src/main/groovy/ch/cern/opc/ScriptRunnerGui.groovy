@@ -107,9 +107,17 @@ class ScriptRunnerGui
 		def thread = Thread.start{
 			resultsTree.clearResults()
 			resultsTree.initTree()
-			scriptResultXml = new ScriptRunner().runScript(scriptFile, resultsTree)
+			scriptResultXml = new ScriptRunner().runScript(
+				scriptFile, 
+				resultsTree, 
+				isOPCUAScript(scriptFile.path))
 			println(scriptResultXml)
 		}
+	}
+	
+	protected def isOPCUAScript(def scriptFilePath)
+	{
+		return (scriptFilePath == null? false: scriptFilePath.contains('opcua.test'))
 	}
 	
 	private def exportScriptResultXml()

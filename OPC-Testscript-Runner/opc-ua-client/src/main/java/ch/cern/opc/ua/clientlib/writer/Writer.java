@@ -173,7 +173,7 @@ public class Writer
 		if (clazz.equals(Integer.class))
 			return Integer.valueOf(value);
 		if (clazz.equals(UnsignedInteger.class))
-			return null;
+			return UnsignedInteger.parseUnsignedInteger(value);
 		if (clazz.equals(Long.class))
 			return null;
 		if (clazz.equals(UnsignedLong.class))

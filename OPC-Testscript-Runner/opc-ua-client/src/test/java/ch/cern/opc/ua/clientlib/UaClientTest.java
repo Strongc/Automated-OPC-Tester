@@ -1,12 +1,12 @@
 package ch.cern.opc.ua.clientlib;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class UaClientTest
 		}
 	}
 	
-	private UaClient testee;
+	private UaClientInterface testee;
 	
 	@Before
 	public void setup()
@@ -68,20 +68,10 @@ public class UaClientTest
 		
 		assertNotNull(testee.getEndpoints(new URI("opc.tcp://I_do_no_exist:69/")));
 	}
-/*	
+	
 	@Test
-	public void testGetEndpoints_ForWorkingServer() throws URISyntaxException
+	public void testGetLastError()
 	{
-		testee.setCertificate(PUBLIC_CERTIFICATE, PRIVATE_KEY, password);
-		
-		EndpointDescription[] endpoints = testee.getEndpoints(new URL("opc.tcp://opc-ua-lnx:4880/"));
-		for(EndpointDescription endpoint: endpoints)
-		{
-			System.out.println(endpoint);
-		}
+		assertTrue(StringUtils.isNotEmpty(testee.getLastError()));
 	}
-*/	
-	
-	
-	
 }

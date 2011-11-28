@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.PropertyConfigurator;
+import org.opcfoundation.ua.builtintypes.DataValue;
 import org.opcfoundation.ua.core.EndpointDescription;
 
 import ch.cern.opc.ua.clientlib.EndpointSummary;
@@ -137,12 +138,12 @@ public class Connector
 	private static void readVariableValue(final String variableName) 
 	{
 		System.out.println("Attempting to read value of variable ["+variableName+"]");
-		final String[] values = UaClient.instance().readNodeValue(variableName);
+		DataValue[] values = UaClient.instance().readNodeValue(variableName);
 		
 		System.out.println("variable ["+variableName+"] has values...");
-		for(String value : values)
+		for(DataValue value : values)
 		{
-			System.out.println("\tvalue ["+value+"]");
+			System.out.println("\tvalue ["+value.getValue().toString()+"]");
 		}
 	}
 	

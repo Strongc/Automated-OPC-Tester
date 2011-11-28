@@ -42,11 +42,20 @@
             <version>0.1</version>
         </dependency>
         <dependency>
+            <groupId>ch.cern.opc</groupId>
+            <artifactId>opc-ua-client</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
-            <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opcfoundation</groupId>
+            <artifactId>ua-stack</artifactId>
+            <version>1.01.311.2</version>
+        </dependency>        
     </dependencies>
     <build>
         <sourceDirectory>src/main/groovy</sourceDirectory>

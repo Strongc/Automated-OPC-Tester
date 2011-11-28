@@ -2,10 +2,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.cern.opc</groupId>
     <artifactId>opc-ua-client</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
     <name>opc-ua-client</name>
-    <url>http://maven.apache.org</url>
     <parent>
         <artifactId>opc-test-app</artifactId>
         <groupId>opc.cern.ch</groupId>
@@ -25,6 +24,11 @@
             <groupId>org.opcfoundation</groupId>
             <artifactId>ua-stack</artifactId>
             <version>1.01.311.2</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cern.opc</groupId>
+            <artifactId>common</artifactId>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>

@@ -1,7 +1,6 @@
 package ch.cern.opc.scriptRunner
 
 import static ch.cern.opc.common.Log.*
-import ch.cern.opc.da.dsl.ScriptContext
 import org.w3c.dom.Element;
 
 import ch.cern.opc.client.OPCDAClientInstance
@@ -10,11 +9,11 @@ class ScriptRunner
 {
 	private def context = null
 	
-	def Element runScript(scriptFile, resultsObserver = null)
+	def Element runScript(scriptFile, resultsObserver = null, isOPCUA = false)
 	{
 		def scriptClosure = Eval.me("{->\ntry{${scriptFile.text}}catch(e){addException(e);logError('exception thrown')}\n}")
 		
-		context = new ScriptContext()
+		context = getDSL(isOPCUA)
 		if(resultsObserver != null)
 		{
 			context.addObserver(resultsObserver)
@@ -36,5 +35,17 @@ class ScriptRunner
 		script.delegate.onScriptEnd()
 				
 		logInfo('finished running the script')
+	}
+	
+	private def getDSL(isOPCUA)
+	{
+		if(isOPCUA)
+		{
+			return new ch.cern.opc.ua.dsl.ScriptContext()
+		}
+		else
+		{
+			return new ch.cern.opc.da.dsl.ScriptContext()
+		}
 	}
 }

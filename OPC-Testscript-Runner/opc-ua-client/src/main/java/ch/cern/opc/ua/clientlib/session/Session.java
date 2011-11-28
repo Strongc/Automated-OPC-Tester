@@ -148,7 +148,9 @@ public class Session implements SubscriptionNotificationHandler
 	
 	public Subscription createSubscription(final String subscriptionId)
 	{
+		startPublicationThread();
 		Subscription subscription = new Subscription(channel);
+		
 		if(subscription.isCreated())
 		{
 			addToSubscriptionMap(subscriptionId, subscription);
