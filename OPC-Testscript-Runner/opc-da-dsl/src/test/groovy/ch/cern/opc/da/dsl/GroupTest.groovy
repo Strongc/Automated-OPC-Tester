@@ -63,7 +63,8 @@ class GroupTest
 			},
 			getItemNames:{
 				return OPC_ADDRESS_SPACE
-			}
+			},
+			registerAsyncUpdate:{}
 		] as OPCDAClientApi
 	
 		setSingletonStubInstance(OPCDAClientInstance, theClientInstance)
