@@ -24,6 +24,7 @@ class ScriptRunnerGui
 	private def scriptFile
 	private def scriptTextArea
 	private def outputTextArea
+	private def scriptIsRunning = false
 	private def resultsTree = new ResultsTree()
 	
 	private def exportScriptResultXmlFile = null
@@ -75,6 +76,12 @@ class ScriptRunnerGui
 	
 	private def openScript()
 	{
+		if(scriptIsRunning)
+		{
+			logError("Cannot open new script, script [${scriptFile.path}] is running - wait until it completes")
+			return
+		}
+
 		def currentDirectory = (scriptFile != null? new File(scriptFile.parent): null) 
 		def scriptChooser = builder.fileChooser(id:'fileChooser', fileSelectionMode: FILES_ONLY, currentDirectory: currentDirectory)
 		
@@ -92,6 +99,12 @@ class ScriptRunnerGui
 	
 	private def runScript()
 	{
+		if(scriptIsRunning)
+		{
+			logError("Cannot start new script run, script [${scriptFile.path}] is running - wait until it completes")
+			return
+		}
+		
 		outputTextArea.text = ''
 		scriptResultXml = null
 		
@@ -104,13 +117,16 @@ class ScriptRunnerGui
 		showScript(scriptFile)
 		Log.setTextComponent(outputTextArea)
 		
+		scriptIsRunning = true
+		
 		def thread = Thread.start{
 			resultsTree.clearResults()
 			resultsTree.initTree()
 			scriptResultXml = new ScriptRunner().runScript(
 				scriptFile, 
 				resultsTree, 
-				isOPCUAScript(scriptFile.path))
+				isOPCUAScript(scriptFile.path),
+				scriptIsRunning)
 			println(scriptResultXml)
 		}
 	}
@@ -122,6 +138,12 @@ class ScriptRunnerGui
 	
 	private def exportScriptResultXml()
 	{
+		if(scriptIsRunning)
+		{
+			logError("Cannot export script results, script [${scriptFile.path}] is still running - wait until it completes")
+			return
+		}
+
 		if(scriptResultXml == null)
 		{
 			scriptTextArea.text = 'no results to export...'

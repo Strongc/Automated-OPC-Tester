@@ -33,6 +33,6 @@ group('test.body').with
 }
 
 // sets the checker timeout for async assertions
-setPingPeriod(500)
+setPingPeriod(1)
 
 logInfo('end of script')

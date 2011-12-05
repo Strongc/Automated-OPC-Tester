@@ -7,7 +7,7 @@ class ScriptRunner
 {
 	private def context = null
 	
-	def Element runScript(scriptFile, resultsObserver = null, isOPCUA = false)
+	def Element runScript(scriptFile, resultsObserver = null, isOPCUA = false, scriptIsRunning = true)
 	{
 		def scriptClosure = Eval.me("{->\ntry{${scriptFile.text}}catch(e){addException(e);logError('exception thrown')}\n}")
 		
@@ -18,6 +18,9 @@ class ScriptRunner
 		}
 
 		runScriptClosure(scriptClosure, context)
+		
+		// nope - it's finished
+		scriptIsRunning = false
 		
 		return context.XML
 	}
