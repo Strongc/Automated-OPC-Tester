@@ -1,14 +1,13 @@
 package ch.cern.opc.dsl.common.async
 
-import ch.cern.opc.dsl.common.results.RunResult;
-import ch.cern.opc.dsl.common.results.ObservableRunResult;
+import ch.cern.opc.dsl.common.results.RunResult
+import ch.cern.opc.dsl.common.results.ObservableRunResult
 import groovy.xml.DOMBuilder
+import static ch.cern.opc.dsl.common.async.AsyncState.*
 
 abstract class AssertAsyncRunResult extends ObservableRunResult implements AsyncRunResult 
 {
-	public static enum ASYNC_STATE {CREATED, WAITING, PASSED, FAILED}
-	
-	private ASYNC_STATE state = ASYNC_STATE.CREATED
+	private AsyncState state = CREATED
 	protected def elapsedWait = 0
 	
 	protected final def timeout
@@ -55,7 +54,7 @@ abstract class AssertAsyncRunResult extends ObservableRunResult implements Async
 	
 	protected def registerWithManager(def manager)
 	{
-		state = ASYNC_STATE.WAITING
+		state = WAITING
 		manager.registerAsyncCondition(this)
 	}
 }

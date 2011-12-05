@@ -16,19 +16,19 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		cout << "[DLL_PROCESS_ATTACH]";
+		cout << "[DLL_PROCESS_ATTACH]" << endl;
 		break;
 	case DLL_THREAD_ATTACH:
-		cout << "[DLL_THREAD_ATTACH]";
+		cout << "[DLL_THREAD_ATTACH]" << endl;
 		break;
 	case DLL_THREAD_DETACH:
-		cout << "[DLL_THREAD_DETACH]";
+		cout << "[DLL_THREAD_DETACH]" << endl;
 		break;
 	case DLL_PROCESS_DETACH:
-		cout << "[DLL_PROCESS_DETACH]";
+		cout << "[DLL_PROCESS_DETACH]" << endl;
 		break;
 	default:
-		cout << "[!Unknown!]";
+		cout << "[!Unknown!]" << endl;
 		break;
 	}
 

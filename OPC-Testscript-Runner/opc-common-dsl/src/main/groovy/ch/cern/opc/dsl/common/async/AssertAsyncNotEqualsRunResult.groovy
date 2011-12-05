@@ -4,6 +4,7 @@ import org.apache.commons.lang.NotImplementedException
 
 import ch.cern.opc.dsl.common.results.RunResult
 import static ch.cern.opc.dsl.common.results.RunResultUtil.formatMessage
+import static ch.cern.opc.dsl.common.async.AsyncState.*
 
 class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 {
@@ -25,19 +26,19 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 		
 		switch(state)
 		{
-			case ASYNC_STATE.FAILED:
+			case FAILED:
 				element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 				{
 					failure(message:"item [${itemPath}] matched anti-expected value [${antiExpectedValue}] in [${elapsedWait}] seconds")
 				}
 				break;
-			case ASYNC_STATE.PASSED:
+			case PASSED:
 				element = xmlBuilder.testcase(name:"${TITLE} success: ${message}")
 				{
 					success(message:"item [${itemPath}] did not match anti-expected value [${antiExpectedValue}] in [${elapsedWait}] seconds")
 				}
 				break;
-			case ASYNC_STATE.WAITING:
+			case WAITING:
 				element = xmlBuilder.testcase(name:"${TITLE} incomplete: ${message}")
 				{
 					incomplete(message:"item [${itemPath}] still waiting,  anti-expected value [${antiExpectedValue}], elapsed wait [${elapsedWait}] seconds")
@@ -52,7 +53,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 	@Override
 	def timedOut()
 	{
-		state = ASYNC_STATE.PASSED
+		state = PASSED
 	}
 	
 	@Override
@@ -62,7 +63,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 		{
 			if(antiExpectedValue.equals(actualValue))
 			{
-				state = ASYNC_STATE.FAILED
+				state = FAILED
 			}
 		}
 	}

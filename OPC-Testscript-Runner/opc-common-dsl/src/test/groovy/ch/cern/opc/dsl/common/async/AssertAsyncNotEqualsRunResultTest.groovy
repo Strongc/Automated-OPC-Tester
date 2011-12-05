@@ -4,16 +4,11 @@ import static org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult;
+import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult
+import static ch.cern.opc.dsl.common.async.AsyncState.*
 
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
-
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.CREATED as CREATED
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.WAITING as WAITING
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.PASSED as PASSED
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.FAILED as FAILED
-
 
 class AssertAsyncNotEqualsRunResultTest 
 {

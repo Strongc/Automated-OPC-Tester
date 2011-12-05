@@ -1,16 +1,12 @@
 package ch.cern.opc.dsl.common.async;
 
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.CREATED as CREATED
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.WAITING as WAITING
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.PASSED as PASSED
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.FAILED as FAILED
-
 import static org.junit.Assert.*;
 import org.junit.Test
 import org.junit.Before
 
-import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult;
-import ch.cern.opc.dsl.common.async.AsyncConditionManager;
+import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult
+import ch.cern.opc.dsl.common.async.AsyncConditionManager
+import static ch.cern.opc.dsl.common.async.AsyncState.*
 import groovy.mock.interceptor.*
 
 class AsyncConditionManagerTest 

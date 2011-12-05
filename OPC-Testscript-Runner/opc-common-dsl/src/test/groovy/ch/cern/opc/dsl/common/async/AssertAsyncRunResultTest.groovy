@@ -8,11 +8,7 @@ import org.junit.Before
 import ch.cern.opc.dsl.common.async.AssertAsyncRunResult;
 import ch.cern.opc.dsl.common.async.AsyncConditionManager;
 import groovy.mock.interceptor.*
-
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.CREATED as CREATED
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.WAITING as WAITING
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.PASSED as PASSED
-import static ch.cern.opc.dsl.common.async.AssertAsyncRunResult.ASYNC_STATE.FAILED as FAILED
+import static ch.cern.opc.dsl.common.async.AsyncState.*
 
 class AssertAsyncRunResultTest 
 {
