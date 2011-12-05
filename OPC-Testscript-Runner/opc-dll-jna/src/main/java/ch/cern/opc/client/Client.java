@@ -1,7 +1,6 @@
 package ch.cern.opc.client;
 
-import static ch.cern.opc.common.Log.logDebug;
-import static ch.cern.opc.common.Log.logError;
+import static ch.cern.opc.common.Log.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +34,8 @@ class Client implements OPCDAClientApi
 	@Override
 	public void end() 
 	{
+		logInfo("Client.end called");
+		
 		// disconnect client session
 		INSTANCE.end();
 		
@@ -42,8 +43,13 @@ class Client implements OPCDAClientApi
 		Native.unregister(DllInterface.class);
 		
 		// drop DLL
-		NativeLibrary.getInstance(DLL_NM).dispose();
+		NativeLibrary.getProcess().dispose();		
 		INSTANCE = null;
+		
+		// garbage collect the instance
+		
+		
+		logInfo("Client.end completed");
 	}
 
 	@Override
