@@ -23,4 +23,10 @@ class OPCDAClient implements Client
 		logInfo("OPCDA client - registering handler for asynchronous updates")
 		asyncHandler = new AsyncUpdateHandler(genericHandler)
 	}
+
+	@Override
+	public void cleanUp() 
+	{
+		OPCDAClientInstance.instance.end();
+	}
 }

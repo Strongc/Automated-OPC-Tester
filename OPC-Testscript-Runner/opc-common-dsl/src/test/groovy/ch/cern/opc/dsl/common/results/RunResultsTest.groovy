@@ -28,6 +28,7 @@ class RunResultsTest
 	
 	private def isUpdateHandlerRegistered = false
 	private def maxConditionTimeout = 10
+	private def isCleanUpCalled = false
 	
 	def testee
 	def client
@@ -35,10 +36,12 @@ class RunResultsTest
 	@Before
 	void setup()
 	{
+		isCleanUpCalled = false
 		
 		client = [
 			getLastError:{return 'last error from DLL'},
-			setUpdateHandler:{isUpdateHandlerRegistered = true}
+			setUpdateHandler:{isUpdateHandlerRegistered = true},
+			cleanUp:{isCleanUpCalled = true}
 			] as Client
 		
 		def stubAsyncManager = new StubFor(AsyncConditionManager)
@@ -88,6 +91,16 @@ class RunResultsTest
 		testee.assertEquals('should fail', 1.0, 2.0)
 		
 		assertEquals(7, testee.XML.getChildNodes().length)
+	}
+	
+	@Test
+	void testOnScriptEnd_CallsClientCleanUp()
+	{
+		assertFalse(isCleanUpCalled)
+		
+		testee.onScriptEnd()
+		
+		assertTrue(isCleanUpCalled)
 	}
 	
 	@Test

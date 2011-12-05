@@ -23,4 +23,10 @@ public interface Client
 	 * @param handler
 	 */
 	public void setUpdateHandler(UpdateHandler handler)
+	
+	/**
+	 * Deletes all client/server sessions etc. Cleaner as in
+	 * Leon the Professional.
+	 */
+	public void cleanUp();
 }

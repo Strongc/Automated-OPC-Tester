@@ -108,6 +108,9 @@ class RunResults extends Observable
 		asyncManager.stopTicking()
 		logInfo("stopped ticking, remaining conditions count [${asyncManager.registeredAsyncConditionsCount}]")
 		
+		logInfo("Cleaning up client connection")
+		client.cleanUp()
+		
 		logInfo('onScriptEnd complete')
 	}
 	

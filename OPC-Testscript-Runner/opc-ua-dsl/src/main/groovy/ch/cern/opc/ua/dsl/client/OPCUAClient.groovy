@@ -21,4 +21,11 @@ class OPCUAClient implements Client
 	{
 		logError("OPCUAClient.setUpdateHandler called with class [${handler.class.simpleName}] Async results handling not plumbed in yet")
 	}
+
+	@Override
+	public void cleanUp() 
+	{
+		logError("OPCUAClient.cleanup called - not plumbed in yet")
+		
+	}
 }

@@ -47,7 +47,7 @@ class Client implements OPCDAClientApi
 		INSTANCE = null;
 		
 		// garbage collect the instance
-		
+		Runtime.getRuntime().gc();
 		
 		logInfo("Client.end completed");
 	}
