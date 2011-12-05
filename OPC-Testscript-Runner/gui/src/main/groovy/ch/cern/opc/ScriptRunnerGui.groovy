@@ -6,6 +6,7 @@ import java.awt.*
 
 import ch.cern.opc.common.Log
 import ch.cern.opc.scriptRunner.ScriptRunner
+import ch.cern.opc.scriptRunner.OnCompleteCallback
 
 
 import javax.swing.tree.DefaultMutableTreeNode as TreeNode
@@ -17,7 +18,7 @@ import static javax.swing.JFileChooser.APPROVE_OPTION
 import static java.awt.Color.*
 import static ch.cern.opc.common.Log.*
 
-class ScriptRunnerGui 
+class ScriptRunnerGui implements OnCompleteCallback
 {
 	private def builder = new SwingBuilder()
 	private def mainFrame
@@ -29,6 +30,12 @@ class ScriptRunnerGui
 	
 	private def exportScriptResultXmlFile = null
 	private def scriptResultXml = null
+	
+	def ScriptRunnerGui(scriptFilePath)
+	{
+		println("ScriptRunnerGui created with [${scriptFilePath}]")
+		scriptFile = new File(scriptFilePath + '\\dummy.opc.test')
+	}
 	
 	def show()
 	{
@@ -83,6 +90,7 @@ class ScriptRunnerGui
 		}
 
 		def currentDirectory = (scriptFile != null? new File(scriptFile.parent): null) 
+		println("opening at directory [${currentDirectory}] parent of file [${scriptFile.path}]")
 		def scriptChooser = builder.fileChooser(id:'fileChooser', fileSelectionMode: FILES_ONLY, currentDirectory: currentDirectory)
 		
 		if(scriptChooser.showOpenDialog(mainFrame) == APPROVE_OPTION)
@@ -104,6 +112,7 @@ class ScriptRunnerGui
 			logError("Cannot start new script run, script [${scriptFile.path}] is running - wait until it completes")
 			return
 		}
+		scriptIsRunning = true
 		
 		outputTextArea.text = ''
 		scriptResultXml = null
@@ -117,8 +126,6 @@ class ScriptRunnerGui
 		showScript(scriptFile)
 		Log.setTextComponent(outputTextArea)
 		
-		scriptIsRunning = true
-		
 		def thread = Thread.start{
 			resultsTree.clearResults()
 			resultsTree.initTree()
@@ -126,7 +133,7 @@ class ScriptRunnerGui
 				scriptFile, 
 				resultsTree, 
 				isOPCUAScript(scriptFile.path),
-				scriptIsRunning)
+				this)
 			println(scriptResultXml)
 		}
 	}
@@ -168,5 +175,12 @@ class ScriptRunnerGui
 	
 		}
 		
+	}
+	
+	@Override
+	void onComplete()
+	{
+		logDebug("GUI - onComplete called")
+		this.scriptIsRunning = false
 	}
 }
