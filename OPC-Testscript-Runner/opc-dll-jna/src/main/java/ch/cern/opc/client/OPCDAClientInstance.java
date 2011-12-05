@@ -74,7 +74,12 @@ public class OPCDAClientInstance implements OPCDAClientApi
 	public void end() 
 	{
 		client.end();
+		client = null;
 		theInstance = null;
+		logInfo("Removed native client library instance");
+		
+		Runtime.getRuntime().gc();
+		logInfo("Requested garbage collector to clean unused native client library references");
 	}
 
 	@Override
