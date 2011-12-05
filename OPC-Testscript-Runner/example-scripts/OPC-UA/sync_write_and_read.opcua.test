@@ -6,25 +6,12 @@ logLevel('trace')
 
 logInfo('OPC testbench connected to target OPC Server')
 
-/*
-// create a group called 'my.group', add items and set their values synchronously using the groovy 'with' keyword
-group('my.group').with
-{
-	item('Bucket Brigade.Boolean').syncValue = '1'
-	item('Bucket Brigade.Int1').syncValue = '2'
-	item('Bucket Brigade.Real4').syncValue = '3.0'
-	item('Bucket Brigade.String').syncValue = 'four'
-	
-	logInfo("OPC group [${name}] created and all [${items.size()}] items written")
-}
-*/
-
 logInfo('writing value 1 now')
 node('ns=4;s=Counter1').syncValue = '1'
 logInfo('wrote value 1')
 
 def value = node('ns=4;s=Counter1').syncValue
-assertEquals('checking that the read following the write is good','7', value.value)
+assertEquals('checking that the read following the write is good','1', value.value)
 
 logInfo("node: value [${value.value}] server tm [${value.serverTimestamp}] source tm [${value.sourceTimestamp}] type [${value.type}]") 
 
