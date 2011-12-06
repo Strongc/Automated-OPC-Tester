@@ -4,5 +4,13 @@ init('', 'Matrikon.OPC.Simulation')
 
 group('test.group').with
 {
-	def value = item('I.do.not.exist').syncValue
+	// reads for invalid item addresses
+	def valueOne = item('I.do.not.exist').syncValue
+	def valueTwo = item('neither.do.I').syncValue
+	
+	logInfo("valueOne [${valueOne}] valueTwo [${valueTwo}]")
+	
+	// writes for invalid item addresses
+	item('I.do.not.exist').syncValue = "this should not work"
+	item('neither.do.I').asyncValue = "nor should this"
 }

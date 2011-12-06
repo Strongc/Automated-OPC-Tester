@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,13 +37,13 @@ public class LimitedSizeTextLoggerTest
 		
 		String msg = new String("1234567890");
 		testee.publish(msg);
-		snoozeThreadToAllowAsyncTextAreaUpdate();
+		snoozeThreadToAllowAsyncTextAreaUpdate(500);
 
 		assertEquals(msg.length()+1, getDocLength());
 	}
 	
 	@Test
-	public void testMultiplePublishInvocationsNeverAllowsDocumentLengthToBeGreaterThanMaxChars()
+	public void testMultiplePublishInvocationsNeverAllowsDocumentLengthToBeGreaterThanMaxChars() throws BadLocationException
 	{
 		String msg = new String("1234567890");
 		
@@ -51,20 +52,30 @@ public class LimitedSizeTextLoggerTest
 			testee.publish(msg);
 		}
 		
-		snoozeThreadToAllowAsyncTextAreaUpdate();
+		snoozeThreadToAllowAsyncTextAreaUpdate(500);
+		
 		assertTrue(getDocLength() <= MAX_CHARS);
 	}
 	
 	private int getDocLength()
 	{
-		return textArea.getDocument().getLength();
+		if(textArea != null)
+		{
+			if(textArea.getDocument() != null)
+			{
+				return textArea.getDocument().getLength();
+			}
+		}
+		
+		fail("programming error: failed to get doc length");
+		return -1;
 	}
 	
-	private void snoozeThreadToAllowAsyncTextAreaUpdate()
+	private void snoozeThreadToAllowAsyncTextAreaUpdate(int snoozeMs)
 	{
 		try 
 		{
-			Thread.sleep(100);
+			Thread.sleep(snoozeMs);
 		} 
 		catch (InterruptedException e) 
 		{

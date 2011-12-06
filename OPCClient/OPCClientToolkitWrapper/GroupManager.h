@@ -72,10 +72,16 @@ public:
 
 	bool AddItem(const char* pGroupName, const char* pItemAddress)
 	{
-		if(!IsValidItem(pItemAddress)) return false;
+		log_NOTICE("AddItem: called group [", pGroupName,"] item [",pItemAddress,"] called");
 
-		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
-		if(pGroupNode != NULL)
+		if(!IsValidItem(pItemAddress)) 
+		{
+			RecordError("AddItem: item [%s] was not found in address space", pItemAddress);
+			return false;
+		}
+
+		GroupNode* pGroupNode = NULL;
+		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
 		{
 			pGroupNode->AddItem(pItemAddress);
 			return true;
@@ -87,8 +93,10 @@ public:
 
 	bool ReadItemSync(const char* const pGroupName, const char* const pItemPath, char* pBuff, size_t szBuff)
 	{
-		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
-		if(pGroupNode != NULL)
+		log_NOTICE("ReadItemSync: called with group [", pGroupName,"] item [",pItemPath,"] called");
+
+		GroupNode* pGroupNode = NULL;
+		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
 		{
 			pGroupNode->ReadItemSync(pItemPath, pBuff, szBuff);
 
@@ -103,8 +111,10 @@ public:
 
 	bool WriteItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{
-		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
-		if(pGroupNode != NULL)
+		log_NOTICE("WriteItemSync: called with group [", pGroupName,"] item [",pItemPath,"] value [",pValue,"] called");
+
+		GroupNode* pGroupNode = NULL;
+		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
 		{
 			pGroupNode->WriteItemSync(pItemPath, pValue);
 
@@ -119,8 +129,9 @@ public:
 	bool ReadItemAsync(const char* const pGroupName, const char* const pItemPath)
 	{
 		log_NOTICE("ReadItemAsync: called with group [", pGroupName,"] item [",pItemPath,"] called");
-		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
-		if(pGroupNode != NULL)
+
+		GroupNode* pGroupNode = NULL;
+		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
 		{
 			pGroupNode->ReadItemAsync(pItemPath);
 
@@ -135,8 +146,9 @@ public:
 	bool WriteItemAsync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{
 		log_NOTICE("WriteItemAsync: called");
-		GroupNode* pGroupNode = m_groups[CString(pGroupName)];
-		if(pGroupNode != NULL)
+
+		GroupNode* pGroupNode = NULL;
+		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
 		{
 			log_NOTICE("WriteItemAsync: found group, writing...");
 			pGroupNode->WriteItemAsync(pItemPath, pValue);

@@ -37,8 +37,9 @@ struct GroupNode
 		bool WriteItem(const char* const pItemName, const char* const pValue, const bool isAsync)
 		{
 			log_NOTICE("writing item [", pItemName,"]");
-			COPCItem* pItem = m_items[CString(pItemName)];
-			if(pItem != NULL)
+
+			COPCItem* pItem = NULL;
+			if(m_items.Lookup(CString(pItemName), pItem))
 			{
 				log_NOTICE("got item [", pItemName,"]");
 				VARTYPE vt = m_itemsDataTypes[CString(pItemName)];
@@ -74,7 +75,10 @@ struct GroupNode
 		GroupNode(const char* const pGroupName, COPCGroup* pGroup):m_pGroupName(_strdup(pGroupName)), m_pGroup(pGroup)
 		{
 			m_items.InitHashTable(257);
+			m_items.RemoveAll();
+
 			m_itemsDataTypes.InitHashTable(257);
+			m_itemsDataTypes.RemoveAll();
 		};
 
 		virtual ~GroupNode()
@@ -100,11 +104,11 @@ struct GroupNode
 
 		bool ReadItemSync(const char* const pItemName, char* pBuff, size_t szBuff)
 		{
-			log_NOTICE("ReadItemSync: GroupNode [", m_pGroupName,"] reading item [", pItemName,"]");
+			log_NOTICE("ReadItemSync: GroupNode [", m_pGroupName,"] reading item [", pItemName,"] (total number of group items [",pantheios::integer(m_items.GetCount()),"])");
 			memset(pBuff, 0, szBuff);
 
-			COPCItem* pItem = m_items[CString(pItemName)];
-			if(pItem != NULL)
+			COPCItem* pItem = NULL;
+			if(m_items.Lookup(CString(pItemName), pItem))
 			{
 				log_NOTICE("ReadItemSync: GroupNode [", m_pGroupName,"] found item [", pItemName,"]");
 	  			OPCItemData data;
@@ -116,6 +120,7 @@ struct GroupNode
 			}
 
 			RecordError("ReadItemSync: failed to read item [%s]", pItemName);
+			sprintf_s(pBuff, szBuff, "ERROR: item [%s] not found in address space", pItemName);
 			return false;
 		}
 
@@ -123,8 +128,8 @@ struct GroupNode
 		{
 			log_NOTICE("ReadItemAsync: GroupNode [", m_pGroupName,"] reading item [", pItemName,"]");
 
-			COPCItem* pItem = m_items[CString(pItemName)];
-			if(pItem != NULL)
+			COPCItem* pItem = NULL;
+			if(m_items.Lookup(CString(pItemName), pItem))
 			{
 				log_NOTICE("ReadItemAsync: GroupNode [", m_pGroupName,"] found item [", pItemName,"]");
 				
