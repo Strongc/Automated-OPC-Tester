@@ -26,6 +26,7 @@ class ScriptContext
 	private static final boolean LOG_SETTINGS_LOADED = loadLog4jProperties('/log.properties');
 
 	def nodes = [:]
+	def subscriptions = [:]
 	
 	private static def instance
 	
@@ -63,6 +64,16 @@ class ScriptContext
 		}
 		
 		return nodes[id]
+	}
+	
+	def subscription(id)
+	{
+		if(subscriptions[id] == null)
+		{
+			subscriptions[id] = new Subscription(id)
+		}
+		
+		return subscriptions[id]
 	}
 	
 	private EndpointSummary[] getEndpoints(URI serverUri)

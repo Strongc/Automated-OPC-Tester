@@ -3,6 +3,7 @@ package ch.cern.opc.ua.clientlib.subscription;
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 
+import java.lang.management.MemoryNotificationInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,8 @@ import org.opcfoundation.ua.core.CreateMonitoredItemsRequest;
 import org.opcfoundation.ua.core.CreateMonitoredItemsResponse;
 import org.opcfoundation.ua.core.CreateSubscriptionRequest;
 import org.opcfoundation.ua.core.CreateSubscriptionResponse;
+import org.opcfoundation.ua.core.DeleteSubscriptionsRequest;
+import org.opcfoundation.ua.core.DeleteSubscriptionsResponse;
 import org.opcfoundation.ua.core.MonitoredItemCreateRequest;
 import org.opcfoundation.ua.core.MonitoringMode;
 import org.opcfoundation.ua.core.MonitoringParameters;
@@ -200,5 +203,35 @@ public class Subscription
 	public void onNotification(final SubscriptionNotification message)
 	{
 		System.out.println("Thread id ["+Thread.currentThread().getId()+"] updating subscription ["+getSubscriptionId()+"] with notification: "+message);
+	}
+
+	public boolean delete() 
+	{
+		if(!isCreated) return true;
+		
+		DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest();
+		request.setSubscriptionIds(new UnsignedInteger[]{subscriptionId});
+		
+		try 
+		{
+			DeleteSubscriptionsResponse response = channel.DeleteSubscriptions(request);
+			System.out.println(response);
+
+			if(response.getResponseHeader().getServiceResult().isGood())
+			{
+				isCreated = false;
+				return true;
+			}
+		} 
+		catch (ServiceFaultException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (ServiceResultException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 }

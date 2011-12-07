@@ -148,14 +148,21 @@ public class Session implements SubscriptionNotificationHandler
 	
 	public Subscription createSubscription(final String subscriptionId)
 	{
-		startPublicationThread();
-		Subscription subscription = new Subscription(channel);
-		
-		if(subscription.isCreated())
+		Subscription result = getSubscription(subscriptionId);
+		if(result != null)
 		{
-			addToSubscriptionMap(subscriptionId, subscription);
+			System.out.println("Warning - requested to create subscription ["+subscriptionId+"] is already created, active flag ["+result.isCreated()+"]");
+			return result;
+		}
+		
+		startPublicationThread();
+		result = new Subscription(channel);
+		
+		if(result.isCreated())
+		{
+			addToSubscriptionMap(subscriptionId, result);
 			System.out.println("Started subscription, name ["+subscriptionId+"], subscription count ["+subscriptions.size()+"]");
-			return subscription;
+			return result;
 		}
 		else
 		{
