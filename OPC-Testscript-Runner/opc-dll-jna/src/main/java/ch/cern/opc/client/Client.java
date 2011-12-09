@@ -188,7 +188,9 @@ class Client implements OPCDAClientApi
 	@Override
 	public void registerAsyncUpdate(OPCDAAsyncUpdateCallback callback) 
 	{
+		System.out.println("Registering OPCDA callback for updates from the dll...");
 		INSTANCE.registerAsyncUpdate(callback);
+		System.out.println("Registered OPCDA callback for updates from the dll");
 	}
 
 	@Override

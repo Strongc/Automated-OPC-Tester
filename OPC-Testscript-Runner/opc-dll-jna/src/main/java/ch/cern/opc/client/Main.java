@@ -11,20 +11,7 @@ public class Main
     	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	OPCDAClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
     	
-    	OPCDAClientApi opcClient = OPCDAClientInstance.getInstance();
-    	opcClient.init("", "Matrikon.OPC.Simulation");
-    	
-    	for(int i=0; i<1000; i++)
-    	{
-    		String groupName = "arseGroup_"+i;
-    		opcClient.createGroup(groupName, 100);
-    		
-    		opcClient.addItem(groupName, "testGroup.myString");
-    		opcClient.writeItemAsync(groupName, "testGroup.myString", groupName);
-    		
-    		opcClient.destroyGroup(groupName);
-/*    	
-    	OPCDAClientInstance.getInstance().registerAsyncUpdate(new OPCDAAsyncUpdateCallback() 
+    	OPCDAAsyncUpdateCallback callback = new OPCDAAsyncUpdateCallback() 
     	{
 			@Override
 			public int onUpdate(String itemPath, String value) 
@@ -32,7 +19,8 @@ public class Main
 				System.out.println("onUpdate called with item ["+itemPath+"] value ["+value+"]");
 				return 1;
 			}
-		});
+		};
+		OPCDAClientInstance.getInstance().registerAsyncUpdate(callback);
     	
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
     	
@@ -49,9 +37,8 @@ public class Main
     		
     		Thread.sleep(100);
     	}
-  */  	
-    	}
-    	opcClient.end();
+    	
+    	OPCDAClientInstance.getInstance().end();
 
     	System.out.println("completed");
     }

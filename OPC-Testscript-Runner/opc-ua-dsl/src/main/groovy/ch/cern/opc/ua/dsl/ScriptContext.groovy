@@ -66,16 +66,21 @@ class ScriptContext
 		return nodes[id]
 	}
 	
-	def subscription(id)
+	def subscription(name)
 	{
-		if(subscriptions[id] == null)
+		if(subscriptions[name] == null)
 		{
-			subscriptions[id] = new Subscription(id)
+			subscriptions[name] = new Subscription(name)
 		}
 		
-		return subscriptions[id]
+		return subscriptions[name]
 	}
 	
+	protected def removeSubscription(name)
+	{
+		subscriptions.remove(name)
+	}
+
 	private EndpointSummary[] getEndpoints(URI serverUri)
 	{
 		logInfo("Discovering server endpoints for server [${serverUri}]");

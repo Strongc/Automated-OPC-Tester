@@ -1,6 +1,5 @@
-package ch.cern.opc.ua.clientlib.session;
+package ch.cern.opc.ua.clientlib.notification;
 
-import ch.cern.opc.ua.clientlib.notification.SubscriptionNotification;
 
 public interface SubscriptionNotificationHandler 
 {

@@ -1,5 +1,9 @@
 package ch.cern.opc.ua.clientlib.session;
 
+import static ch.cern.opc.common.Log.logDebug;
+import static ch.cern.opc.common.Log.logError;
+import static ch.cern.opc.common.Log.logTrace;
+import static ch.cern.opc.common.Log.logWarning;
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 
 import org.opcfoundation.ua.application.SessionChannel;
@@ -12,11 +16,13 @@ import org.opcfoundation.ua.core.DataChangeNotification;
 import org.opcfoundation.ua.core.MonitoredItemNotification;
 import org.opcfoundation.ua.core.PublishRequest;
 import org.opcfoundation.ua.core.PublishResponse;
+import org.opcfoundation.ua.core.StatusCodes;
 import org.opcfoundation.ua.core.SubscriptionAcknowledgement;
 import org.opcfoundation.ua.encoding.DecodingException;
 import org.opcfoundation.ua.transport.AsyncResult;
 
 import ch.cern.opc.ua.clientlib.notification.SubscriptionNotification;
+import ch.cern.opc.ua.clientlib.notification.SubscriptionNotificationHandler;
 
 class PublicationThread implements Runnable
 {
@@ -63,7 +69,7 @@ class PublicationThread implements Runnable
 	{
 		if(!isRunning()) return true;
 		
-		System.out.println("Stopping publication thread");
+		logDebug("Stopping publication thread");
 		setKeepRunning(false);
 		
 		return waitForRunState(false, MAX_STOP_START_WAIT_MS);
@@ -89,7 +95,7 @@ class PublicationThread implements Runnable
 	{
 		if(isRunning()) return true;
 		
-		System.out.println("Starting publication thread");
+		logDebug("Starting publication thread");
 		setKeepRunning(true);
 		
 		new Thread(this).start();
@@ -100,12 +106,12 @@ class PublicationThread implements Runnable
 	public void run() 
 	{
 		setIsRunning(true);
-		System.out.println("Started publication thread");
+		logDebug("Started publication thread");
 		
 		mainLoop();
 		
 		setIsRunning(false);
-		System.out.println("Stopped publication thread");
+		logDebug("Stopped publication thread");
 	}
 
 	private void mainLoop() 
@@ -117,7 +123,7 @@ class PublicationThread implements Runnable
 			try 
 			{
 				final AsyncResult asyncResult = channel.PublishAsync(createPublishRequest(lastResponse));
-				System.out.println("Waiting for a response for publish request");
+				logTrace("Waiting for a response for publish request");
 				
 				final PublishResponse response = (PublishResponse) asyncResult.waitForResult();
 				handleResponse(response);
@@ -125,7 +131,11 @@ class PublicationThread implements Runnable
 			} 
 			catch (ServiceFaultException e) 
 			{
-				e.printStackTrace();
+				// ignore timeouts - they're OK
+				if(!StatusCodes.Bad_Timeout.equals(e.getStatusCode()))
+				{
+					e.printStackTrace();
+				}
 			} 
 			catch (ServiceResultException e) 
 			{
@@ -140,7 +150,7 @@ class PublicationThread implements Runnable
 		
 		if(isEmpty(notifications))
 		{
-			System.err.println("WARNING - received empty notification");
+			logWarning("publication handler thread received empty notification");
 			return;
 		}
 		
@@ -155,7 +165,7 @@ class PublicationThread implements Runnable
 			}
 			else
 			{
-				System.err.println("WARNING - received notification with unrecognised payload type ["+objectTypeId+"], ignoring");
+				logWarning("publication handler thread received notification with unrecognised payload type ["+objectTypeId+"], ignoring");
 			}
 		}
 	}
@@ -179,7 +189,7 @@ class PublicationThread implements Runnable
 		} 
 		catch (DecodingException e) 
 		{
-			System.err.println("ERROR: Failed to decode notification object");
+			logError("Publication handler thread failed to decode notification object");
 			e.printStackTrace();
 		}
 	}

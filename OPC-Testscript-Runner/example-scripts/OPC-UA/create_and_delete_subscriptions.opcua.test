@@ -1,0 +1,28 @@
+logInfo('script started...')
+
+init('opc.tcp://pcitco161:4842')
+
+logLevel('trace')
+
+logInfo('OPC testbench connected to target OPC Server')
+
+logInfo('creating subscription')
+subscription('firstSubscription').with
+{
+	monitor(node('ns=2;i=260'), node('ns=2;i=257'))
+	
+	node('ns=2;i=257').assertAsyncEquals("expect [ns=2;i=257] to have value [true] in 25s", 25, 'true')
+	node('ns=2;i=257').assertAsyncEquals("expect [ns=2;i=257] to have value [true] in 25s", 25, 'false')
+	node('ns=2;i=257').assertAsyncEquals("expect [ns=2;i=257] to have value [true] in 25s", 25, 'pie shop')
+}
+
+logInfo('created subscription, sleeping')
+sleep(5000)
+
+logInfo('deleting subscription')
+subscription('firstSubscription').delete()
+
+logInfo('deleted subscription, sleeping')
+sleep(1000)
+
+logInfo('end of script')

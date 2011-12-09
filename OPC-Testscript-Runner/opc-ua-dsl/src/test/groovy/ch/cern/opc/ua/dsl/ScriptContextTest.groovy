@@ -22,6 +22,9 @@ class ScriptContextTest
 				println "started subscription name [${name}]"
 				createdSubscriptions << name
 				return false
+			},
+			registerAsyncUpdate: {callback->
+				println "registered the UA async event callback"
 			}
 		] as UaClientInterface
 	

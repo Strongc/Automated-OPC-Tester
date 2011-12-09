@@ -11,7 +11,7 @@ import org.junit.Before
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 import groovy.mock.interceptor.StubFor
-import ch.cern.opc.dsl.common.client.Client
+import ch.cern.opc.dsl.common.client.GenericClient
 import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult;
 import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult;
 import ch.cern.opc.dsl.common.async.AsyncConditionManager;
@@ -40,9 +40,9 @@ class RunResultsTest
 		
 		client = [
 			getLastError:{return 'last error from DLL'},
-			setUpdateHandler:{isUpdateHandlerRegistered = true},
+			registerForAsyncUpdates:{isUpdateHandlerRegistered = true},
 			cleanUp:{isCleanUpCalled = true}
-			] as Client
+			] as GenericClient
 		
 		def stubAsyncManager = new StubFor(AsyncConditionManager)
 		stubAsyncManager.demand.getRegisteredAsyncConditionsCount(100) 
@@ -61,7 +61,7 @@ class RunResultsTest
 		* (final fields must be initialised by the ctor).
 		*
 		* Create the testee within the use{} block of the stubbed classes. The
-		* testee's ctor calls 'new AsyncConditionManager()' and 'new AsyncUpdateHandler'.
+		* testee's ctor calls 'new AsyncConditionManager()'
 		* Since this is within the scope of the stubs use{} blocks stubbed object
 		* instance are created.
 		*

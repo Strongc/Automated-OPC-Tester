@@ -8,14 +8,13 @@ import org.junit.Test
 import org.junit.Before
 import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
 
-class AsyncUpdateHandlerTest 
+class OPCDAUpdateHandlerTest 
 {
 	private def rcvdItemId
 	private def rcvdAttributeId
 	private def rcvdValue
-	private def registeredHandlerForUpdatesFromDll
 	
-	private AsyncUpdateHandler testee
+	private OPCDAUpdateHandler testee
 	
 	@Before
 	void setup()
@@ -24,32 +23,15 @@ class AsyncUpdateHandlerTest
 		rcvdItemId = null
 		rcvdValue = null
 		
-		def updateHandler  = [
+		def updateHandler  = 
+		[
 			onUpdate:{itemId, attributeId, value->
 				rcvdItemId = itemId
 				rcvdAttributeId = attributeId
 				rcvdValue = value}
-			] as UpdateHandler;
-		
-		registeredHandlerForUpdatesFromDll = null
-		def theClientInstance = [
-			registerAsyncUpdate: {registeredHandler ->
-				registeredHandlerForUpdatesFromDll = registeredHandler
-			}
-		] as OPCDAClientApi
-		setSingletonStubInstance(OPCDAClientInstance.class, theClientInstance)
-		
-		testee = new AsyncUpdateHandler(updateHandler)
-	}
-	
-	@Test
-	void testCtorRegistersForAsyncUpdates()
-	{
-		registeredHandlerForUpdatesFromDll = null
-		
-		def handler = new AsyncUpdateHandler([onUpdate:{}] as UpdateHandler)
-		
-		assertSame(handler, registeredHandlerForUpdatesFromDll)
+		] as UpdateHandler;
+			
+		testee = new OPCDAUpdateHandler(updateHandler)
 	}
 	
 	@Test

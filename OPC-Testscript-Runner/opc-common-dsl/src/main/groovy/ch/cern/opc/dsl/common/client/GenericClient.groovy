@@ -8,7 +8,7 @@ package ch.cern.opc.dsl.common.client
  * @author bfarnham
  *
  */
-public interface Client 
+public interface GenericClient 
 {
 	/**
 	 * Queries the underlying client layer (OPC-DA/UA)
@@ -22,7 +22,7 @@ public interface Client
 	 * arrival of information from the client (OPC-UA/DA) layer.
 	 * @param handler
 	 */
-	public void setUpdateHandler(UpdateHandler handler)
+	public void registerForAsyncUpdates(UpdateHandler handler)
 	
 	/**
 	 * Deletes all client/server sessions etc. Cleaner as in

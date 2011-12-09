@@ -1,6 +1,6 @@
 package ch.cern.opc.ua.clientlib.session;
 
-import static ch.cern.opc.ua.clientlib.session.SessionState.*;
+import static ch.cern.opc.ua.clientlib.session.SessionState.INITIAL;
 
 class ToInitialState implements StateChanger 
 {

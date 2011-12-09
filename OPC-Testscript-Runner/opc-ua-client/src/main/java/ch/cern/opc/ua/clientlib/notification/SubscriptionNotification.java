@@ -31,10 +31,23 @@ public class SubscriptionNotification
 		return value;
 	}
 	
+	public String getValueAsString()
+	{
+		if(value != null)
+		{
+			return value.getValue().toString();
+		}
+		
+		return "null";
+	}
+	
 	@Override
 	public String toString() 
 	{
-		return "subscription ["+subscriptionId.shortValue()+"] clientHandle ["+clientHandle.shortValue()+"] value ["+value+"]";
+		String subsIdString = (subscriptionId != null? ""+subscriptionId.shortValue(): "NULL");
+		String clientHdlString = (clientHandle != null? ""+clientHandle.shortValue(): "NULL");
+		
+		return "subscription ["+subsIdString+"] clientHandle ["+clientHdlString+"] value ["+value+"]";
 	}
 	
 }

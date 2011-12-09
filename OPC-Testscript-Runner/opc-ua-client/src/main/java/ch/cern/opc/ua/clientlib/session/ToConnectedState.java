@@ -1,6 +1,7 @@
 package ch.cern.opc.ua.clientlib.session;
 
-import static ch.cern.opc.ua.clientlib.session.SessionState.*;
+import static ch.cern.opc.ua.clientlib.session.SessionState.CONNECTED;
+import static ch.cern.opc.ua.clientlib.session.SessionState.ERROR;
 
 import org.opcfoundation.ua.application.Client;
 import org.opcfoundation.ua.application.SessionChannel;

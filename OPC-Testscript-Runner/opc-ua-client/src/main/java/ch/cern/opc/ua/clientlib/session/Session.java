@@ -1,21 +1,32 @@
 package ch.cern.opc.ua.clientlib.session;
 
+import static ch.cern.opc.common.Log.logDebug;
+import static ch.cern.opc.common.Log.logError;
+import static ch.cern.opc.common.Log.logInfo;
+import static ch.cern.opc.common.Log.logWarning;
 import static ch.cern.opc.ua.clientlib.session.SessionState.CLOSED;
 import static ch.cern.opc.ua.clientlib.session.SessionState.ERROR;
 import static ch.cern.opc.ua.clientlib.session.SessionState.INITIAL;
 import static ch.cern.opc.ua.clientlib.session.SessionState.READY;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.opcfoundation.ua.application.Client;
 import org.opcfoundation.ua.application.SessionChannel;
+import org.opcfoundation.ua.builtintypes.UnsignedInteger;
 import org.opcfoundation.ua.core.EndpointDescription;
 
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.browse.Browser;
+import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
 import ch.cern.opc.ua.clientlib.notification.SubscriptionNotification;
+import ch.cern.opc.ua.clientlib.notification.SubscriptionNotificationHandler;
 import ch.cern.opc.ua.clientlib.read.Reader;
 import ch.cern.opc.ua.clientlib.subscription.Subscription;
 import ch.cern.opc.ua.clientlib.writer.Writer;
@@ -70,13 +81,17 @@ public class Session implements SubscriptionNotificationHandler
 	
 	private boolean moveToTargetState(final SessionState targetState)
 	{
-		System.out.println("Current state is ["+state+"], target state is ["+targetState+"]");
+		logDebug("Current state is ["+state+"], moving to target state ["+targetState+"]");
 		
 		while(state != targetState)
 		{
 			state = state.moveToNext(this);
 			
-			if(state == ERROR) break;
+			if(state == ERROR) 
+			{
+				logError("Error occurred setting session state to ["+targetState+"]. Current state is ["+state+"]");
+				break;
+			}
 		}
 		
 		return state == targetState;
@@ -146,29 +161,54 @@ public class Session implements SubscriptionNotificationHandler
 		return writer;
 	}
 	
-	public Subscription createSubscription(final String subscriptionId)
+	public Subscription createSubscription(final String name, final OPCUAAsyncUpdateCallback dslCallback)
 	{
-		Subscription result = getSubscription(subscriptionId);
+		logDebug("Creating subscription ["+name+"]");
+		
+		Subscription result = getSubscription(name);
 		if(result != null)
 		{
-			System.out.println("Warning - requested to create subscription ["+subscriptionId+"] is already created, active flag ["+result.isCreated()+"]");
+			logWarning("subscription ["+name+"] already exists, active flag ["+result.isActive()+"]");
 			return result;
 		}
 		
+		result = new Subscription(channel, dslCallback);
 		startPublicationThread();
-		result = new Subscription(channel);
 		
-		if(result.isCreated())
+		if(result.isActive())
 		{
-			addToSubscriptionMap(subscriptionId, result);
-			System.out.println("Started subscription, name ["+subscriptionId+"], subscription count ["+subscriptions.size()+"]");
+			addToSubscriptionMap(name, result);
+			logDebug("Started subscription, name ["+name+"], subscription count ["+subscriptions.size()+"]");
 			return result;
 		}
 		else
 		{
-			System.err.println("Failed to create server subscription with name ["+subscriptionId+"]");
+			logError("Failed to create server subscription with name ["+name+"]");
 			return null;
 		}
+	}
+	
+	public boolean deleteSubscription(final String name)
+	{
+		logDebug("Deleting subscription ["+name+"] - exists? ["+(getSubscription(name)!=null?"Y":"N")+"]");
+		Subscription subscription = getSubscription(name);
+		
+		if(subscription != null)
+		{
+			if(getSubscriptionCount() == 1)
+			{
+				logInfo("Deleting the last subscription - stopping the publication thread");
+				publicationThread.stop();
+			}
+			
+			boolean result = subscription.delete();
+			if(!result) logError("Failed to delete subscription name ["+name+"] id ["+subscription.getSubscriptionId()+"]");
+			
+			removeFromSubscriptionMap(name);
+			return result;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -184,9 +224,42 @@ public class Session implements SubscriptionNotificationHandler
 		subscriptions.put(subscription.getSubscriptionId(), subscription);
 	}
 	
-	public Subscription getSubscription(final String subscriptionId)
+	/**
+	 * Counterpart to addToSubscriptionMap. Slightly cmoplicated due to subscriptions
+	 * map containing 2 keys to same subscription (name and Id).
+	 * Basically method finds the subscription object to remove then loops through
+	 * finding all references to the subscription and removes the keys.
+	 * @param name
+	 */
+	private void removeFromSubscriptionMap(final String name)
 	{
-		return subscriptions.get(subscriptionId);
+		Subscription subscription = subscriptions.get(name);
+		if(subscription == null) return;
+		
+		List<Object> keysToRemove = new ArrayList<Object>();
+		
+		for(Map.Entry<Object, Subscription> entry: subscriptions.entrySet())
+		{
+			if(subscription.getSubscriptionId().equals(entry.getValue().getSubscriptionId()))
+			{
+				keysToRemove.add(entry.getKey());
+			}
+		}
+		
+		for(Object key: keysToRemove)
+		{
+			subscriptions.remove(key);
+		}
+	}
+	
+	public Subscription getSubscription(final String name)
+	{
+		return subscriptions.get(name);
+	}
+	
+	public Subscription getSubscription(final UnsignedInteger id)
+	{
+		return subscriptions.get(id);
 	}
 
 	public Reader getReader() 
@@ -215,17 +288,35 @@ public class Session implements SubscriptionNotificationHandler
 	{
 		if(notification == null)
 		{
-			System.err.println("WARNING: null notification received at handler - ignoring");
+			logWarning("Session received null notification - ignoring");
 			return;
 		}
 		
 		Subscription subscription = subscriptions.get(notification.getSubscriptionId());
 		if(subscription == null)
 		{
-			System.err.println("WARNING: notification received referencing invalid subscription, notification: "+notification);
+			logError("Session received referencing unknown subscription (id["+notification.getSubscriptionId()+"]), notification: "+notification);
 			return;
 		}
 		
-		subscription.onNotification(notification);
+		subscription.handle(notification);
+	}
+
+	public int getSubscriptionCount() 
+	{
+		Set<Subscription> subscriptionSet = new HashSet<Subscription>();
+		
+		for(Map.Entry<Object, Subscription> entry: subscriptions.entrySet())
+		{
+			subscriptionSet.add(entry.getValue());
+		}
+		
+		return subscriptionSet.size();
+	}
+	
+	protected void injectMockPublicationThread(PublicationThread publicationThread)
+	{
+		logError("injecting a mock publication thread...");
+		this.publicationThread = publicationThread;
 	}
 }

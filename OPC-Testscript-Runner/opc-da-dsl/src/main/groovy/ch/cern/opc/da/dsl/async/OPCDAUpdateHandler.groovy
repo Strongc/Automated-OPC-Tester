@@ -1,24 +1,18 @@
 package ch.cern.opc.da.dsl.async
 
 import ch.cern.opc.client.OPCDAAsyncUpdateCallback;
+import ch.cern.opc.client.OPCDAClientApi;
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.dsl.common.client.UpdateHandler
 import static ch.cern.opc.common.Log.*
 
-class AsyncUpdateHandler implements OPCDAAsyncUpdateCallback 
+class OPCDAUpdateHandler implements OPCDAAsyncUpdateCallback 
 {
 	final UpdateHandler genericHandler
 	
-	def AsyncUpdateHandler(UpdateHandler genericHandler)
+	def OPCDAUpdateHandler(UpdateHandler genericHandler)
 	{
 		this.genericHandler = genericHandler
-		register()
-	}
-	
-	private def register()
-	{
-		logInfo('registering async callback with client dll')
-		OPCDAClientInstance.instance.registerAsyncUpdate(this)
 	}
 	
 	@Override
@@ -31,7 +25,7 @@ class AsyncUpdateHandler implements OPCDAAsyncUpdateCallback
 		}
 		else
 		{
-			logTrace("asyncUpdateHandler.onUpdate called for item [${itemPath}] value [${value}] thread [${Thread.currentThread().id}]")
+			logTrace("onUpdate called for item [${itemPath}] value [${value}] thread [${Thread.currentThread().id}]")
 			genericHandler.onUpdate(itemPath, null, value)
 			return 1
 		}

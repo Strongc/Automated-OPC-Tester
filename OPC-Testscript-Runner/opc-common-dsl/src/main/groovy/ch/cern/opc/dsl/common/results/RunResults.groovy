@@ -3,7 +3,7 @@ package ch.cern.opc.dsl.common.results
 
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
-import ch.cern.opc.dsl.common.client.Client
+import ch.cern.opc.dsl.common.client.GenericClient
 import ch.cern.opc.common.Log
 import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult;
 import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult;
@@ -27,11 +27,11 @@ class RunResults extends Observable
 		asyncManager = new AsyncConditionManager()
 	}
 	
-	def setClient(Client client)
+	def setClient(GenericClient client)
 	{
 		println("Setting the RunResult client implementation")
 		this.client = client
-		client.updateHandler = asyncManager;
+		client.registerForAsyncUpdates(asyncManager);
 	}
 	
 	def assertTrue(message, value)

@@ -4,7 +4,10 @@ import java.io.File;
 import java.net.URI;
 
 import org.opcfoundation.ua.builtintypes.DataValue;
+
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
+import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
+import ch.cern.opc.ua.clientlib.notification.SubscriptionNotificationHandler;
 
 public interface UaClientInterface 
 {
@@ -27,8 +30,14 @@ public interface UaClientInterface
 	public abstract boolean writeNodeValue(final String nodeId, String... values);
 
 	public abstract boolean startSubscription(final String subscriptionName);
+	
+	public abstract boolean deleteSubscription(final String subscriptionName);
+	
+	public abstract boolean hasSubscription(final String subscriptionName);
 
 	public abstract boolean monitorNodeValues(final String subscriptionName, final String... nodeIds);
 
 	public abstract String getLastError();
+	
+	public abstract void registerAsyncUpdate(OPCUAAsyncUpdateCallback callback);
 }

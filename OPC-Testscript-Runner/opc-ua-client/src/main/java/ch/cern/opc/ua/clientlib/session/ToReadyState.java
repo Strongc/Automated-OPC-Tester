@@ -1,6 +1,7 @@
 package ch.cern.opc.ua.clientlib.session;
 
-import static ch.cern.opc.ua.clientlib.session.SessionState.*;
+import static ch.cern.opc.ua.clientlib.session.SessionState.ERROR;
+import static ch.cern.opc.ua.clientlib.session.SessionState.READY;
 
 import org.apache.commons.lang3.ArrayUtils;
 

@@ -1,6 +1,7 @@
 package ch.cern.opc.ua.clientlib.notification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,5 +29,20 @@ public class SubscriptionNotificationTest
 		assertEquals(SUBSRIPTION_ID, testee.getSubscriptionId());
 		assertEquals(CLIENT_HANDLE, testee.getClientHandle());
 		assertEquals(VALUE, testee.getValue());
+	}
+	
+	@Test
+	public void testToStringHandlesNullContents()
+	{
+		testee = new SubscriptionNotification(null, null, null);
+		try
+		{
+			testee.toString();
+		}
+		catch(NullPointerException e)
+		{
+			e.printStackTrace();
+			fail();
+		}
 	}
 }

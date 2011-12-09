@@ -9,6 +9,8 @@ import org.opcfoundation.ua.builtintypes.StatusCode;
 import org.opcfoundation.ua.builtintypes.UnsignedInteger;
 import org.opcfoundation.ua.common.ServiceFaultException;
 import org.opcfoundation.ua.common.ServiceResultException;
+import org.opcfoundation.ua.core.CreateMonitoredItemsRequest;
+import org.opcfoundation.ua.core.CreateMonitoredItemsResponse;
 import org.opcfoundation.ua.core.CreateSubscriptionRequest;
 import org.opcfoundation.ua.core.CreateSubscriptionResponse;
 import org.opcfoundation.ua.core.DeleteSubscriptionsRequest;
@@ -19,6 +21,7 @@ public class MockChannelBuilder
 {
 	private DeleteSubscriptionsResponse deleteSubscriptionsResponse;
 	private CreateSubscriptionResponse createSubscriptionResponse;
+	private CreateMonitoredItemsResponse createMonitoredItemsResponse;
 
 	public MockChannelBuilder createSubscriptionResponse(final UnsignedInteger subscriptionId, final StatusCode reponseCode)
 	{
@@ -42,6 +45,17 @@ public class MockChannelBuilder
 
 		return this;
 	}
+	
+	public MockChannelBuilder createMonitoredItemsResponse(final StatusCode reponseCode)
+	{
+		ResponseHeader header = new ResponseHeader();
+		header.setServiceResult(reponseCode);
+
+		createMonitoredItemsResponse = new CreateMonitoredItemsResponse();
+		createMonitoredItemsResponse.setResponseHeader(header);
+
+		return this;
+	}
 
 	public SessionChannel build() throws ServiceFaultException, ServiceResultException
 	{
@@ -52,6 +66,9 @@ public class MockChannelBuilder
 
 		when(channel.DeleteSubscriptions(any(DeleteSubscriptionsRequest.class))).
 		thenReturn(deleteSubscriptionsResponse);
+		
+		when(channel.CreateMonitoredItems(any(CreateMonitoredItemsRequest.class))).
+		thenReturn(createMonitoredItemsResponse);
 
 		return channel;
 	}

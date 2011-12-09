@@ -4,7 +4,7 @@ import groovy.lang.MissingMethodException
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 
-import ch.cern.opc.dsl.common.client.Client
+import ch.cern.opc.dsl.common.client.GenericClient
 import ch.cern.opc.dsl.common.results.AssertEqualsRunResult
 
 import static org.junit.Assert.*
@@ -25,7 +25,7 @@ class AssertEqualsRunResultTest
 		com.sun.org.apache.xerces.internal.dom.ElementImpl.mixin(DOMCategory)
 		groovy.xml.dom.DOMCategory.NodesHolder.mixin(DOMCategory)
 		
-		client = [getLastError:{it->return TEST_LAST_ERR}] as Client
+		client = [getLastError:{it->return TEST_LAST_ERR}] as GenericClient
 	}
 	
 	@Test

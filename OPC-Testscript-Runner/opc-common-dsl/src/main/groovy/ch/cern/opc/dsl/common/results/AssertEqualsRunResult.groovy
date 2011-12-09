@@ -1,6 +1,6 @@
 package ch.cern.opc.dsl.common.results
 
-import ch.cern.opc.dsl.common.client.Client
+import ch.cern.opc.dsl.common.client.GenericClient
 import static RunResultUtil.formatMessage
 
 protected class AssertEqualsRunResult extends ObservableRunResult 

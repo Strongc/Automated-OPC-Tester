@@ -1,15 +1,16 @@
 package ch.cern.opc.da.dsl.client
 
-import ch.cern.opc.da.dsl.async.AsyncUpdateHandler;
-import ch.cern.opc.dsl.common.client.Client
+import ch.cern.opc.da.dsl.async.OPCDAUpdateHandler;
+import ch.cern.opc.dsl.common.client.GenericClient
 import ch.cern.opc.dsl.common.client.UpdateHandler;
+import ch.cern.opc.client.OPCDAAsyncUpdateCallback
 import ch.cern.opc.client.OPCDAClientInstance
 import static ch.cern.opc.common.Log.*;
 
 
-class OPCDAClient implements Client 
+class OPCDAClient implements GenericClient 
 {
-	private AsyncUpdateHandler asyncHandler = null;
+	private OPCDAAsyncUpdateCallback daCallback = null
 	
 	@Override
 	public String getLastError() 
@@ -18,10 +19,11 @@ class OPCDAClient implements Client
 	}
 
 	@Override
-	public void setUpdateHandler(UpdateHandler genericHandler) 
+	public void registerForAsyncUpdates(UpdateHandler genericHandler) 
 	{
 		logInfo("OPCDA client - registering handler for asynchronous updates")
-		asyncHandler = new AsyncUpdateHandler(genericHandler)
+		daCallback = new OPCDAUpdateHandler(genericHandler)
+		OPCDAClientInstance.instance.registerAsyncUpdate(daCallback)
 	}
 
 	@Override

@@ -24,7 +24,11 @@ class AsyncConditionManager implements UpdateHandler
 		}
 		else
 		{
-			logDebug("asyncUpdateHandler.onUpdate called for item [${itemId}] value [${value}] thread [${Thread.currentThread().id}]")
+			logDebug("onUpdate called")
+			logDebug("-item [${itemId}]")
+			logDebug("-value [${value}]")
+			logDebug("-thread [${Thread.currentThread().id}]")
+			
 			asyncUpdate(itemId, value)
 		}
 	}

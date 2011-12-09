@@ -1,12 +1,12 @@
 package ch.cern.opc.ua.clientlib.browse;
 
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.opcfoundation.ua.application.SessionChannel;

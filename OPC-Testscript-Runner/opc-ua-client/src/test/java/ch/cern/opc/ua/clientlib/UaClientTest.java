@@ -1,6 +1,12 @@
 package ch.cern.opc.ua.clientlib;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.URI;
@@ -9,9 +15,14 @@ import java.net.URISyntaxException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.opcfoundation.ua.common.ServiceFaultException;
+import org.opcfoundation.ua.common.ServiceResultException;
+
+import ch.cern.opc.ua.clientlib.session.Session;
 
 public class UaClientTest 
 {
+	private static final String SUBSCRIPTION_NAME = "name of subscription";
 	private static File PUBLIC_CERTIFICATE;
 	private static File PRIVATE_KEY;
 	private static final String password = "Opc.Sample.Ua.Client";
@@ -29,12 +40,12 @@ public class UaClientTest
 		}
 	}
 	
-	private UaClientInterface testee;
+	private UaClient testee;
 	
 	@Before
 	public void setup()
 	{
-		testee = UaClient.instance();
+		testee = (UaClient) UaClient.instance();
 	}
 	
 	@Test
@@ -73,5 +84,33 @@ public class UaClientTest
 	public void testGetLastError()
 	{
 		assertTrue(StringUtils.isNotEmpty(testee.getLastError()));
+	}
+	
+	@Test
+	public void testDeleteSubscriptionSuccess() throws ServiceFaultException, ServiceResultException
+	{
+		Session mockSession = mock(Session.class);
+		when(mockSession.deleteSubscription(any(String.class))).thenReturn(true);
+		
+		testee.injectTestSession(mockSession);
+		
+		assertTrue(testee.deleteSubscription(SUBSCRIPTION_NAME));
+	}
+	
+	@Test
+	public void testDeleteSubscriptionFailure() throws ServiceFaultException, ServiceResultException
+	{
+		Session mockSession = mock(Session.class);
+		when(mockSession.deleteSubscription(any(String.class))).thenReturn(false);
+		
+		testee.injectTestSession(mockSession);
+		
+		assertFalse(testee.deleteSubscription(SUBSCRIPTION_NAME));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testRegisterSubscriptionNotificationHandler()
+	{
+		testee.registerAsyncUpdate(null);
 	}
 }

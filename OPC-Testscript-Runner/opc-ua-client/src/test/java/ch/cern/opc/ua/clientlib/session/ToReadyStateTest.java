@@ -1,20 +1,18 @@
 package ch.cern.opc.ua.clientlib.session;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static ch.cern.opc.ua.clientlib.session.SessionState.ERROR;
+import static ch.cern.opc.ua.clientlib.session.SessionState.READY;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.opcfoundation.ua.builtintypes.NodeId;
 import org.opcfoundation.ua.core.Identifiers;
 
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
-import static ch.cern.opc.ua.clientlib.session.SessionState.*;
 
 
 public class ToReadyStateTest 

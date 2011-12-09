@@ -1,5 +1,11 @@
 package ch.cern.opc.ua.clientlib;
 
+import static ch.cern.opc.common.Log.logDebug;
+import static ch.cern.opc.common.Log.logError;
+import static ch.cern.opc.common.Log.logInfo;
+import static ch.cern.opc.ua.clientlib.EndpointSummary.matchEndpoint;
+import static ch.cern.opc.ua.clientlib.EndpointSummary.toEndpointSummaries;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,13 +21,12 @@ import org.opcfoundation.ua.transport.security.Cert;
 import org.opcfoundation.ua.transport.security.KeyPair;
 import org.opcfoundation.ua.transport.security.PrivKey;
 
-import static ch.cern.opc.common.Log.logError;
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
+import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
+import ch.cern.opc.ua.clientlib.notification.SubscriptionNotificationHandler;
 import ch.cern.opc.ua.clientlib.session.Session;
 import ch.cern.opc.ua.clientlib.subscription.Subscription;
-import static ch.cern.opc.ua.clientlib.EndpointSummary.toEndpointSummaries;
-import static ch.cern.opc.ua.clientlib.EndpointSummary.matchEndpoint;
 
 public class UaClient implements UaClientInterface 
 {
@@ -37,6 +42,7 @@ public class UaClient implements UaClientInterface
 	private Client client = null;
 	private Session session = null;
 	private EndpointDescription[] endpoints;
+	private OPCUAAsyncUpdateCallback dslCallback;
 
 	private UaClient()
 	{
@@ -100,7 +106,7 @@ public class UaClient implements UaClientInterface
 	@Override
 	public void startSession(final EndpointSummary endpoint)
 	{
-		System.out.println("starting session with endpoint:\n"+endpoint);
+		logInfo("starting session with endpoint:\n"+endpoint);
 		
 		if(session == null)
 		{
@@ -111,13 +117,13 @@ public class UaClient implements UaClientInterface
 			}
 			else
 			{
-				System.err.println("Failed to locate target endpoint:\n"+endpoint+"\nfrom known server endpoints:\n"+ArrayUtils.toString(endpoints));
+				logError("Failed to locate target endpoint:\n"+endpoint+"\nfrom known server endpoints:\n"+ArrayUtils.toString(endpoints));
 			}
 		}
 		
 		if(!session.setup())
 		{
-			System.err.println("Failed to start session with endpoint ["+endpoint+"]");
+			logError("Failed to start session with endpoint ["+endpoint+"]");
 		}
 	}
 
@@ -129,15 +135,19 @@ public class UaClient implements UaClientInterface
 	{
 		if(session != null)
 		{
-			if(!session.close())
+			if(session.close())
 			{
-				System.err.println("Failed to close session with endpoint ["+session.getEndpoint()+"]");
+				logInfo("Closed session with endpoint ["+session.getEndpoint()+"]");
+			}
+			else
+			{
+				logError("Failed to close session with endpoint ["+session.getEndpoint()+"]");
 			}
 		}
 		
 		session = null;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#browseNamespace()
 	 */
@@ -149,6 +159,7 @@ public class UaClient implements UaClientInterface
 			return session.getNamespace();
 		}
 
+		logError("Cannot browse namespace until a client/server session has been established");
 		return new String[] {"Cannot browse namespace until a client/server session has been established"};
 	}
 
@@ -162,7 +173,8 @@ public class UaClient implements UaClientInterface
 		{
 			return session.getAddressspace();
 		}
-
+		
+		logError("Failed to browse addressspace - no session has been created");
 		return null;
 	}
 
@@ -190,7 +202,7 @@ public class UaClient implements UaClientInterface
 	{
 		if(session == null)
 		{
-			System.err.println("null session");
+			logError("failed to read node ["+nodeId+"] data type - no session");
 			return INVALID_DATA_TYPE;
 		}
 		
@@ -198,13 +210,13 @@ public class UaClient implements UaClientInterface
 			
 		if(node == null)
 		{
-			System.err.println("Failed to find node ["+nodeId+"] in address space");
+			logError("failed to read node ["+nodeId+"] data type - node not found in address space");
 			return INVALID_DATA_TYPE; 
 		}
 			
 		if(!session.getBrowser().getNodeDataTypes(node))
 		{
-			System.err.println("Failed to read node data type ["+nodeId+"]");
+			logError("failed to read node ["+nodeId+"] data type - found node ["+nodeId+"] but data type read failed");
 		}
 		
 		return node.getDataTypes();
@@ -235,14 +247,27 @@ public class UaClient implements UaClientInterface
 	@Override
 	public boolean startSubscription(final String subscriptionName)
 	{
-		Subscription subscription = session.createSubscription(subscriptionName);
+		Subscription subscription = session.createSubscription(subscriptionName, dslCallback);
 		if(subscription != null)
 		{
-			return subscription.isCreated();
+			return subscription.isActive();
 		}
 		
 		return false;
 	}
+	
+	@Override
+	public boolean deleteSubscription(final String subscriptionName)
+	{
+		return session.deleteSubscription(subscriptionName);
+	}
+
+	@Override
+	public boolean hasSubscription(String subscriptionName) 
+	{
+		return (session.getSubscription(subscriptionName) != null);
+	}
+	
 	
 	/* (non-Javadoc)
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#monitorNodeValues(java.lang.String, java.lang.String)
@@ -250,7 +275,7 @@ public class UaClient implements UaClientInterface
 	@Override
 	public boolean monitorNodeValues(final String subscriptionName, final String... nodeIds)
 	{
-		final Subscription subscription = session.createSubscription(subscriptionName);
+		final Subscription subscription = session.getSubscription(subscriptionName);
 		
 		if(subscription == null)
 		{
@@ -258,7 +283,7 @@ public class UaClient implements UaClientInterface
 			return false;
 		}
 		
-		if(!subscription.isCreated())
+		if(!subscription.isActive())
 		{
 			System.err.println("Subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"] was not correctly established with the server, unable to monitor nodes ["+ArrayUtils.toString(nodeIds)+"]");
 			return false;
@@ -278,5 +303,20 @@ public class UaClient implements UaClientInterface
 	public String getLastError() 
 	{
 		return "getLastError not implemented yet in opc-ua client";
+	}
+	
+	protected void injectTestSession(Session testSession)
+	{
+		System.out.println("Warning: injecting test session to UaClient instance");
+		session = testSession;
+	}
+
+	@Override
+	public void registerAsyncUpdate(OPCUAAsyncUpdateCallback callback) 
+	{
+		if(callback == null) throw new IllegalArgumentException("Cannot pass null async update handler");
+		
+		logDebug("DSL async update handler registered");
+		dslCallback = callback;
 	}
 }

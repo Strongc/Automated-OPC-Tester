@@ -21,7 +21,8 @@ class OPCDAClientTest
 	{
 		isCallbackRegistered = false
 		
-		def theClientInstance = [
+		def theClientInstance = 
+		[
 			getLastError:{it->
 				return LAST_ERROR
 			},
@@ -42,12 +43,12 @@ class OPCDAClientTest
 	}
 	
 	@Test
-	void testSetUpdateHandlerRegistersCallbackHandler()
+	void testRegisterForAsyncUpdatesRegistersCallbackHandler()
 	{
 		assertFalse(isCallbackRegistered)
 		
 		def handler = [onUpdate:{itemId, attributeId, value->println "handled update"}] as UpdateHandler
-		testee.updateHandler = handler
+		testee.registerForAsyncUpdates(handler)
 		
 		assertTrue(isCallbackRegistered) 
 	}

@@ -1,15 +1,20 @@
 package ch.cern.opc.ua.clientlib.subscription;
 
+import static ch.cern.opc.common.Log.logDebug;
+import static ch.cern.opc.common.Log.logError;
+import static ch.cern.opc.common.Log.logTrace;
+import static ch.cern.opc.common.Log.logWarning;
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 
-import java.lang.management.MemoryNotificationInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opcfoundation.ua.application.SessionChannel;
+import org.opcfoundation.ua.builtintypes.NodeId;
 import org.opcfoundation.ua.builtintypes.UnsignedByte;
 import org.opcfoundation.ua.builtintypes.UnsignedInteger;
 import org.opcfoundation.ua.common.ServiceFaultException;
@@ -28,9 +33,11 @@ import org.opcfoundation.ua.core.ReadValueId;
 import org.opcfoundation.ua.core.TimestampsToReturn;
 
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
+import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
 import ch.cern.opc.ua.clientlib.notification.SubscriptionNotification;
+import ch.cern.opc.ua.clientlib.notification.SubscriptionNotificationHandler;
 
-public class Subscription 
+public class Subscription implements SubscriptionNotificationHandler
 {
 	private static final Double SAMPLING_INTERVAL = Double.valueOf(-1);
 	private static final UnsignedInteger QUEUE_SIZE = UnsignedInteger.valueOf(1);
@@ -41,8 +48,9 @@ public class Subscription
 	private static final Double PUBLISHING_INTERVAL = Double.valueOf(500);
 
 	private final SessionChannel channel;
+	private final OPCUAAsyncUpdateCallback dslCallback;
 
-	private boolean isCreated = false;
+	private boolean active = false;
 	private UnsignedInteger subscriptionId;
 	
 	private UnsignedInteger clientHandle = UnsignedInteger.ONE;
@@ -60,15 +68,16 @@ public class Subscription
 		return clientHandle;
 	}
 
-	public Subscription(final SessionChannel channel)
+	public Subscription(final SessionChannel channel, final OPCUAAsyncUpdateCallback dslCallback)
 	{
 		this.channel = channel;
+		this.dslCallback = dslCallback;
 		createSubscription();
 	}
 	
-	public boolean isCreated()
+	public boolean isActive()
 	{
-		return isCreated;
+		return active;
 	}
 	
 	public UnsignedInteger getSubscriptionId()
@@ -87,20 +96,27 @@ public class Subscription
 
 		try 
 		{
+			logTrace("sending createsubscriptionrequest to server");
 			CreateSubscriptionResponse response = channel.CreateSubscription(request);
 			if(response.getResponseHeader().getServiceResult().isGood())
 			{
-				isCreated = true;
+				logTrace("received positive createsubscriptionresponse from server");
+				active = true;
 				subscriptionId = response.getSubscriptionId();
 			}
-			System.out.println(response.toString());
+			else
+			{
+				logError("received negative createsubscriptionresponse from server");
+			}
 		} 
 		catch (ServiceFaultException e) 
 		{
+			logError("createsubscriptionrequest threw ["+e.getClass().getSimpleName()+"] message ["+e.getMessage()+"]");
 			e.printStackTrace();
 		} 
 		catch (ServiceResultException e) 
 		{
+			logError("createsubscriptionrequest threw ["+e.getClass().getSimpleName()+"] message ["+e.getMessage()+"]");
 			e.printStackTrace();
 		}
 	}
@@ -109,17 +125,17 @@ public class Subscription
 	{
 		if(isEmpty(nodes))
 		{
-			System.err.println("Cannot monitor nodes via subscription - empty node list provided");
+			logError("Cannot monitor nodes via subscription - empty node list provided");
 			return false;
 		}
 		
-		if(!isCreated) 
+		if(!active) 
 		{
-			System.err.println("Failed to monitor nodes, the parent subscription has not been created on the server");
+			logError("Failed to monitor nodes, the parent subscription is not active on the server");
 			return false;
 		}
 		
-		System.out.println("Adding monitor for values of ["+nodes.length+"] nodes on subscription [id: "+subscriptionId.intValue()+"]");
+		logDebug("Adding monitor for values of ["+nodes.length+"] nodes on subscription [id: "+subscriptionId.intValue()+"]");
 
 		CreateMonitoredItemsRequest request = new CreateMonitoredItemsRequest();
 		request.setItemsToCreate(createMonitorRequests(nodes));
@@ -200,14 +216,33 @@ public class Subscription
 	 *  
 	 * @param message
 	 */
-	public void onNotification(final SubscriptionNotification message)
+	@Override
+	public void handle(SubscriptionNotification notification) 
 	{
-		System.out.println("Thread id ["+Thread.currentThread().getId()+"] updating subscription ["+getSubscriptionId()+"] with notification: "+message);
+		System.out.println("Thread id ["+Thread.currentThread().getId()+"] updating subscription ["+getSubscriptionId()+"] callback? ["+(dslCallback != null?"Y":"N")+"] with notification: "+notification);
+		
+		if(dslCallback != null)
+		{
+			NodeDescription dsc = monitoredItems.get(notification.getClientHandle());
+			if(dsc != null)
+			{
+				dslCallback.onUpdate(dsc.getNodeId().toString(), "", notification);
+			}
+			else
+			{
+				logWarning("Subscription ["+getSubscriptionId()+"] received update for item with unknown client handle ["+notification.getClientHandle()+"], ignoring...");
+			}
+		}
+		else
+		{
+			logWarning("No DSL handler to update with subscription notifications");
+		}
 	}
 
 	public boolean delete() 
 	{
-		if(!isCreated) return true;
+		if(!active) return true;
+		active = false;
 		
 		DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest();
 		request.setSubscriptionIds(new UnsignedInteger[]{subscriptionId});
@@ -219,8 +254,11 @@ public class Subscription
 
 			if(response.getResponseHeader().getServiceResult().isGood())
 			{
-				isCreated = false;
 				return true;
+			}
+			else
+			{
+				logError("received negative deletesubscriptionresponse from server");
 			}
 		} 
 		catch (ServiceFaultException e) 
@@ -233,5 +271,30 @@ public class Subscription
 		}
 		
 		return false;
+	}
+
+	public int getMonitoredItemCount() 
+	{
+		return monitoredItems.size();
+	}
+	
+	public UnsignedInteger getClientHandle(final NodeId targetNodeId)
+	{
+		if(targetNodeId == null) return null;
+		
+		for(Entry<UnsignedInteger, NodeDescription > entry : monitoredItems.entrySet())
+		{
+			if(targetNodeId.equals(entry.getValue().getNodeId()))
+			{
+				return entry.getKey();
+			}
+		}
+		
+		return null;
+	}
+	
+	public boolean hasClientHandle(final UnsignedInteger handle)
+	{
+		return monitoredItems.containsKey(handle);
 	}
 }
