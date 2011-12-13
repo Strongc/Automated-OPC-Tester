@@ -29,8 +29,14 @@ class Node
 	
 	def setSyncValue(def value)
 	{
-		return UaClient.instance().writeNodeValue(id, value)
+		return UaClient.instance().writeNodeValueSync(id, value)
 	}
+	
+	def setAsyncValue(def value)
+	{
+		return UaClient.instance().writeNodeValueAsync(id, value)
+	}
+
 	
 	def assertAsyncEquals(message, timeout, expectedValue)
 	{

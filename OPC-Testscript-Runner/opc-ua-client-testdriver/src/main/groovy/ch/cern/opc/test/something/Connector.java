@@ -21,7 +21,8 @@ public class Connector
 {
 //	private static String SERVER_URI = "opc.tcp://localhost:4842";
 //	private static String SERVER_URI = "opc.tcp://opc-ua-lnx:4880/";
-	private static String SERVER_URI = "opc.tcp://pcen33068:4841";
+//	private static String SERVER_URI = "opc.tcp://pcen33068:4841";
+	private static String SERVER_URI = "opc.tcp://pcen33068:62541/Quickstarts/DataAccessServer";
 	
 	private static File PUBLIC_CERTIFICATE = loadFileFromResource("/ClientCert.der", "temporaryPublicCertificateFile.der");
 	private static File PRIVATE_KEY = loadFileFromResource("/ClientCert.pfx", "temporaryPrivateKeyFile.der");
@@ -51,8 +52,8 @@ public class Connector
 
 		startSubscription("firstSubscription");
 //		monitorNodeValues("firstSubscription", "ns=2;i=0");
-		monitorNodeValues("firstSubscription", "ns=4;s=Counter1");
-		monitorNodeValues("firstSubscription", "ns=4;s=Counter2");
+//		monitorNodeValues("firstSubscription", "ns=4;s=Counter1");
+//		monitorNodeValues("firstSubscription", "ns=4;s=Counter2");
 /*	
 		for(int i=0; i<0; i++)
 		{
@@ -150,7 +151,7 @@ public class Connector
 	private static void writeVariableValue(final String variableName, String value) 
 	{
 		System.out.println("Attempting to write value ["+value+"] to variable ["+variableName+"]");
-		final boolean isWritten = UaClient.instance().writeNodeValue(variableName, value);
+		final boolean isWritten = UaClient.instance().writeNodeValueSync(variableName, value);
 		
 		System.out.println("Attempted write to variable ["+variableName+"] returned ["+isWritten+"]");
 		

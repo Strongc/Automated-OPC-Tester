@@ -1,6 +1,6 @@
 package ch.cern.opc.da.dsl.client
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 import ch.cern.opc.client.OPCDAClientApi
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.da.dsl.client.OPCDAClient;

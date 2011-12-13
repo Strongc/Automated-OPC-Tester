@@ -24,7 +24,6 @@ import org.opcfoundation.ua.transport.security.PrivKey;
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
 import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
-import ch.cern.opc.ua.clientlib.notification.SubscriptionNotificationHandler;
 import ch.cern.opc.ua.clientlib.session.Session;
 import ch.cern.opc.ua.clientlib.subscription.Subscription;
 
@@ -226,20 +225,37 @@ public class UaClient implements UaClientInterface
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#writeNodeValue(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public boolean writeNodeValue(final String nodeId, String... values)
+	public boolean writeNodeValueSync(final String nodeId, String... values)
 	{
-		System.out.println("Writing to node ["+nodeId+"], values: "+ArrayUtils.toString(values));
+		logDebug("Writing synchronously  to node ["+nodeId+"], values: "+ArrayUtils.toString(values));
 		
 		if(nodeId == null) return false;
 		
 		if(session != null)
 		{
 			NodeDescription node = session.getAddressspace().findNodeById(nodeId);
-			return session.getWriter().writeNodeValue(node, values);
+			return session.getWriter().writeNodeValueSync(node, values);
 		}
 
 		return false;
 	}
+	
+	@Override
+	public boolean writeNodeValueAsync(String nodeId, String... values) 
+	{
+		logDebug("Writing asynchronously  to node ["+nodeId+"], values: "+ArrayUtils.toString(values));
+		
+		if(nodeId == null) return false;
+		
+		if(session != null)
+		{
+			NodeDescription node = session.getAddressspace().findNodeById(nodeId);
+			return session.getWriter().writeNodeValueAsync(node, values);
+		}
+
+		return false;
+	}
+
 	
 	/* (non-Javadoc)
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#startSubscription(java.lang.String)

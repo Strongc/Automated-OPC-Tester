@@ -18,6 +18,7 @@ class NodeTest
 	private final static def SRC_TIME = new DateTime()
 	private final static def SVR_TIME = new DateTime()
 	
+	private def rcvdSyncWrite
 	private def rcvdWriteId
 	private def rcvdWriteValues
 	private def returnedWriteResponse
@@ -28,6 +29,7 @@ class NodeTest
 	@Before
 	void setup()
 	{
+		rcvdSyncWrite = false
 		rcvdWriteId = null
 		rcvdWriteValues = null
 		
@@ -35,10 +37,17 @@ class NodeTest
 			readNodeValue:{id->
 				return NODE_VALUES
 			},
-			writeNodeValue:{id, values->
+			writeNodeValueSync:{id, values->
+				rcvdSyncWrite = true
 				rcvdWriteId = id
 				rcvdWriteValues = values
 				return returnedWriteResponse},
+			writeNodeValueAsync:{id, values->
+				rcvdSyncWrite = false
+				rcvdWriteId = id
+				rcvdWriteValues = values
+				return returnedWriteResponse},
+
 			] as UaClientInterface
 		
 		setSingletonStubInstance(UaClient.class, theClientInstance)
@@ -79,10 +88,26 @@ class NodeTest
 		returnedWriteResponse = true
 		
 		testee.syncValue = ['123', '456'] as String[]
-		
+	
+		assertTrue(rcvdSyncWrite)	
 		assertEquals(NODE_ID, rcvdWriteId)
 		assertTrue(isEquals(['123', '456'] as String[], rcvdWriteValues))
 	}
+	
+	@Test
+	void testWriteAsyncValueArray()
+	{
+		assertNull(rcvdWriteId)
+		assertNull(rcvdWriteValues)
+		returnedWriteResponse = true
+		
+		testee.asyncValue = ['123', '456'] as String[]
+	
+		assertFalse(rcvdSyncWrite)
+		assertEquals(NODE_ID, rcvdWriteId)
+		assertTrue(isEquals(['123', '456'] as String[], rcvdWriteValues))
+	}
+
 	
 	private static DataValue[] createDataValues(value)
 	{

@@ -7,7 +7,6 @@ import org.opcfoundation.ua.builtintypes.DataValue;
 
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
-import ch.cern.opc.ua.clientlib.notification.SubscriptionNotificationHandler;
 
 public interface UaClientInterface 
 {
@@ -27,8 +26,10 @@ public interface UaClientInterface
 
 	public abstract Class<?>[] readNodeDataTypes(final String nodeId);
 
-	public abstract boolean writeNodeValue(final String nodeId, String... values);
-
+	public abstract boolean writeNodeValueSync(final String nodeId, String... values);
+	
+	public abstract boolean writeNodeValueAsync(final String nodeId, String... values);
+	
 	public abstract boolean startSubscription(final String subscriptionName);
 	
 	public abstract boolean deleteSubscription(final String subscriptionName);

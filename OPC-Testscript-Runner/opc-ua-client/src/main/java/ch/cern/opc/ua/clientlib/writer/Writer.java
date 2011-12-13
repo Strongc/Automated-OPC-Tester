@@ -28,6 +28,8 @@ import org.opcfoundation.ua.common.ServiceResultException;
 import org.opcfoundation.ua.core.Attributes;
 import org.opcfoundation.ua.core.WriteResponse;
 import org.opcfoundation.ua.core.WriteValue;
+import org.opcfoundation.ua.transport.AsyncResult;
+import org.opcfoundation.ua.transport.AsyncResult.AsyncResultStatus;
 
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
 import ch.cern.opc.ua.clientlib.browse.Browser;
@@ -43,7 +45,27 @@ public class Writer
 		this.channel = channel;
 	}
 
-	public boolean writeNodeValue(final NodeDescription node, String... values)
+	public boolean writeNodeValueSync(final NodeDescription node, String... values)
+	{
+		if(!validateWriteParameters(node, values)) return false;
+
+		return writeToServerSync(createWriteValues(node, values));
+	}
+	
+	public boolean writeNodeValueAsync(final NodeDescription node, String... values)
+	{
+		if(!validateWriteParameters(node, values)) return false;
+
+		return writeToServerAsync(createWriteValues(node, values));
+	}
+
+	private WriteValue[] createWriteValues(final NodeDescription node, String... values) 
+	{
+		DataValue[] dataValues = translateToDataValues(values, node.getDataTypes());
+		return createWriteValues(node, dataValues );
+	}
+
+	private boolean validateWriteParameters(final NodeDescription node, String... values) 
 	{
 		if(node == null)
 		{
@@ -65,18 +87,29 @@ public class Writer
 				return false;
 			}
 		}
-
-		DataValue[] dataValues = translateToDataValues(values, node.getDataTypes());
-		WriteValue[] writeValues = createWriteValues(node, dataValues );
-		return writeToServer(writeValues);
+		
+		return true;
 	}
 	
 	private boolean getNodeDataTypes(final NodeDescription node)
 	{
 		return new Browser(channel).getNodeDataTypes(node);
 	}
+	
+	private boolean writeToServerAsync(WriteValue[] writeValues) 
+	{
+		AsyncResult response = channel.WriteAsync(null, writeValues);
+		if(response != null)
+		{
+			return (!AsyncResultStatus.Failed.equals(response.getStatus()));
+		}
+		
+		return false;
+	}
+	
 
-	private boolean writeToServer(WriteValue[] writeValues) {
+	private boolean writeToServerSync(WriteValue[] writeValues) 
+	{
 		try 
 		{
 			WriteResponse response = channel.Write(null, writeValues);

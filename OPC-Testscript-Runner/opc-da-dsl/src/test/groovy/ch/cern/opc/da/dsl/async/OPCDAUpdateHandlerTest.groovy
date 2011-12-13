@@ -6,7 +6,6 @@ import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.dsl.common.client.UpdateHandler
 import org.junit.Test
 import org.junit.Before
-import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
 
 class OPCDAUpdateHandlerTest 
 {

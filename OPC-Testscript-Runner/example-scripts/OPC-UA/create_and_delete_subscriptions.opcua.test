@@ -1,6 +1,6 @@
 logInfo('script started...')
 
-init('opc.tcp://pcitco161:4842')
+init('opc.tcp://pcen33068:4841')
 
 logLevel('trace')
 

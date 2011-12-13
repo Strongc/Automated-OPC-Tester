@@ -28,7 +28,8 @@ class OPCUAClient implements GenericClient
 	@Override
 	public void cleanUp() 
 	{
-		logError("OPCUAClient.cleanup called - not plumbed in yet")
+		logInfo("OPCUA client clean up - stopping session")
+		UaClient.instance().stopSession()
 		
 	}
 }
