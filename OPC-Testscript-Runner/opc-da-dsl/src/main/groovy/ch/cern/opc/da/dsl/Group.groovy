@@ -66,7 +66,7 @@ class Group
 
 	private def replaceStarsWithRegexps(def text)
 	{
-		def chars = text.chars
+		def chars = text.toString().chars
 		def result = ""
 		
 		for(def i = chars.length-1; i >= 0; i--)

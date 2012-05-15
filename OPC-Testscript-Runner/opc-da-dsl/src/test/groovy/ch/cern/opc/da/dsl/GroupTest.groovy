@@ -191,6 +191,15 @@ class GroupTest
 	}
 	
 	@Test
+	void testItemsAddingAllItemsFromAddressSpaceMatchingStringSubstitutionPattern()
+	{
+		def substitutionPattern = '**'
+		assertEquals(0, testee.items.size())
+		testee.items("${substitutionPattern}")
+		assertEquals(OPC_ADDRESS_SPACE.size(), testee.items.size())
+	}
+	
+	@Test
 	void testDestroyGroupCallsDestroyGroup()
 	{
 		println("testee [${testee.toString()}] - calling destroy...")
