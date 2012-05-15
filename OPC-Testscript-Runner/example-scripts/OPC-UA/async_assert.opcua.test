@@ -1,0 +1,30 @@
+logInfo('script started...')
+
+init('opc.tcp://pcen33068:4841')
+
+logLevel('info')
+
+logInfo('OPC testbench connected to target OPC Server')
+
+logInfo('creating subscription...')
+subscription('firstSubscription').with
+{
+	monitor(node('ns=4;s=MyDemoObject.Test1'), node('ns=4;s=MyDemoObject.Test2'))
+	
+	node('ns=4;s=MyDemoObject.Test1').assertAsyncEquals("expect [Test1] to have value [10] within 30s", 30, '10')
+	node('ns=4;s=MyDemoObject.Test2').assertAsyncEquals("expect [Test2] to have value [10] within 30s", 30, '10')
+}
+
+logInfo('sleeping for 5 seconds')
+sleep(5000)
+
+logInfo('woken up, setting value for [Test1] to 0')
+node('ns=4;s=MyDemoObject.Test1').asyncValue = '0'
+
+logInfo('sleeping for 5 seconds')
+sleep(5000)
+
+logInfo('woken up, setting value for [Test2] to 0')
+node('ns=4;s=MyDemoObject.Test2').asyncValue = '0'
+
+logInfo('end of script')
