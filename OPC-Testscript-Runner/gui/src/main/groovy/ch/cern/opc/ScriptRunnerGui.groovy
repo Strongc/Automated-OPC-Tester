@@ -61,6 +61,10 @@ class ScriptRunnerGui implements OnCompleteCallback
 				menuItem(text:'Run Script', mnemonic:'R', actionPerformed:{runScript()})
 				menuItem(text:'Export Script Result (XML)', mnemonic:'E', actionPerformed:{exportScriptResultXml()})
 			}
+			menu(text: 'About', mnemonic:'A')
+			{
+				menuItem(text:'v1.1')
+			}
 		}
 	}
 	
