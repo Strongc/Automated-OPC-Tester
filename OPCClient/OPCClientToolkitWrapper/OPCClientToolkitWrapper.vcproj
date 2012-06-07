@@ -186,11 +186,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ItemValueStruct.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Pantheios_implicit_link.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\TransactionCompleteHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils.cpp"
 				>
 			</File>
 		</Filter>
@@ -213,6 +221,10 @@
 			</File>
 			<File
 				RelativePath=".\GroupNode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ItemValueStruct.h"
 				>
 			</File>
 			<File

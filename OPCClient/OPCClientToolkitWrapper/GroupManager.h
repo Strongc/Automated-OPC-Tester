@@ -8,6 +8,7 @@
 
 #include <pantheios/pantheios.hpp>
 #include <pantheios/inserters/integer.hpp>
+#include <pantheios/inserters/boolean.hpp>
 
 using namespace pantheios;
 using namespace std;
@@ -91,21 +92,25 @@ public:
 		return false;
 	};
 
-	bool ReadItemSync(const char* const pGroupName, const char* const pItemPath, char* pBuff, size_t szBuff)
+	bool ReadItemSync(const char* const pGroupName, const char* const pItemPath, OPCItemData& itemData)
 	{
 		log_NOTICE("ReadItemSync: called with group [", pGroupName,"] item [",pItemPath,"] called");
 
+		bool result = false;
 		GroupNode* pGroupNode = NULL;
+
 		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
 		{
-			pGroupNode->ReadItemSync(pItemPath, pBuff, szBuff);
-
-			log_NOTICE("readItemSync: group [", pGroupName,"] item [",pItemPath,"] value [",pBuff,"]");
-			return true;
+			result = pGroupNode->ReadItemSync(pItemPath, itemData);
+			log_NOTICE("readItemSync: group [", pGroupName,"] item [",pItemPath,"] returned result [",(pantheios::integer)result,"]");
+		}
+		else
+		{
+			RecordError("ReadItemSync: failed to find group [%s]", pGroupName);
 		}
 
-		RecordError("ReadItemSync: failed to find group [%s]", pGroupName);
-		return false;
+		
+		return result;
 	};
 
 

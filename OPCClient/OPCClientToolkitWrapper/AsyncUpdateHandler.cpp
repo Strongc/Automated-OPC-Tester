@@ -4,6 +4,7 @@
 #include "OPCGroup.h"
 #include "Utils.h"
 #include "OPCItem.h"
+#include "ItemValueStruct.h"
 
 #include <pantheios/pantheios.hpp>
 #include <pantheios/inserters/integer.hpp>
@@ -31,16 +32,14 @@ void AsyncUpdateHandler::OnDataChange(COPCGroup & group, CAtlMap<COPCItem *, OPC
 	{
 		CAtlMap<COPCItem *, OPCItemData *>::CPair* pPair = changes.GetNext(pos);
 
-		char valueBuff[nMaxBuffSz];
-		memset(valueBuff, nMaxBuffSz, 0);
-		ConvertOPCItemDataValueToCharArray(*pPair->m_value, valueBuff, nMaxBuffSz);
+		ItemValueStruct itemValueStruct(pPair->m_value);
 
-		log_NOTICE("\t item [",pPair->m_key->getName(),"] value [", valueBuff,"]");
+		log_NOTICE("\t item [",pPair->m_key->getName(),"] value [", itemValueStruct.getItemValue().value,"]");
 		if(callbackFn != NULL)
 		{
-			log_NOTICE("OnDataChange calling callback fn");
-			callbackFn(pPair->m_key->getName(), valueBuff);
-			log_NOTICE("OnDataChange called callback fn");
+			log_NOTICE("\t OnDataChange calling callback fn");
+			callbackFn(pPair->m_key->getName(), itemValueStruct.getItemValue().value);
+			log_DEBUG("\t OnDataChange called callback fn");
 		}
 	}
 }

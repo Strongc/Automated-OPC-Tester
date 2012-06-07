@@ -181,6 +181,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\ItemValueStructTest.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\OPCClientToolkitWrapperTests.cpp"
 				>
 			</File>
@@ -203,6 +207,22 @@
 			Name="SourceUnderTest"
 			>
 			<File
+				RelativePath="..\OPCClientToolkitWrapper\AsyncUpdateHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OPCClientToolkitWrapper\AsyncUpdateHandler.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OPCClientToolkitWrapper\ItemValueStruct.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OPCClientToolkitWrapper\ItemValueStruct.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OPCClientToolKit\src\main\include\OPCClient.h"
 				>
 			</File>
@@ -212,6 +232,10 @@
 			</File>
 			<File
 				RelativePath="..\OPCClientToolkitWrapper\Pantheios_implicit_link.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OPCClientToolkitWrapper\Utils.cpp"
 				>
 			</File>
 			<File

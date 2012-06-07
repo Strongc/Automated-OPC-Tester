@@ -24,12 +24,11 @@ void TransactionCompleteHandler::complete(CTransaction &transaction)
 	for(POSITION pos = transaction.opcData.GetStartPosition(); pos != NULL; )
 	{
 		COPCItem_DataMap::CPair* pPair = transaction.opcData.GetNext(pos);
-
-		char valueBuff[nMaxBuffSz];
-		memset(valueBuff, nMaxBuffSz, 0);
-		ConvertOPCItemDataValueToCharArray(*pPair->m_value, valueBuff, nMaxBuffSz);
-
-		log_NOTICE("\t completed item [",pPair->m_key->getName(),"] value [", valueBuff,"]");
+		
+		OPCItemData* pItemData = pPair->m_value;
+		
+		std::string value = Utils::VariantToStringConverter(pItemData->vDataValue);
+		log_NOTICE("\t completed item [",pPair->m_key->getName(),"] value [", value,"]");
 	}
 
 }

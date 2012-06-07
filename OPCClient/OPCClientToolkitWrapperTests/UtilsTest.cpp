@@ -12,62 +12,55 @@
 #include "gtest\gtest.h"
 
 using namespace std;
+using namespace Utils;
 
-// test instance - normally instantiated by dllInterface and referenced elsewhere as an extern.
-// avoids having to drag in dllInterface.cpp (and all the attendant compilation problems)
-CString gstrLastError = "No errors reported";
-
-TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForString)
+TEST(UtilsTest, testVariantToStringConverterForString)
 {
 	OPCItemData data;
 	data.vDataValue = _variant_t("I am a string");
 
-	char buff[100];
-	ConvertOPCItemDataValueToCharArray(data, buff, 100);
+	string result = VariantToStringConverter(data.vDataValue);
 
-	ASSERT_EQ(0, strcmp("I am a string", buff));
+	ASSERT_EQ(0, string("I am a string").compare(result));
 }
 
-TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForFloat)
+TEST(UtilsTest, testVariantToStringConverterForFloat)
 {
 	OPCItemData data;
 	data.vDataValue = _variant_t(3.1415927);
 
-	char buff[100];
-	ConvertOPCItemDataValueToCharArray(data, buff, 100);
+	string result = VariantToStringConverter(data.vDataValue);
 
-	ASSERT_EQ(0, strcmp("3.1415927", buff));
+	ASSERT_EQ(0, string("3.1415927").compare(result));
 }
 
-TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForFalseBool)
+TEST(UtilsTest, testVariantToStringConverterForFalseBool)
 {
 	OPCItemData data;
 	data.vDataValue = _variant_t(false);
 
-	char buff[100];
-	ConvertOPCItemDataValueToCharArray(data, buff, 100);
+	string result = VariantToStringConverter(data.vDataValue);
 
-	ASSERT_EQ(0, strcmp("0", buff));
+	ASSERT_EQ(0, string("0").compare(result));
 }
 
-TEST(UtilsTest, testConvertOPCItemDataValueToCharArrayForTrueBool)
+TEST(UtilsTest, testVariantToStringConverterForTrueBool)
 {
 	OPCItemData data;
 	data.vDataValue = _variant_t(true);
 
-	char buff[100];
-	ConvertOPCItemDataValueToCharArray(data, buff, 100);
+	string result = VariantToStringConverter(data.vDataValue);
 
 	// can only assert that string value is something other than 0
-	ASSERT_NE(0, strcmp("0", buff));
+	ASSERT_NE(0, string("0").compare(result));
 }
 
-TEST(UtilsTest, testConvertVariantToCharArrayForInteger)
+TEST(UtilsTest, testVariantToStringConverter)
 {
 	_variant_t wrappedVariant(123);
-	char buff[100];
+	std::string result = VariantToStringConverter(wrappedVariant.GetVARIANT());
 
-	ASSERT_EQ(0, strcmp("123", ConvertVariantToCharArray(wrappedVariant.GetVARIANT(), buff, 100)));
+	ASSERT_EQ(0, std::string("123").compare(result));
 }
 
 TEST(UtilsTest, testConvertIntToVarType)

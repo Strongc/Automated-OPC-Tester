@@ -14,9 +14,12 @@
 #include <pantheios/backends/bec.file.h>
 #include <pantheios/inserters/integer.hpp>
 #include <pantheios/frontends/fe.simple.h>
+#include "Utils.h"
+#include "ItemValueStruct.h"
 
 using namespace pantheios;
 using namespace std;
+using namespace Utils;
 
 bool gsbLoggingInitialised = false;
 char gscLogFilePath[MAX_PATH];
@@ -140,7 +143,12 @@ extern "C"
 	{
 		log_NOTICE("readItemSync called, group [",pGroupName,"] item [",pItemPath,"] initial buffer [", pBuff,"] buffer sz [", pantheios::integer(nBuffSz),"]");
 
-		bool result = gsoGroupManager.ReadItemSync(pGroupName, pItemPath, pBuff, nBuffSz);
+		OPCItemData itemData;
+		bool result = gsoGroupManager.ReadItemSync(pGroupName, pItemPath, itemData);
+
+		// create itemValue with data if available, otherwise empty.
+		ItemValueStruct itemValue(result? &itemData: 0);
+		_snprintf(pBuff, nBuffSz, "%s", itemValue.getItemValue().value);
 
 		log_NOTICE("readItemSync complete, buffer [", pBuff,"] buffer sz [", pantheios::integer(nBuffSz),"]");
 		return result;

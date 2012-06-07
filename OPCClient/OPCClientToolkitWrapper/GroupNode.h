@@ -10,6 +10,7 @@
 
 using namespace pantheios;
 using namespace std;
+using namespace Utils;
 
 extern TransactionCompleteHandler transactionHandler;
 
@@ -102,25 +103,19 @@ struct GroupNode
 			log_NOTICE("Added item to group - name [", pItemName,"] type [", pantheios::integer(m_itemsDataTypes[CString(pItemName)]),"]");
 		};
 
-		bool ReadItemSync(const char* const pItemName, char* pBuff, size_t szBuff)
+		bool ReadItemSync(const char* const pItemName, OPCItemData& itemData)
 		{
 			log_NOTICE("ReadItemSync: GroupNode [", m_pGroupName,"] reading item [", pItemName,"] (total number of group items [",pantheios::integer(m_items.GetCount()),"])");
-			memset(pBuff, 0, szBuff);
 
 			COPCItem* pItem = NULL;
 			if(m_items.Lookup(CString(pItemName), pItem))
 			{
 				log_NOTICE("ReadItemSync: GroupNode [", m_pGroupName,"] found item [", pItemName,"]");
-	  			OPCItemData data;
-	  			pItem->readSync(data, OPC_DS_DEVICE);
-
-				log_NOTICE("ReadItemSync: GroupNode [", m_pGroupName,"] translating item [", pItemName,"]");
-				ConvertOPCItemDataValueToCharArray(data, pBuff, szBuff);
+	  			pItem->readSync(itemData, OPC_DS_DEVICE);
 				return true;
 			}
 
 			RecordError("ReadItemSync: failed to read item [%s]", pItemName);
-			sprintf_s(pBuff, szBuff, "ERROR: item [%s] not found in address space", pItemName);
 			return false;
 		}
 
