@@ -77,6 +77,13 @@ class ScriptContextTest
 	}
 	
 	@Test
+	void testCreateGroupWithTimeout()
+	{
+		def newGroup = testee.createGroup(TEST_GROUP_NAME, 999)
+		assertEquals(TEST_GROUP_NAME, newGroup.name)
+	}
+	
+	@Test
 	void testGetGroupAddsGroupIfGroupNotAlreadyAdded()
 	{
 		assertNull(testee.findGroup(TEST_GROUP_NAME))

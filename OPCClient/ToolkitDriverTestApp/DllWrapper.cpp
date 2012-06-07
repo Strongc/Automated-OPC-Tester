@@ -11,6 +11,7 @@ typedef unsigned long (__cdecl *DLL_CREATE_GROUP_EXPORTED_METHOD)(const char* co
 typedef const bool (__cdecl *DLL_DESTROY_GROUP_EXPORTED_METHOD)(const char* const pGroupName);
 typedef const bool (__cdecl *DLL_ADD_ITEM_EXPORTED_METHOD)(const char* const pGroupName, const char* pItemPath);
 typedef const bool (__cdecl *DLL_GET_ITEM_NAMES_EXPORTED_METHOD)(char* itemsBuffer[], const int nElementLength, const int nNumElements, const int nOffSet);
+typedef const void (__cdecl *DLL_REGISTER_ASYNC_UPDATE_METHOD)(updateCallback cb);
 
 DllWrapper::DllWrapper(HINSTANCE hDllHandle)
 :m_hDllHandle(hDllHandle)
@@ -104,4 +105,14 @@ void DllWrapper::getItemNames()
 	}
 
 	cout << "DllWrapper::getItemNames complete" << endl;
+}
+
+void DllWrapper::registerAsyncUpdate(updateCallback cb)
+{
+	cout << "DllWrapper::registerAsyncUpdate+" << endl;
+
+	DLL_REGISTER_ASYNC_UPDATE_METHOD dllRegisterAsyncUpdate = (DLL_REGISTER_ASYNC_UPDATE_METHOD)GetDllMethod("registerAsyncUpdate");
+	dllRegisterAsyncUpdate(cb);
+
+	cout << "DllWrapper::registerAsyncUpdate-" << endl;
 }

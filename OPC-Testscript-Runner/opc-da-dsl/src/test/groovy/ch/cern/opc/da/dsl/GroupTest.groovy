@@ -109,21 +109,27 @@ class GroupTest
 	@Test(expected = IllegalArgumentException)
 	void testConstructorFailsIfNullGroupNameSupplied()
 	{
-		new Group()
+		new Group(null)
+		new Group(null, 999)
 	}
 	
 	@Test(expected = IllegalArgumentException)
 	void testConstructorFailsIfEmptyGroupNameSupplied()
 	{
 		new Group('')
+		new Group('', 999)
 	}
 	
 	@Test
 	void testConstructorCallsDllClientWithCorrectGroupNameAndRefreshRate()
 	{
-		new Group('the.group.name')
-		assertEquals('the.group.name', createdGroupName)
+		new Group('default.timeout')
+		assertEquals('default.timeout', createdGroupName)
 		assertEquals(1000, createdGroupRefreshRate)
+		
+		new Group('explicit.timeout', 999)
+		assertEquals('explicit.timeout', createdGroupName)
+		assertEquals(999, createdGroupRefreshRate)
 	}
 
 	@Test

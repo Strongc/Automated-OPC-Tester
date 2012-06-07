@@ -13,13 +13,15 @@ class Group
 	def private final static WITHIN_DOTS = '[a-zA-Z0-9\\_\\-]*'
 	def private final static STAR_REG_EXPS = ['**':ANY_DEPTH, '*':WITHIN_DOTS]
 	
-	def Group(name)
+	def public final static int GROUP_REFRESH_RATE_MS = 1000
+	
+	def Group(name, refreshRateMs = GROUP_REFRESH_RATE_MS)
 	{
 		if(name == null) throw new IllegalArgumentException("Group names cannot be null")
 		if(name.toString().empty) throw new IllegalArgumentException("Group names cannot be empty")
 		
 		this.name = name.toString()
-		OPCDAClientInstance.instance.createGroup(name, 1000)
+		OPCDAClientInstance.instance.createGroup(name, refreshRateMs)
 	}
 	
 	private def addItem(path)

@@ -9,13 +9,20 @@
 using namespace std;
 
 const LPCTSTR gsDllName = _T("AutomatedOpcTester.dll");
+const char* const gsOPCServerName = "Matrikon.OPC.Simulation";
+
+int updateCallbackFn(const char* path, const char* item)
+{
+	cout << "updated item with path ["<<path<<"] item ["<<item<<"]" << endl;
+	return 0;
+}
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	wcout << "loading " << gsDllName << "..." << endl;
 	DllWrapper dllWrapper(LoadLibrary(gsDllName));
 	
-	dllWrapper.init("", "WIENER.Plein.Baus.OPC.Server.DA");
+	dllWrapper.init("", gsOPCServerName);
 	dllWrapper.getItemNames();
 
 	string baseGroupNm("testGroup");
@@ -28,24 +35,25 @@ int _tmain(int argc, _TCHAR* argv[])
 		groupNm.append(buff);
 
 		cout << "creating group ["<<groupNm.c_str()<<"]" << endl;
-		dllWrapper.createGroup(groupNm.c_str(), 1000);
+		dllWrapper.createGroup(groupNm.c_str(), 10);
 		
-		Sleep(50);
+		Sleep(750);
 
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.I1_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.I2_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.I4_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.UI1_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.UI2_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.UI4_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.R4_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.R8_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.BOOL_Cache");
-		dllWrapper.addItem(groupNm.c_str(), "Server.TestObjects.BSTR_Cache");
+		dllWrapper.registerAsyncUpdate(updateCallbackFn);
 
-		Sleep(50);
+		dllWrapper.addItem(groupNm.c_str(), "testGroup.myBigFloat");
+		dllWrapper.addItem(groupNm.c_str(), "testGroup.myBool");
+		dllWrapper.addItem(groupNm.c_str(), "testGroup.myLongInt");
+		dllWrapper.addItem(groupNm.c_str(), "testGroup.myReadOnly");
+		dllWrapper.addItem(groupNm.c_str(), "testGroup.myShortInt");
+		dllWrapper.addItem(groupNm.c_str(), "testGroup.mySmallFloat");
+		dllWrapper.addItem(groupNm.c_str(), "testGroup.myString");
+		cout << "added items" << endl;
+
+		Sleep(120000);
 
 		dllWrapper.destroyGroup(groupNm.c_str());
+		cout << "destroyed group" << endl;
 	}
 
 	dllWrapper.end();

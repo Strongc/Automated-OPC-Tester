@@ -28,9 +28,9 @@ class ScriptContext
 		setClient(new OPCDAClient())
 	}
 	
-	private def createGroup(name)
+	private def createGroup(name, refreshRateMs = Group.GROUP_REFRESH_RATE_MS)
 	{
-		groups[name] = new Group(name)
+		groups[name] = new Group(name, refreshRateMs)
 		return groups[name]
 	}
 	
@@ -39,11 +39,11 @@ class ScriptContext
 		return groups[name]
 	}
 	
-	def group(name)
+	def group(name, refreshRateMs = Group.GROUP_REFRESH_RATE_MS)
 	{
 		if(findGroup(name) == null)
 		{
-			createGroup(name)
+			createGroup(name, refreshRateMs)
 		}
 		return findGroup(name)
 	}

@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include <windows.h>
+#include "AsyncUpdateHandler.h"
 
 class DllWrapper
 {
@@ -15,6 +16,7 @@ public:
 	void destroyGroup(const char* const pGroupName);
 	void addItem(const char* const pGroupName, const char* pItemPath);
 	void getItemNames();
+	void registerAsyncUpdate(updateCallback cb);
 
 private:
 	HINSTANCE m_hDllHandle;
