@@ -14,9 +14,9 @@ public class Main
     	OPCDAAsyncUpdateCallback callback = new OPCDAAsyncUpdateCallback() 
     	{
 			@Override
-			public int onUpdate(String itemPath, String value) 
+			public int onUpdate(String itemPath, String value, int quality, int type, String timestamp) 
 			{
-				System.out.println("onUpdate called with item ["+itemPath+"] value ["+value+"]");
+				System.out.println("onUpdate called with item ["+itemPath+"] value ["+value+"] quality ["+quality+"] type ["+type+"] timestamp ["+timestamp+"]");
 				return 1;
 			}
 		};

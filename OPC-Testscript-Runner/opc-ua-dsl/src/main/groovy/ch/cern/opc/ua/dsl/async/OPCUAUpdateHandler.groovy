@@ -23,7 +23,7 @@ class OPCUAUpdateHandler implements OPCUAAsyncUpdateCallback
 		if(notification.value == null) return 0
 		
 		def valueAsString = notification.value.value.value.toString()
-		dslHandler.onUpdate(nodeId, attributeId, valueAsString)
+		dslHandler.onUpdate(nodeId, attributeId, valueAsString, 0, 0, null)
 		return 1;
 	}
 }

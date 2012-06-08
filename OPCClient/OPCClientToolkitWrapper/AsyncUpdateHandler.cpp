@@ -38,7 +38,8 @@ void AsyncUpdateHandler::OnDataChange(COPCGroup & group, CAtlMap<COPCItem *, OPC
 		if(callbackFn != NULL)
 		{
 			log_NOTICE("\t OnDataChange calling callback fn");
-			callbackFn(pPair->m_key->getName(), itemValueStruct.getItemValue().value);
+			const ItemValue& itemValue = itemValueStruct.getItemValue();
+			callbackFn(pPair->m_key->getName(), itemValue.value, itemValue.quality, itemValue.dataType, itemValue.timestamp);
 			log_DEBUG("\t OnDataChange called callback fn");
 		}
 	}

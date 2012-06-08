@@ -16,7 +16,7 @@ class OPCDAUpdateHandler implements OPCDAAsyncUpdateCallback
 	}
 	
 	@Override
-	public int onUpdate(String itemPath, String value) 
+	public int onUpdate(String itemPath, String value, int quality, int type, String timestamp) 
 	{
 		if(itemPath == null || value == null)
 		{
@@ -26,7 +26,7 @@ class OPCDAUpdateHandler implements OPCDAAsyncUpdateCallback
 		else
 		{
 			logTrace("onUpdate called for item [${itemPath}] value [${value}] thread [${Thread.currentThread().id}]")
-			genericHandler.onUpdate(itemPath, null, value)
+			genericHandler.onUpdate(itemPath, null, value, quality, type, timestamp)
 			return 1
 		}
 	}

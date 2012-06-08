@@ -3,7 +3,7 @@
 #include "OPCClient.h"
 #include <atlstr.h>
 
-typedef int(*updateCallback)(const char* path, const char* item);
+typedef int(*updateCallback)(const char* path, const char* value, const int quality, const int type, const char* timestamp);
 
 class AsyncUpdateHandler : public IAsynchDataCallback
 {

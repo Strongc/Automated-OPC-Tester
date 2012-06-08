@@ -28,7 +28,12 @@ class OPCUAUpdateHandlerTest
 	private def rcvdItemId
 	private def rcvdAttributeId
 	private def rcvdValue
+	private def rcvdQuality
+	private def rcvdType
+	private def rcvdTimestamp
+	
 	private def wasUpdateInvoked
+	
 
 	private def testee
 	
@@ -41,11 +46,14 @@ class OPCUAUpdateHandlerTest
 		wasUpdateInvoked = false
 		
 		def result = [
-			onUpdate:{itemId, attributeId, value->
+			onUpdate:{itemId, attributeId, value, quality, type, timestamp->
 				wasUpdateInvoked = true
 				rcvdItemId = itemId
 				rcvdAttributeId = attributeId
-				rcvdValue = value}
+				rcvdValue = value
+				rcvdQuality = quality
+				rcvdType = type
+				rcvdTimestamp = timestamp}
 		] as UpdateHandler;
 	
 		return result

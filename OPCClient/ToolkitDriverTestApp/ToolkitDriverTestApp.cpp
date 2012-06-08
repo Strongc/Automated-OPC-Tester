@@ -11,9 +11,9 @@ using namespace std;
 const LPCTSTR gsDllName = _T("AutomatedOpcTester.dll");
 const char* const gsOPCServerName = "Matrikon.OPC.Simulation";
 
-int updateCallbackFn(const char* path, const char* item)
+int updateCallbackFn(const char* path, const char* value, const int quality, const int type, const char* timestamp)
 {
-	cout << "updated item with path ["<<path<<"] item ["<<item<<"]" << endl;
+	cout << "updated item with path ["<<path<<"] value ["<<value<<"] quality ["<<quality<<"] type ["<<type<<"] timestamp ["<<timestamp<<"]" << endl;
 	return 0;
 }
 

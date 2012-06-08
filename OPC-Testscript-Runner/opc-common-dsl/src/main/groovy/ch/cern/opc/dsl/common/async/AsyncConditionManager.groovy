@@ -16,7 +16,7 @@ class AsyncConditionManager implements UpdateHandler
 	}
 	
 	@Override
-	public synchronized void onUpdate(itemId, attributeId, value)
+	public synchronized void onUpdate(itemId, attributeId, value, quality, type, timestamp)
 	{
 		if(itemId == null || value == null)
 		{
@@ -27,6 +27,9 @@ class AsyncConditionManager implements UpdateHandler
 			logDebug("onUpdate called")
 			logDebug("-item [${itemId}]")
 			logDebug("-value [${value}]")
+			logDebug("-quality [${quality}]")
+			logDebug("-type [${type}]")
+			logDebug("-timestamp [${timestamp}]")
 			logDebug("-thread [${Thread.currentThread().id}]")
 			
 			asyncUpdate(itemId, value)

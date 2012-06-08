@@ -13,5 +13,5 @@ public interface UpdateHandler
 	* @param attributeId identifies the attribute of the item which has been updated
 	* @param value the value
 	*/
-   public void onUpdate(itemId, attributeId, value);
+   public void onUpdate(itemId, attributeId, value, quality, type, timestamp);
 }
