@@ -83,3 +83,36 @@ TEST(ItemValueStructTest, testStringTypeRecognised)
 
 	ASSERT_EQ(VT_BSTR, ItemValueStruct(&data).getItemValue().dataType);
 }
+
+TEST(ItemValueStructTest, testDuplication)
+{
+	FILETIME now;
+	string expectedTimestamp = getCurrentTime(now);
+
+	OPCItemData data;
+	data.vDataValue = _variant_t(-1234.5678);
+	data.wQuality = 0x03; // first 2 bits ON = item quality GOOD.
+	data.ftTimeStamp.dwHighDateTime = now.dwHighDateTime;
+	data.ftTimeStamp.dwLowDateTime = now.dwLowDateTime;
+
+	ItemValueStruct itemValueWrapper(&data);
+	
+	ASSERT_EQ(0, string("-1234.5678").compare(itemValueWrapper.getItemValue().value));
+	ASSERT_EQ(3, itemValueWrapper.getItemValue().quality);
+	ASSERT_EQ(0, expectedTimestamp.compare(itemValueWrapper.getItemValue().timestamp));
+	ASSERT_EQ(VT_R8, itemValueWrapper.getItemValue().dataType);
+
+	char valueBuff[1024];
+	char timestampBuff[1024];
+	int qualityBuff;
+	int typeBuff;
+
+	itemValueWrapper.duplicateTo(1024, valueBuff, qualityBuff, typeBuff, timestampBuff);
+	cout << "duplicated value is ["<<valueBuff<<"]" << endl;
+	cout << "expected timestampis ["<<timestampBuff<<"] duplicated timestamp is ["<<timestampBuff<<"]" << endl;
+
+	ASSERT_EQ(0, string("-1234.5678").compare(valueBuff));
+	ASSERT_EQ(3, qualityBuff);
+	ASSERT_EQ(0, expectedTimestamp.compare(timestampBuff));
+	ASSERT_EQ(VT_R8, typeBuff);
+}

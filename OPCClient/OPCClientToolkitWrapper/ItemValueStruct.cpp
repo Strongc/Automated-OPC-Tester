@@ -68,3 +68,27 @@ void ItemValueStruct::initialiseStructure(void)
 	itemValue.quality = 0;
 	itemValue.dataType = 0;
 }
+
+/**
+* Note duplication assumes that the target instances char buffers (value and timestamp)
+* have size charBuffSz. If not, trouble.
+*/
+void ItemValueStruct::duplicateTo(const int charBuffSz, char* valueOut, int& qualityOut, int& typeOut, char* timestampOut) const
+{
+	duplicateStringField(itemValue.value, valueOut, charBuffSz);
+	duplicateStringField(itemValue.timestamp, timestampOut, charBuffSz);
+	qualityOut = itemValue.quality;
+	typeOut = itemValue.dataType;
+}
+
+void ItemValueStruct::duplicateStringField(const char* const srcStringField, char* dstStringField, const int charBuffSz) const
+{
+	if(srcStringField != 0)
+	{
+		_snprintf_s(dstStringField, charBuffSz, charBuffSz-1, "%s", srcStringField);
+	}
+	else
+	{
+		_snprintf_s(dstStringField, charBuffSz, charBuffSz-1, "%s", NO_VALUE_STR);
+	}
+}

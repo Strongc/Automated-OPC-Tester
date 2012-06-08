@@ -1,13 +1,17 @@
 package ch.cern.opc.client;
 
-import static ch.cern.opc.common.Log.*;
+import static ch.cern.opc.common.Log.logDebug;
+import static ch.cern.opc.common.Log.logError;
+import static ch.cern.opc.common.Log.logInfo;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.NativeLong;
+import com.sun.jna.ptr.IntByReference;
 
 class Client implements OPCDAClientApi 
 {
@@ -115,10 +119,14 @@ class Client implements OPCDAClientApi
 	@Override
 	public String readItemSync(String groupName, String itemPath) 
 	{
-		byte buff[] = new byte[MAX_BUFF_SZ];
-		if(INSTANCE.readItemSync(groupName, itemPath, buff, MAX_BUFF_SZ))
+		byte[] valBuff = new byte[1024];
+		byte[] tsBuff = new byte[1024];
+		IntByReference quality = new IntByReference();
+		IntByReference type = new IntByReference();
+		
+		if(INSTANCE.readItemSync(groupName, itemPath, 1024, ByteBuffer.wrap(valBuff), quality, type, ByteBuffer.wrap(tsBuff)))
 		{
-			return translateCppString(buff);
+			return translateCppString(valBuff);
 		}
 		else
 		{

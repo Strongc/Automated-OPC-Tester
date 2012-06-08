@@ -139,18 +139,20 @@ extern "C"
 		return bAdded;
 	}
 
-	__declspec(dllexport) const bool __cdecl readItemSync(const char* const pGroupName, const char* pItemPath, char* pBuff, const int nBuffSz)
+	__declspec(dllexport) const bool __cdecl readItemSync(const char* const pGroupName, const char* pItemPath, const int charBuffSz, char* valueOut, int& qualityOut, int& typeOut, char* timestampOut)
 	{
-		log_NOTICE("readItemSync called, group [",pGroupName,"] item [",pItemPath,"] initial buffer [", pBuff,"] buffer sz [", pantheios::integer(nBuffSz),"]");
+		log_NOTICE("readItemSync called, group [",pGroupName,"] item [",pItemPath,"] buffSz [",(pantheios::integer)charBuffSz,"]");
 
 		OPCItemData itemData;
 		bool result = gsoGroupManager.ReadItemSync(pGroupName, pItemPath, itemData);
 
-		// create itemValue with data if available, otherwise empty.
+		// create itemValue with data if available, otherwise empty (which creates #NO_VALUE# entries).
 		ItemValueStruct itemValue(result? &itemData: 0);
-		_snprintf(pBuff, nBuffSz, "%s", itemValue.getItemValue().value);
 
-		log_NOTICE("readItemSync complete, buffer [", pBuff,"] buffer sz [", pantheios::integer(nBuffSz),"]");
+		// write to output values
+		itemValue.duplicateTo(charBuffSz, valueOut, qualityOut, typeOut, timestampOut);
+		log_NOTICE("readItemSync complete, group [",pGroupName,"] item [",pItemPath,"] value [",valueOut,"] quality [",(pantheios::integer)qualityOut,"]");
+		
 		return result;
 	}
 

@@ -17,7 +17,7 @@
 * class. So if you add/remove anything to the struct, ensure the Java layer corresponds.
 *
 */
-struct ItemValue
+typedef struct _ItemValue
 {
 	// item value
 	char* value;
@@ -30,7 +30,7 @@ struct ItemValue
 
 	// format: YYYY/MM/DD-HH:MM:SS.mmm
 	char* timestamp;
-};
+} ItemValue;
 
 /**
 * class is a wrapper (essentially for translation from OPCDataItem instances to ItemValue instances)
@@ -43,10 +43,12 @@ public:
 	virtual ~ItemValueStruct();
 
 	const ItemValue& getItemValue(void) const;
+	void duplicateTo(const int charBuffSz, char* valueOut, int& qualityOut, int& typeOut, char* timestampOut) const;
 
 private:
 	ItemValue itemValue;
 
+	void duplicateStringField(const char* const srcStringField, char* dstStringField, const int charBuffSz) const;
 	void translateOPCItemData(const OPCItemData* itemData);
 	std::string convertFILETIMEToString(const FILETIME& ft);
 	void initialiseStructure(void);
