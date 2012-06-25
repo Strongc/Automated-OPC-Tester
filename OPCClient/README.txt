@@ -4,8 +4,10 @@ Note: The C++ portion of the Automated-OPC-Tester has some dependencies, namely:
 Pantheios (A C++ logging front end), which depends on
 STLSOFT (A C++ library - headers only).
 
-These have to be installed and environment variables set to point to their root directories, for example
-PATHEIOS_ROOT="C:\3rd_Party\CPP\panth
+These have to be installed and environment variables set to point to their root directories, for example set environment varibles:
+PATHEIOS_ROOT="C:\3rd_Party\CPP\pantheios-1.01-beta212"
+STLSOFT="C:\3rd_Party\CPP\stlsoft-1.9.109"
+
 
 
 == Building with maven (maven-nar-plugin) UNDER CONSTRUCTION ==

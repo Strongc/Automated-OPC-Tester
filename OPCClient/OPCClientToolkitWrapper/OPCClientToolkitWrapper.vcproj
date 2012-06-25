@@ -85,7 +85,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(ConfigurationName)\AutomatedOpcTester.dll C:\WINNT\System32\AutomatedOpcTester.dll"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -161,7 +161,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(ConfigurationName)\AutomatedOpcTester.dll C:\WINNT\System32\AutomatedOpcTester.dll"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
