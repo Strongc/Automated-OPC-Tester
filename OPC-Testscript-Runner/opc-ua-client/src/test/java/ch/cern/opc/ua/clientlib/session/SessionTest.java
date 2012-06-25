@@ -13,14 +13,11 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 import org.opcfoundation.ua.application.SessionChannel;
-import org.opcfoundation.ua.builtintypes.DataValue;
 import org.opcfoundation.ua.builtintypes.StatusCode;
 import org.opcfoundation.ua.builtintypes.UnsignedInteger;
 import org.opcfoundation.ua.common.ServiceFaultException;
 import org.opcfoundation.ua.common.ServiceResultException;
 
-import ch.cern.opc.ua.clientlib.notification.MockUaDslCallback;
-import ch.cern.opc.ua.clientlib.notification.SubscriptionNotification;
 import ch.cern.opc.ua.clientlib.subscription.Subscription;
 
 public class SessionTest 

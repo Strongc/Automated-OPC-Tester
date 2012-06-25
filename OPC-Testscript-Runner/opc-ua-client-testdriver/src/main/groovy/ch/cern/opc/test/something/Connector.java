@@ -11,7 +11,6 @@ import java.util.Scanner;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.opcfoundation.ua.builtintypes.DataValue;
-import org.opcfoundation.ua.core.EndpointDescription;
 
 import ch.cern.opc.ua.clientlib.EndpointSummary;
 import ch.cern.opc.ua.clientlib.UaClient;
