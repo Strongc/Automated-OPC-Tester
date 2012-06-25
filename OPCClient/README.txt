@@ -1,5 +1,13 @@
 This project is a wrapper around an OPCClient (in the OPCClientToolkit). The wrapper (OPCClientToolkitWrapper) handles a bit of state and exposes a nice interface onto which the groovy/java modules (in ../OPC-Testscript-Runner) connect and drive the tests.
 
+Note: The C++ portion of the Automated-OPC-Tester has some dependencies, namely:
+Pantheios (A C++ logging front end), which depends on
+STLSOFT (A C++ library - headers only).
+
+These have to be installed and environment variables set to point to their root directories, for example
+PATHEIOS_ROOT="C:\3rd_Party\CPP\panth
+
+
 == Building with maven (maven-nar-plugin) UNDER CONSTRUCTION ==
 This solution should eventually be buildable with maven.
 
