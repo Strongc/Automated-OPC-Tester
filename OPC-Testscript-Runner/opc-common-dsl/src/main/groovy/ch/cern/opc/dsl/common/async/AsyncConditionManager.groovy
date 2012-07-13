@@ -10,10 +10,10 @@ class AsyncConditionManager implements UpdateHandler
 	private final def asyncConditions = []
 	private final AsyncTicker ticker = new AsyncTicker()
 	
-	def AsyncConditionManager()
-	{
-		logTrace("AsyncConditionManager instance created")
-	}
+	//def AsyncConditionManager()
+	//{
+		//logTrace("AsyncConditionManager instance created")
+	//}
 	
 	def synchronized registerAsyncCondition(asyncCondition)
 	{
@@ -43,7 +43,7 @@ class AsyncConditionManager implements UpdateHandler
 	
 	private def asyncUpdate(itemPath, actualValue)
 	{
-		logTrace("asyncUpdate started item [${itemPath}] value [${actualValue}] thread [${Thread.currentThread().id}] async conditions count [${asyncConditions.size()}]")
+		//logTrace("asyncUpdate started item [${itemPath}] value [${actualValue}] thread [${Thread.currentThread().id}] async conditions count [${asyncConditions.size()}]")
 		synchronized(asyncConditions)
 		{
 			asyncConditions.each
@@ -53,7 +53,7 @@ class AsyncConditionManager implements UpdateHandler
 			
 			removeNonWaitingAsyncConditions()
 		}
-		logTrace("asyncUpdate completed")
+		//logTrace("asyncUpdate completed")
 	}
 	
 	def synchronized getRegisteredAsyncConditionsCount()
