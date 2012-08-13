@@ -3,6 +3,7 @@ package ch.cern.opc.da.dsl.async
 import ch.cern.opc.client.OPCDAAsyncUpdateCallback;
 import ch.cern.opc.client.OPCDAClientApi;
 import ch.cern.opc.client.OPCDAClientInstance
+import ch.cern.opc.client.Update
 import ch.cern.opc.dsl.common.client.UpdateHandler
 import static ch.cern.opc.common.Log.*
 
@@ -16,17 +17,17 @@ class OPCDAUpdateHandler implements OPCDAAsyncUpdateCallback
 	}
 	
 	@Override
-	public int onUpdate(String itemPath, String value, int quality, int type, String timestamp) 
+	public int onUpdate(Update update) 
 	{
-		if(itemPath == null || value == null)
+		if(update.itemPath == null || update.value == null)
 		{
-			logWarning("WARNING onUpdate called with null - item null [${itemPath==null?'Y':'N'}] value null [${value==null?'Y':'N'}]")
+			logWarning("WARNING onUpdate called with null - item null [${update.itemPath==null?'Y':'N'}] value null [${update.value==null?'Y':'N'}]")
 			return 0
 		}
 		else
 		{
-			logTrace("onUpdate called for item [${itemPath}] value [${value}] thread [${Thread.currentThread().id}]")
-			genericHandler.onUpdate(itemPath, null, value, quality, type, timestamp)
+			logTrace("onUpdate called for item [${update.itemPath}] value [${update.value}] thread [${Thread.currentThread().id}]")
+			genericHandler.onUpdate(update.itemPath, null, update.value, update.quality, update.type, update.timestamp)
 			return 1
 		}
 	}

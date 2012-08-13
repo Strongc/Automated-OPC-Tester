@@ -39,7 +39,17 @@ void AsyncUpdateHandler::OnDataChange(COPCGroup & group, CAtlMap<COPCItem *, OPC
 		{
 			log_NOTICE("\t OnDataChange calling callback fn");
 			const ItemValue& itemValue = itemValueStruct.getItemValue();
-			callbackFn(pPair->m_key->getName(), itemValue.value, itemValue.quality, itemValue.dataType, itemValue.timestamp);
+			
+			Update update;
+			update.path = const_cast<char*>(pPair->m_key->getName().GetString());
+			update.value = itemValue.value;
+			update.quality = itemValue.quality;
+			update.type = itemValue.dataType;
+			update.timestamp = itemValue.timestamp;
+			update.attributeId = "UNUSED";
+
+			callbackFn(&update);
+
 			log_DEBUG("\t OnDataChange called callback fn");
 		}
 	}

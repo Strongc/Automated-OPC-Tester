@@ -14,17 +14,21 @@ public class Main
     	OPCDAAsyncUpdateCallback callback = new OPCDAAsyncUpdateCallback() 
     	{
 			@Override
-			public int onUpdate(String itemPath, String value, int quality, int type, String timestamp) 
+			public int onUpdate(Update update) 
 			{
-				System.out.println("onUpdate called with item ["+itemPath+"] value ["+value+"] quality ["+quality+"] type ["+type+"] timestamp ["+timestamp+"]");
+				System.out.println("onUpdate called with item ["+update.itemPath+"] value ["+update.value+"] quality ["+update.quality+"] type ["+update.type+"] timestamp ["+update.timestamp+"]");
 				return 1;
 			}
 		};
 		OPCDAClientInstance.getInstance().registerAsyncUpdate(callback);
     	
+		OPCDAClientInstance.getInstance().createGroup(GROUP_NM, 1000);
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
+    	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myShortInt");
     	
+    	Thread.sleep(120000);
     	
+/*    	
     	for(int i=0; i<100; i++)
     	{
     		OPCDAClientInstance.getInstance().writeItemAsync(GROUP_NM, "testGroup.myString", "loop_"+i);
@@ -37,7 +41,7 @@ public class Main
     		
     		Thread.sleep(100);
     	}
-    	
+*/    	
     	OPCDAClientInstance.getInstance().end();
 
     	System.out.println("completed");
