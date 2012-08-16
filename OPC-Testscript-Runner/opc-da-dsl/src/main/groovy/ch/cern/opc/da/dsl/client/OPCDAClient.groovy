@@ -10,6 +10,7 @@ import static ch.cern.opc.common.Log.*;
 
 class OPCDAClient implements GenericClient 
 {
+	private OPCDAUpdateHandler updateHandler = null
 	private OPCDAAsyncUpdateCallback daCallback = null
 	
 	@Override
@@ -22,13 +23,21 @@ class OPCDAClient implements GenericClient
 	public void registerForAsyncUpdates(UpdateHandler genericHandler) 
 	{
 		logInfo("OPCDA client - registering handler for asynchronous updates")
-		daCallback = new OPCDAUpdateHandler(genericHandler)
+		
+		// set up handling updates out to wider Java
+		updateHandler = new OPCDAUpdateHandler(genericHandler)
+		updateHandler.startUpdaterThread();
+		
+		// setup handling 'landing zone' for updates direct from C++
+		daCallback = new OPCDAAsyncUpdateCallback(updateHandler.updatesQueue)
 		OPCDAClientInstance.instance.registerAsyncUpdate(daCallback)
 	}
 
 	@Override
 	public void cleanUp() 
 	{
+		updateHandler.stopUpdaterThread();
+		
 		OPCDAClientInstance.instance.end();
 	}
 }

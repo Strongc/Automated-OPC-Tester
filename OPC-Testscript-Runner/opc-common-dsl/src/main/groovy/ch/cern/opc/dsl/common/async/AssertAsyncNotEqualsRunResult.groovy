@@ -1,5 +1,7 @@
 package ch.cern.opc.dsl.common.async
 
+import java.util.Map;
+
 import org.apache.commons.lang.NotImplementedException
 
 import ch.cern.opc.dsl.common.results.RunResult
@@ -59,7 +61,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 	@Override
 	def checkUpdate(itemPath, actualValue)
 	{
-		if(this.itemPath.equals(itemPath))
+		if(isItemPathMatch(itemPath))
 		{
 			if(antiExpectedValue.equals(actualValue))
 			{

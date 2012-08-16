@@ -2,6 +2,9 @@ package ch.cern.opc.dsl.common.async
 
 import static ch.cern.opc.dsl.common.results.RunResultUtil.formatMessage
 import static ch.cern.opc.dsl.common.async.AsyncState.*
+
+import java.util.Map;
+
 import org.apache.commons.lang.NotImplementedException
 
 class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
@@ -64,7 +67,7 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 	@Override
 	def checkUpdate(itemPath, actualValue)
 	{
-		if(this.itemPath.equals(itemPath))
+		if(isItemPathMatch(itemPath))
 		{
 			if(this.expectedValue.equals(actualValue))
 			{
@@ -73,4 +76,5 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 		}
 		println("AssertAsyncEqualsRunResult.checkUpdate - state [${state}] checked input [item:${itemPath} actual:${actualValue}] against this: ${this}")
 	}
+
 }

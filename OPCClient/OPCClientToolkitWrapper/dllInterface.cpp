@@ -32,7 +32,7 @@ AsyncUpdateHandler updateHandler;
 TransactionCompleteHandler transactionHandler;
 GroupManager gsoGroupManager(updateHandler);
 
-CString gstrLastError = "No errors reported";
+std::string gstrLastError = "No errors reported";
 
 
 const char* const GetLogFilePath()
@@ -86,137 +86,242 @@ extern "C"
 {
 	__declspec(dllexport) void __cdecl init(const char* const pHost, const char* const pServer)
 	{
-		log_NOTICE("Initialising with host [",pHost,"] port [",pServer,"]");
+		log_NOTICE("init+, host [",pHost,"] server [",pServer,"]");
 
-		InitialiseLogging();
+		try
+		{
+			InitialiseLogging();
 
-		COPCClient::init();
-		log_NOTICE("init - intialised OPCClient class");
+			COPCClient::init();
+			log_NOTICE("init - intialised OPCClient class");
 
-		gspHost = COPCClient::makeHost(pHost);
-		log_NOTICE("init: made host [", pHost,"]");
+			gspHost = COPCClient::makeHost(pHost);
+			log_NOTICE("init: made host [", pHost,"]");
 
-		gspOpcServer = gspHost->connectDAServer(pServer);
-		log_NOTICE("init: connected opcServer [", pServer,"]");
+			gspOpcServer = gspHost->connectDAServer(pServer);			
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("init: [", gstrLastError,"]");
+		}
+
+		log_NOTICE("init-, host [",pHost,"] server [",pServer,"]");
 	}
 
 	__declspec(dllexport) void __cdecl end()
 	{
-		log_NOTICE("Ending client session");
+		log_NOTICE("end+ ending client session");
 
-		COPCClient::stop();
-		log_NOTICE("stop - called for OPCClient class");
+		try
+		{
+			COPCClient::stop();
+			log_NOTICE("stop - called for OPCClient class");
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("end: [", gstrLastError,"]");
+		}
+
+		log_NOTICE("end-");
 	}
 
 	__declspec(dllexport) const unsigned long __cdecl createGroup(const char* const pGroupName, const unsigned long requestedRefreshRate)
 	{
-		log_NOTICE("createGroup called, group name [", pGroupName,"] requested refresh rate [", ((pantheios::integer)requestedRefreshRate),"]");
+		log_NOTICE("createGroup+, group name [", pGroupName,"] requested refresh rate [", ((pantheios::integer)requestedRefreshRate),"]");
 
-		unsigned long actualRefreshRate = gsoGroupManager.CreateGroup(pGroupName, requestedRefreshRate);
+		unsigned long actualRefreshRate = 0;
+		try
+		{		
+			actualRefreshRate = gsoGroupManager.CreateGroup(pGroupName, requestedRefreshRate);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("createGroup: [", gstrLastError,"]");
+		}
 
-		log_NOTICE("createGroup completed, for group name [", pGroupName,"] actual refresh rate [",((pantheios::integer)actualRefreshRate),"]");
+		log_NOTICE("createGroup-, group name [", pGroupName,"] actual refresh rate [",((pantheios::integer)actualRefreshRate),"]");
 		return actualRefreshRate;
 	} 
 
 	__declspec(dllexport) const bool __cdecl destroyGroup(const char* const pGroupName)
 	{
-		log_NOTICE("destroyGroup called, group name [", pGroupName,"]");
+		log_NOTICE("destroyGroup+, group name [", pGroupName,"]");
 
-		bool result = gsoGroupManager.DestroyGroup(pGroupName);
+		bool result = false;
+		try
+		{
+			result = gsoGroupManager.DestroyGroup(pGroupName);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("destroyGroup: [", gstrLastError,"]");
+		}
 
-		log_NOTICE("destroyGroup completed, for group name [", pGroupName,"] success [",(result?"Y":"N"),"]");
+		log_NOTICE("destroyGroup-, group name [", pGroupName,"] success [",(result?"Y":"N"),"]");
 		return result;
 	} 
 
 
 	__declspec(dllexport) const bool __cdecl addItem(const char* const pGroupName, const char* pItemPath)
 	{
-		log_NOTICE("addItem called, group name [", pGroupName,"] item name [", pItemPath,"]");
+		log_NOTICE("addItem+, group name [", pGroupName,"] item name [", pItemPath,"]");
 
-		bool bAdded = gsoGroupManager.AddItem(pGroupName, pItemPath);
+		bool bAdded = false;
+		try
+		{
+			bAdded = gsoGroupManager.AddItem(pGroupName, pItemPath);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("addItem: [", gstrLastError,"]");
+		}
 
-		log_NOTICE("addItem completed, for group name [", pGroupName,"] success [",(bAdded?"Y":"N"),"]");
+		log_NOTICE("addItem-, group name [", pGroupName,"] success [",(bAdded?"Y":"N"),"]");
 		return bAdded;
 	}
 
 	__declspec(dllexport) const bool __cdecl readItemSync(const char* const pGroupName, const char* pItemPath, const int charBuffSz, char* valueOut, int& qualityOut, int& typeOut, char* timestampOut)
 	{
-		log_NOTICE("readItemSync called, group [",pGroupName,"] item [",pItemPath,"] buffSz [",(pantheios::integer)charBuffSz,"]");
+		log_NOTICE("readItemSync+, group [",pGroupName,"] item [",pItemPath,"] buffSz [",(pantheios::integer)charBuffSz,"]");
 
-		OPCItemData itemData;
-		bool result = gsoGroupManager.ReadItemSync(pGroupName, pItemPath, itemData);
+		bool result = false;
+		try
+		{
+			OPCItemData itemData;
+			result = gsoGroupManager.ReadItemSync(pGroupName, pItemPath, itemData);
 
-		// create itemValue with data if available, otherwise empty (which creates #NO_VALUE# entries).
-		ItemValueStruct itemValue(result? &itemData: 0);
+			// create itemValue with data if available, otherwise empty (which creates #NO_VALUE# entries).
+			ItemValueStruct itemValue(result? &itemData: 0);
 
-		// write to output values
-		itemValue.duplicateTo(charBuffSz, valueOut, qualityOut, typeOut, timestampOut);
-		log_NOTICE("readItemSync complete, group [",pGroupName,"] item [",pItemPath,"] value [",valueOut,"] quality [",(pantheios::integer)qualityOut,"]");
-		
+			// write to output values
+			itemValue.duplicateTo(charBuffSz, valueOut, qualityOut, typeOut, timestampOut);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("readItemSync: [", gstrLastError,"]");
+		}
+
+		log_NOTICE("readItemSync-, result [",(result?"Y":"N"),"] group [",pGroupName,"] item [",pItemPath,"] value [",valueOut,"] quality [",(pantheios::integer)qualityOut,"]");
 		return result;
 	}
 
 	__declspec(dllexport) const bool __cdecl readItemAsync(const char* const pGroupName, const char* pItemPath)
 	{
-		log_NOTICE("readItemAsync called, group [",pGroupName,"] item [",pItemPath,"]");
+		log_NOTICE("readItemAsync+, group [",pGroupName,"] item [",pItemPath,"]");
 
-		bool result = gsoGroupManager.ReadItemAsync(pGroupName, pItemPath);
+		bool result = false;
+		try
+		{
+			result = gsoGroupManager.ReadItemAsync(pGroupName, pItemPath);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("readItemAsync: [", gstrLastError,"]");
+		}
 
-		log_NOTICE("readItemAsync complete, success [", (result?"Y":"N"),"]");
+		log_NOTICE("readItemAsync-, success [", (result?"Y":"N"),"]");
 		return false;
 	}
 
 
 	__declspec(dllexport) const bool __cdecl writeItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{
-		log_NOTICE("writeItemSync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
+		log_NOTICE("writeItemSync+, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
 		
-		bool result = gsoGroupManager.WriteItemSync(pGroupName, pItemPath, pValue);
-		
-		log_NOTICE("writeItemSync complete, group [", pGroupName,"] item [", pItemPath,"] success [", (result?"Y":"N"),"]");
+		bool result = false;
+		try
+		{
+			gsoGroupManager.WriteItemSync(pGroupName, pItemPath, pValue);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("writeItemSync: [", gstrLastError,"]");
+		}
+
+		log_NOTICE("writeItemSync-, group [", pGroupName,"] item [", pItemPath,"] success [", (result?"Y":"N"),"]");
 		return result;
 	}
 
 	__declspec(dllexport) const bool __cdecl writeItemAsync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{
-		log_NOTICE("writeItemAsync called, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
+		log_NOTICE("writeItemAsync+, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"]");
 		
-		bool result = gsoGroupManager.WriteItemAsync(pGroupName, pItemPath, pValue);
+		bool result = false;
+		try
+		{
+			result = gsoGroupManager.WriteItemAsync(pGroupName, pItemPath, pValue);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("writeItemAsync: [", gstrLastError,"]");
+		}
 		
-		log_NOTICE("writeItemAsync completed, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"], success [", (result?"Y":"N"),"]");
+		log_NOTICE("writeItemAsync-, group [", pGroupName,"] item [", pItemPath,"] value [", pValue,"], success [", (result?"Y":"N"),"]");
 		return result;
 	}
 
 	__declspec(dllexport) const bool __cdecl getItemNames(char* itemsBuffer[], const int nElementLength, const int nNumElements, const int nOffSet)
 	{
-		log_NOTICE("getItemNames: called, nNumElements [",((pantheios::integer)nNumElements),"] nElementLength [",((pantheios::integer)nElementLength),"] nOffset [", ((pantheios::integer)nOffSet),"]");
+		log_NOTICE("getItemNames+, nNumElements [",((pantheios::integer)nNumElements),"] nElementLength [",((pantheios::integer)nElementLength),"] nOffset [", ((pantheios::integer)nOffSet),"]");
 
-		if(gsoOpcServerAddressSpace.IsEmpty())
+		bool result = false;
+
+		try
 		{
-	  		gspOpcServer->getItemNames(gsoOpcServerAddressSpace);
+			if(gsoOpcServerAddressSpace.IsEmpty())
+			{
+	  			gspOpcServer->getItemNames(gsoOpcServerAddressSpace);
+			}
+
+			log_NOTICE("item names retrived: there are [", pantheios::integer(gsoOpcServerAddressSpace.GetCount()),"] items");
+
+			for(unsigned int i=nOffSet; i<gsoOpcServerAddressSpace.GetCount() && i-nOffSet < nNumElements; i++)
+			{
+				strcpy_s(itemsBuffer[i-nOffSet], nElementLength, CStringA(gsoOpcServerAddressSpace[i]).GetString());
+				log_NOTICE("getItemNames: copying opc item to java buffer, index [", pantheios::integer(i),"] value [", CStringA(gsoOpcServerAddressSpace[i]).GetString(),"]");
+			}
+
+			result = nNumElements > gsoOpcServerAddressSpace.GetCount() - nOffSet;
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("getItemNames: [", gstrLastError,"]");
 		}
 
-		log_NOTICE("item names retrived: there are [", pantheios::integer(gsoOpcServerAddressSpace.GetCount()),"] items");
-
-		for(unsigned int i=nOffSet; i<gsoOpcServerAddressSpace.GetCount() && i-nOffSet < nNumElements; i++)
-		{
-			strcpy_s(itemsBuffer[i-nOffSet], nElementLength, CStringA(gsoOpcServerAddressSpace[i]).GetString());
-			log_NOTICE("getItemNames: copying opc item to java buffer, index [", pantheios::integer(i),"] value [", CStringA(gsoOpcServerAddressSpace[i]).GetString(),"]");
-		}
-
-		bool result = nNumElements > gsoOpcServerAddressSpace.GetCount() - nOffSet;
-		log_NOTICE("getItemNames: result [",(result?"Y":"N"),"]");
+		log_NOTICE("getItemNames-, result [",(result?"Y":"N"),"]");
 		
 		return result;
 	}
 
 	__declspec(dllexport) void __cdecl getLastError(char* const pErrorBuffer, const int nBuffSz)
 	{
-		strcpy_s(pErrorBuffer, nBuffSz, gstrLastError);
+		strcpy_s(pErrorBuffer, nBuffSz, gstrLastError.c_str());
 	}
 
 	__declspec(dllexport) void __cdecl registerAsyncUpdate(updateCallback cb)
 	{
-		updateHandler.SetCallback(cb);
+		log_NOTICE("registerAsyncUpdate+");
+
+		try
+		{
+			updateHandler.SetCallback(cb);
+		}
+		catch(OPCException e)
+		{
+			gstrLastError = "OPC Exception: " + e.reasonString();
+			log_ERROR("registerAsyncUpdate: [", gstrLastError,"]");
+		}
+
+		log_NOTICE("registerAsyncUpdate-");
 	}
 }

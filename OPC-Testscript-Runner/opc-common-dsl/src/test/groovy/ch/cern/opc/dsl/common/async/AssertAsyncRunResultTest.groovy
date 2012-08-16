@@ -17,7 +17,35 @@ class AssertAsyncRunResultTest
 	@Before
 	void setup()
 	{
-		testee = new NonAbstractAssertAsyncRunResult(10, null)
+		testee = new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path")
+	}
+	
+	@Test
+	void testIsItemPathMatch()
+	{
+		assertTrue(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
+			isItemPathMatch("this.is.the.item.path") )
+		
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
+			isItemPathMatch("this.is.NOT.the.item.path") )
+		
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
+			isItemPathMatch("") )
+		
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
+			isItemPathMatch(null) )
+		
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, "").
+			isItemPathMatch("some.item.path") )
+		
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, null).
+			isItemPathMatch("some.item.path") )
+		
+		assertTrue(new NonAbstractAssertAsyncRunResult(10, "").
+			isItemPathMatch("") )
+		
+		assertTrue(new NonAbstractAssertAsyncRunResult(10, null).
+			isItemPathMatch(null) )
 	}
 	
 	@Test

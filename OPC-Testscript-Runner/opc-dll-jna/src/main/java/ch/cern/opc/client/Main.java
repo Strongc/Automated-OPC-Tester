@@ -1,32 +1,55 @@
 package ch.cern.opc.client;
 
-import static ch.cern.opc.common.Log.*;
+import static ch.cern.opc.common.Log.logInfo;
+import static ch.cern.opc.common.Log.logWarning;
+
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class Main 
 {
 	private final static String GROUP_NM = "myGroup";
+	private final static BlockingDeque<UpdateValue> updatesQueue = new LinkedBlockingDeque<UpdateValue>();
 	
     public static void main(String[] args) throws InterruptedException 
     {
     	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	OPCDAClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
     	
-    	OPCDAAsyncUpdateCallback callback = new OPCDAAsyncUpdateCallback() 
+    	OPCDAAsyncUpdateCallback callback = new OPCDAAsyncUpdateCallback(updatesQueue);
+    	Runnable updatesHandler = new Runnable()
     	{
 			@Override
-			public int onUpdate(Update update) 
+			public void run() 
 			{
-				System.out.println("onUpdate called with item ["+update.itemPath+"] value ["+update.value+"] quality ["+update.quality+"] type ["+update.type+"] timestamp ["+update.timestamp+"]");
-				return 1;
+				System.out.println("Updater thread started, waiting for updates...");
+				while(true)
+				{
+					try 
+					{
+						UpdateValue update = Main.updatesQueue.takeFirst();
+						System.out.println("update recvd: item ["+update.itemPath+"] value ["+update.value+"] quality ["+update.quality+"] type ["+update.type+"] timestamp ["+update.timestamp+"]");
+					} 
+					catch (InterruptedException e) 
+					{
+						e.printStackTrace();
+					} 
+				}
 			}
-		};
+    	};
+    	
+    	new Thread(updatesHandler).start();
 		OPCDAClientInstance.getInstance().registerAsyncUpdate(callback);
     	
-		OPCDAClientInstance.getInstance().createGroup(GROUP_NM, 1000);
+		OPCDAClientInstance.getInstance().createGroup(GROUP_NM, 99);
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myShortInt");
+    	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myLongInt");
+    	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
+    	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.mySmallFloat");
     	
-    	Thread.sleep(120000);
+    	// let main thread sleep - update handler thread deals with updates
+    	Thread.sleep(240000);
     	
 /*    	
     	for(int i=0; i<100; i++)

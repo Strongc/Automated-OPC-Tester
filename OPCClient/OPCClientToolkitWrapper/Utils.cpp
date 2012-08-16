@@ -12,7 +12,7 @@
 
 using namespace pantheios;
 
-extern CString gstrLastError;
+extern std::string gstrLastError;
 
 std::string Utils::VariantToStringConverter(const VARIANT& variant)
 {
@@ -57,7 +57,7 @@ void Utils::RecordError(char* format, ...)
 	char buff[1028];
     vsprintf_s(buff, 1028, format, args);
 
-	gstrLastError = buff;
+	gstrLastError = std::string(buff);
 	log_ERROR(buff);
 
     va_end(args);

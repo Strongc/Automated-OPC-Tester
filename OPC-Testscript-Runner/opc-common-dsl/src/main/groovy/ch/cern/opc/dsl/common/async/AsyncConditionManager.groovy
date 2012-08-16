@@ -1,24 +1,81 @@
 package ch.cern.opc.dsl.common.async
 
-import ch.cern.opc.common.Log
+import static ch.cern.opc.common.Log.*
 import ch.cern.opc.dsl.common.client.UpdateHandler
 import static ch.cern.opc.dsl.common.async.AsyncState.*
 
-@Mixin(Log)
 class AsyncConditionManager implements UpdateHandler
 {
-	private final def asyncConditions = []
+	/*
+	 * asyncConditions is a 'string:[]' mapping (string to array)
+	 *   string - the item path
+	 *   [] - array of async conditions for this item
+	 */
+	private final def asyncConditions = [:]
+	
 	private final AsyncTicker ticker = new AsyncTicker()
 	
-	//def AsyncConditionManager()
-	//{
-		//logTrace("AsyncConditionManager instance created")
-	//}
-	
-	def synchronized registerAsyncCondition(asyncCondition)
+	def registerAsyncCondition(AsyncRunResult condition)
 	{
-		asyncConditions << asyncCondition 
+		if(!isValidCondition(condition, 'remove')) return
+
+		logDebug("adding async assertion for item [${condition.itemPath}]")
+		synchronized(asyncConditions)
+		{
+			def itemConditions = asyncConditions[condition.itemPath]
+			
+			// create collection to hold all conditions for this item, if required
+			if(itemConditions == null) 
+			{
+				itemConditions = []
+				asyncConditions[condition.itemPath] = itemConditions
+			}
+			
+			// and add
+			itemConditions << condition
+			
+			asyncConditions[condition]
+		} 
 	}
+	
+	def removeAsyncCondition(AsyncRunResult condition)
+	{
+		if(!isValidCondition(condition, 'remove')) return
+
+		synchronized(asyncConditions)
+		{
+			def itemConditions = asyncConditions[condition.itemPath]
+			
+			if(itemConditions != null)
+			{
+				itemConditions.remove(condition)
+
+				// if was last condition for item remove map entry
+				if(itemConditions.isEmpty())
+				{
+					asyncConditions.remove(condition.itemPath)
+				}
+			}
+		}
+	}
+	
+	private boolean isValidCondition(condition, actionString)
+	{
+		if(condition == null)
+		{
+			logWarning("attempt to ${actionString} null condition, probably a programming error")
+			return false
+		}
+		
+		if(condition.itemPath == null || condition.itemPath.isEmpty())
+		{
+			logWarning("attempt to ${actionString} asynchronous condition with invalid item path [${condition.itemPath}]")
+			return false
+		}
+
+		return true
+	}
+
 	
 	@Override
 	public void onUpdate(itemId, attributeId, value, quality, type, timestamp)
@@ -43,72 +100,111 @@ class AsyncConditionManager implements UpdateHandler
 	
 	private def asyncUpdate(itemPath, actualValue)
 	{
-		//logTrace("asyncUpdate started item [${itemPath}] value [${actualValue}] thread [${Thread.currentThread().id}] async conditions count [${asyncConditions.size()}]")
+//		long start = System.currentTimeMillis();
+				
+		logDebug("asyncUpdate started item [${itemPath}] value [${actualValue}] thread [${Thread.currentThread().id}] async conditions count [${asyncConditions.size()}]")
+		
 		synchronized(asyncConditions)
 		{
-			asyncConditions.each
-			{
-				it.checkUpdate(itemPath, actualValue)
-			}
-			
-			removeNonWaitingAsyncConditions()
+			def itemConditions = asyncConditions[itemPath]
+			itemConditions.each{ it.checkUpdate(itemPath, actualValue) }
 		}
-		//logTrace("asyncUpdate completed")
+		
+		removeNonWaitingAsyncConditions()
+
+//		long elapsedTime = System.currentTimeMillis() - start;
+//		logError("asyncUpdate completed for item [${itemPath}], elapsed time [${elapsedTime}ms]")
 	}
 	
-	def synchronized getRegisteredAsyncConditionsCount()
+	def getRegisteredAsyncConditionsCount()
 	{
-		return asyncConditions.size() 
-	}
-	
-	def synchronized getMaxConditionTimeout()
-	{
-		def result = 0
-		asyncConditions.each
+		int count = 0
+		
+		synchronized(asyncConditions)
 		{
-			if(it.state == WAITING)
-			{
-				result = it.timeout > result? it.timeout: result
+			asyncConditions*.value.each
+			{itemConditions->
+				count += itemConditions.size()
+			}
+		} 
+		
+		return count
+	}
+	
+	def getMaxConditionTimeout()
+	{
+		int maxTimeout = 0
+		
+		synchronized(asyncConditions)
+		{
+			asyncConditions*.value.each
+			{itemConditions->
+				itemConditions.each
+				{condition->
+					if(WAITING == condition.state)
+					{
+						maxTimeout = condition.timeout > maxTimeout? condition.timeout: maxTimeout
+					} 
+				}
 			}
 		}
 		
-		return result
+		return maxTimeout
 	}
 	
-	def synchronized onTick()
+	def onTick()
 	{
-		asyncConditions.each
+		synchronized(asyncConditions)
 		{
-			it.onTick()
+			asyncConditions*.value.each
+			{itemConditions->
+				itemConditions.each { it.onTick() }
+			}
 		}
 		
 		removeNonWaitingAsyncConditions()
 	}
 	
-	def synchronized startTicking()
+	def startTicking()
 	{
 		ticker.start(this)
 	}
 	
-	def synchronized stopTicking()
+	def stopTicking()
 	{
 		ticker.stop()	
 		removeNonWaitingAsyncConditions()
 		logInfo("stopping the asynchronous condition manager - timing out the remaining [${asyncConditions.size()}] conditions")
-		asyncConditions.each{it.timedOut()}
+		
+		synchronized(asyncConditions)
+		{
+			asyncConditions*.value.each
+			{itemConditions->
+				itemConditions.each {it.timedOut() }
+			}
+		}
 	}
 	
 	private def removeNonWaitingAsyncConditions()
 	{
 		def nonWaitingAsyncConditions = []
-		asyncConditions.each
-		{
-			if(WAITING != it.state)
-			{
-				nonWaitingAsyncConditions << it
-			}
-		}
 		
-		asyncConditions.removeAll(nonWaitingAsyncConditions)
+		synchronized(asyncConditions)
+		{
+			// collect non-waiting conditions
+			asyncConditions*.value.each
+			{itemConditions->
+				itemConditions.each 
+				{condition->
+					if(WAITING != condition.state)
+					{
+						nonWaitingAsyncConditions << condition
+					}
+				}
+			}
+			
+			// remove them from the map
+			nonWaitingAsyncConditions.each{ removeAsyncCondition(it) }
+		}
 	}
 }

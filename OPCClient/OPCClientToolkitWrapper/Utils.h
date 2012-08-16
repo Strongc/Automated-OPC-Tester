@@ -12,7 +12,7 @@
 
 #include "comutil.h"
 
-extern CString gstrLastError;
+extern std::string gstrLastError;
 
 namespace Utils
 {

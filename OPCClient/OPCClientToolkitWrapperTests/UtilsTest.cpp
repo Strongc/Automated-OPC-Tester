@@ -128,12 +128,12 @@ TEST(RecordErrorTest, testSimpleErrorIsRecorded)
 {
 	RecordError("I am the error");
 	cout << gstrLastError << endl;
-	ASSERT_EQ(0, strcmp("I am the error", gstrLastError));
+	ASSERT_EQ(0, strcmp("I am the error", gstrLastError.c_str()));
 }
 
 TEST(RecordErrorTest, testFormattedErrorIsRecorded)
 {
 	RecordError("Error [%d] [%s]", 69, "woohoo");
 	cout << gstrLastError << endl;
-	ASSERT_EQ(0, strcmp("Error [69] [woohoo]", gstrLastError));
+	ASSERT_EQ(0, strcmp("Error [69] [woohoo]", gstrLastError.c_str()));
 }

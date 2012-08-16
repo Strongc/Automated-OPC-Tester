@@ -13,6 +13,7 @@ using namespace pantheios;
 using namespace std;
 
 static const int nMaxBuffSz = 2000;
+const char* const gsAttributeId = "UNUSED";
 
 
 AsyncUpdateHandler::AsyncUpdateHandler(void)
@@ -32,29 +33,52 @@ void AsyncUpdateHandler::OnDataChange(COPCGroup & group, CAtlMap<COPCItem *, OPC
 	{
 		CAtlMap<COPCItem *, OPCItemData *>::CPair* pPair = changes.GetNext(pos);
 
-		ItemValueStruct itemValueStruct(pPair->m_value);
-
+		ItemValueStruct itemValueStruct(pPair->m_value);		
+		const ItemValue& itemValue = itemValueStruct.getItemValue();
+		
 		log_NOTICE("\t item [",pPair->m_key->getName(),"] value [", itemValueStruct.getItemValue().value,"]");
+
 		if(callbackFn != NULL)
 		{
-			log_NOTICE("\t OnDataChange calling callback fn");
-			const ItemValue& itemValue = itemValueStruct.getItemValue();
-			
-			Update update;
-			update.path = const_cast<char*>(pPair->m_key->getName().GetString());
-			update.value = itemValue.value;
-			update.quality = itemValue.quality;
-			update.type = itemValue.dataType;
-			update.timestamp = itemValue.timestamp;
-			update.attributeId = "UNUSED";
-
-			callbackFn(&update);
+			log_NOTICE("\t OnDataChange calling callback fn");			
+			//Update* update = createUpdate(pPair->m_key->getName().GetString(), itemValue.value, itemValue.quality, itemValue.dataType, itemValue.timestamp);
+			callbackFn(pPair->m_key->getName().GetString(), itemValue.value, itemValue.quality, itemValue.dataType, itemValue.timestamp);
 
 			log_DEBUG("\t OnDataChange called callback fn");
+/*			
+			callbackFn(update);
+			log_DEBUG("\t OnDataChange called callback fn");
+
+			destroyUpdate(update);
+			log_DEBUG("\t OnDataChange destroyed object");
+*/
 		}
 	}
 }
+/*
+Update* AsyncUpdateHandler::createUpdate(const char* path, const char* value, const int quality, const int type, const char* timestamp) const
+{
+	Update* update = new Update();
 
+	update->path = _strdup(path);
+	update->value = _strdup(value);
+	update->quality = quality;
+	update->type = type;
+	update->timestamp = _strdup(timestamp);
+	update->attributeId = _strdup(gsAttributeId);
+
+	return update;
+}
+
+void AsyncUpdateHandler::destroyUpdate(Update* update) const
+{
+	free(update->path);
+	free(update->value);
+	free(update->timestamp);
+	free(update->attributeId);
+	delete update;
+}
+*/
 void AsyncUpdateHandler::SetCallback(updateCallback cb)
 {
 	log_NOTICE("Setting callbackFn - is currently NULL [", (this->callbackFn == NULL?"Y":"N"),"]");
