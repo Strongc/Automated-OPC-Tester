@@ -15,14 +15,22 @@ abstract class AssertAsyncRunResult extends ObservableRunResult implements Async
 	protected def elapsedWait = 0
 	
 	protected final def timeout
-	protected final def itemPath
-	protected final int itemPathLength
 	
-	AssertAsyncRunResult(timeout, itemPath)
+	protected final def itemPath
+	
+	/*
+	 * concerns the 'significant' value for the condition, note that the value might be the 
+	 * expected value, or the anti-expected value (i.e. the condition is considered to have 
+	 * passed so long as the actual item value does not match this). The exact usage of the
+	 * item value depends on the concrete type extending this abstract base class 
+	 */
+	protected final def itemValue
+	
+	AssertAsyncRunResult(timeout, itemPath, itemValue)
 	{
 		this.timeout = timeout
 		this.itemPath = itemPath
-		itemPathLength = (itemPath != null ? itemPath.size(): 0)
+		this.itemValue = itemValue
 	}
 	
 	@Override
@@ -44,23 +52,30 @@ abstract class AssertAsyncRunResult extends ObservableRunResult implements Async
 	
 	protected boolean isItemPathMatch(final candidatePath)
 	{
-		final int candidatePathLength = (candidatePath != null ? candidatePath.size(): 0)
-		
-		// check lengths
-		if(candidatePathLength != itemPathLength) return false
-		
-		// check last 3 characters (if longer than 3), usually OPC item addresses
-		// differ only towards the end.
-		if(candidatePathLength > 3)
+		return isStringMatch(itemPath, candidatePath)
+	}
+			
+	protected boolean isItemValueMatch(final candidateValue)
+	{
+		return isStringMatch(itemValue, candidateValue)
+	}
+
+	private boolean isStringMatch(targetString, candidateString)
+	{
+		if(targetString == null && candidateString == null)
 		{
-			for(int i in 3..1)
-			{
-				if(candidatePath[candidatePathLength-i] != itemPath[itemPathLength-i]) return false
-			}
+			return true
+		}
+		else if(targetString == null && candidateString != null)
+		{
+			return false
+		}
+		else if(targetString != null && candidateString == null)
+		{
+			return false
 		}
 		
-		// check full match	
-		return itemPath.equals(candidatePath)
+		return targetString.toString().equals(candidateString.toString())
 	}
 	
 	protected synchronized setState(newState)
