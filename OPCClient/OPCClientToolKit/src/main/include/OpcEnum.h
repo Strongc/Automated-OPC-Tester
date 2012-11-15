@@ -3,8 +3,8 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 6.00.0361 */
-/* at Thu Dec 02 08:28:27 2004
+ /* File created by MIDL compiler version 7.00.0500 */
+/* at Mon Jan 17 19:41:21 2011
  */
 /* Compiler settings for .\OpcEnum.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
@@ -60,8 +60,6 @@ typedef struct OpcServerList OpcServerList;
 extern "C"{
 #endif 
 
-void * __RPC_USER MIDL_user_allocate(size_t);
-void __RPC_USER MIDL_user_free( void * ); 
 
 
 #ifndef __OpcEnumLib_LIBRARY_DEFINED__

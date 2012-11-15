@@ -22,6 +22,7 @@ Boston, MA  02111-1307, USA.
 #include "OPCGroup.h"
 #include <assert.h>
 #include <pantheios/pantheios.hpp>
+#include <pantheios/inserters/integer.hpp>
 
 using namespace pantheios;
 
@@ -45,8 +46,6 @@ void COPCItem::setOPCParams(OPCHANDLE handle, VARTYPE type, DWORD dwAccess){
 	dwAccessRights		=dwAccess;
 }
 
-
-
 void COPCItem::writeSync(VARIANT &data){
 	log_NOTICE("writeSync+");
 	HRESULT * itemWriteErrors; 
@@ -56,9 +55,10 @@ void COPCItem::writeSync(VARIANT &data){
 		log_NOTICE("writeSync! COM call direct return value was FAILED");
 		throw OPCException("write failed");
 	} 
-
-	if (FAILED(itemWriteErrors[0])){
-		log_NOTICE("writeSync! COM call parameter return value was FAILED");
+	
+	HRESULT itemWriteError = itemWriteErrors[0];	
+	if (FAILED(itemWriteError)){
+		log_NOTICE("writeSync! COM call parameter return value was [",pantheios::integer(itemWriteError),"]");
 		COPCClient::comFree(itemWriteErrors);
 		throw OPCException("write failed");
 	}

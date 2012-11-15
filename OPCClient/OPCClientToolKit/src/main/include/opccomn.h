@@ -3,12 +3,12 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 6.00.0361 */
-/* at Thu Dec 02 08:28:02 2004
+ /* File created by MIDL compiler version 7.00.0500 */
+/* at Mon Jan 17 19:13:34 2011
  */
 /* Compiler settings for .\opccomn.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
-    protocol : dce , ms_ext, c_ext
+    Oicf, W1, Zp8, env=Win64 (32b run)
+    protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
@@ -21,7 +21,7 @@
 
 /* verify that the <rpcndr.h> version is high enough to compile this file*/
 #ifndef __REQUIRED_RPCNDR_H_VERSION__
-#define __REQUIRED_RPCNDR_H_VERSION__ 440
+#define __REQUIRED_RPCNDR_H_VERSION__ 475
 #endif
 
 #include "rpc.h"
@@ -114,8 +114,6 @@ typedef interface IOPCEnumGUID IOPCEnumGUID;
 extern "C"{
 #endif 
 
-void * __RPC_USER MIDL_user_allocate(size_t);
-void __RPC_USER MIDL_user_free( void * ); 
 
 #ifndef __IOPCShutdown_INTERFACE_DEFINED__
 #define __IOPCShutdown_INTERFACE_DEFINED__
@@ -146,7 +144,8 @@ EXTERN_C const IID IID_IOPCShutdown;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IOPCShutdown * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IOPCShutdown * This);
@@ -172,35 +171,23 @@ EXTERN_C const IID IID_IOPCShutdown;
 
 
 #define IOPCShutdown_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IOPCShutdown_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IOPCShutdown_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IOPCShutdown_ShutdownRequest(This,szReason)	\
-    (This)->lpVtbl -> ShutdownRequest(This,szReason)
+    ( (This)->lpVtbl -> ShutdownRequest(This,szReason) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-HRESULT STDMETHODCALLTYPE IOPCShutdown_ShutdownRequest_Proxy( 
-    IOPCShutdown * This,
-    /* [string][in] */ LPCWSTR szReason);
-
-
-void __RPC_STUB IOPCShutdown_ShutdownRequest_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 
@@ -250,7 +237,8 @@ EXTERN_C const IID IID_IOPCCommon;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IOPCCommon * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IOPCCommon * This);
@@ -294,97 +282,35 @@ EXTERN_C const IID IID_IOPCCommon;
 
 
 #define IOPCCommon_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IOPCCommon_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IOPCCommon_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IOPCCommon_SetLocaleID(This,dwLcid)	\
-    (This)->lpVtbl -> SetLocaleID(This,dwLcid)
+    ( (This)->lpVtbl -> SetLocaleID(This,dwLcid) ) 
 
 #define IOPCCommon_GetLocaleID(This,pdwLcid)	\
-    (This)->lpVtbl -> GetLocaleID(This,pdwLcid)
+    ( (This)->lpVtbl -> GetLocaleID(This,pdwLcid) ) 
 
 #define IOPCCommon_QueryAvailableLocaleIDs(This,pdwCount,pdwLcid)	\
-    (This)->lpVtbl -> QueryAvailableLocaleIDs(This,pdwCount,pdwLcid)
+    ( (This)->lpVtbl -> QueryAvailableLocaleIDs(This,pdwCount,pdwLcid) ) 
 
 #define IOPCCommon_GetErrorString(This,dwError,ppString)	\
-    (This)->lpVtbl -> GetErrorString(This,dwError,ppString)
+    ( (This)->lpVtbl -> GetErrorString(This,dwError,ppString) ) 
 
 #define IOPCCommon_SetClientName(This,szName)	\
-    (This)->lpVtbl -> SetClientName(This,szName)
+    ( (This)->lpVtbl -> SetClientName(This,szName) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-HRESULT STDMETHODCALLTYPE IOPCCommon_SetLocaleID_Proxy( 
-    IOPCCommon * This,
-    /* [in] */ LCID dwLcid);
-
-
-void __RPC_STUB IOPCCommon_SetLocaleID_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCCommon_GetLocaleID_Proxy( 
-    IOPCCommon * This,
-    /* [out] */ LCID *pdwLcid);
-
-
-void __RPC_STUB IOPCCommon_GetLocaleID_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCCommon_QueryAvailableLocaleIDs_Proxy( 
-    IOPCCommon * This,
-    /* [out] */ DWORD *pdwCount,
-    /* [size_is][size_is][out] */ LCID **pdwLcid);
-
-
-void __RPC_STUB IOPCCommon_QueryAvailableLocaleIDs_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCCommon_GetErrorString_Proxy( 
-    IOPCCommon * This,
-    /* [in] */ HRESULT dwError,
-    /* [string][out] */ LPWSTR *ppString);
-
-
-void __RPC_STUB IOPCCommon_GetErrorString_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCCommon_SetClientName_Proxy( 
-    IOPCCommon * This,
-    /* [string][in] */ LPCWSTR szName);
-
-
-void __RPC_STUB IOPCCommon_SetClientName_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 
@@ -433,7 +359,8 @@ EXTERN_C const IID IID_IOPCServerList;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IOPCServerList * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IOPCServerList * This);
@@ -474,72 +401,29 @@ EXTERN_C const IID IID_IOPCServerList;
 
 
 #define IOPCServerList_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IOPCServerList_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IOPCServerList_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IOPCServerList_EnumClassesOfCategories(This,cImplemented,rgcatidImpl,cRequired,rgcatidReq,ppenumClsid)	\
-    (This)->lpVtbl -> EnumClassesOfCategories(This,cImplemented,rgcatidImpl,cRequired,rgcatidReq,ppenumClsid)
+    ( (This)->lpVtbl -> EnumClassesOfCategories(This,cImplemented,rgcatidImpl,cRequired,rgcatidReq,ppenumClsid) ) 
 
 #define IOPCServerList_GetClassDetails(This,clsid,ppszProgID,ppszUserType)	\
-    (This)->lpVtbl -> GetClassDetails(This,clsid,ppszProgID,ppszUserType)
+    ( (This)->lpVtbl -> GetClassDetails(This,clsid,ppszProgID,ppszUserType) ) 
 
 #define IOPCServerList_CLSIDFromProgID(This,szProgId,clsid)	\
-    (This)->lpVtbl -> CLSIDFromProgID(This,szProgId,clsid)
+    ( (This)->lpVtbl -> CLSIDFromProgID(This,szProgId,clsid) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-HRESULT STDMETHODCALLTYPE IOPCServerList_EnumClassesOfCategories_Proxy( 
-    IOPCServerList * This,
-    /* [in] */ ULONG cImplemented,
-    /* [size_is][in] */ CATID rgcatidImpl[  ],
-    /* [in] */ ULONG cRequired,
-    /* [size_is][in] */ CATID rgcatidReq[  ],
-    /* [out] */ IEnumGUID **ppenumClsid);
-
-
-void __RPC_STUB IOPCServerList_EnumClassesOfCategories_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCServerList_GetClassDetails_Proxy( 
-    IOPCServerList * This,
-    /* [in] */ REFCLSID clsid,
-    /* [out] */ LPOLESTR *ppszProgID,
-    /* [out] */ LPOLESTR *ppszUserType);
-
-
-void __RPC_STUB IOPCServerList_GetClassDetails_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCServerList_CLSIDFromProgID_Proxy( 
-    IOPCServerList * This,
-    /* [in] */ LPCOLESTR szProgId,
-    /* [out] */ LPCLSID clsid);
-
-
-void __RPC_STUB IOPCServerList_CLSIDFromProgID_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 
@@ -587,7 +471,8 @@ EXTERN_C const IID IID_IOPCEnumGUID;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IOPCEnumGUID * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IOPCEnumGUID * This);
@@ -626,81 +511,32 @@ EXTERN_C const IID IID_IOPCEnumGUID;
 
 
 #define IOPCEnumGUID_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IOPCEnumGUID_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IOPCEnumGUID_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IOPCEnumGUID_Next(This,celt,rgelt,pceltFetched)	\
-    (This)->lpVtbl -> Next(This,celt,rgelt,pceltFetched)
+    ( (This)->lpVtbl -> Next(This,celt,rgelt,pceltFetched) ) 
 
 #define IOPCEnumGUID_Skip(This,celt)	\
-    (This)->lpVtbl -> Skip(This,celt)
+    ( (This)->lpVtbl -> Skip(This,celt) ) 
 
 #define IOPCEnumGUID_Reset(This)	\
-    (This)->lpVtbl -> Reset(This)
+    ( (This)->lpVtbl -> Reset(This) ) 
 
 #define IOPCEnumGUID_Clone(This,ppenum)	\
-    (This)->lpVtbl -> Clone(This,ppenum)
+    ( (This)->lpVtbl -> Clone(This,ppenum) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-HRESULT STDMETHODCALLTYPE IOPCEnumGUID_Next_Proxy( 
-    IOPCEnumGUID * This,
-    /* [in] */ ULONG celt,
-    /* [length_is][size_is][out] */ GUID *rgelt,
-    /* [out] */ ULONG *pceltFetched);
-
-
-void __RPC_STUB IOPCEnumGUID_Next_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCEnumGUID_Skip_Proxy( 
-    IOPCEnumGUID * This,
-    /* [in] */ ULONG celt);
-
-
-void __RPC_STUB IOPCEnumGUID_Skip_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCEnumGUID_Reset_Proxy( 
-    IOPCEnumGUID * This);
-
-
-void __RPC_STUB IOPCEnumGUID_Reset_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCEnumGUID_Clone_Proxy( 
-    IOPCEnumGUID * This,
-    /* [out] */ IOPCEnumGUID **ppenum);
-
-
-void __RPC_STUB IOPCEnumGUID_Clone_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 
@@ -750,7 +586,8 @@ EXTERN_C const IID IID_IOPCServerList2;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IOPCServerList2 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IOPCServerList2 * This);
@@ -792,73 +629,29 @@ EXTERN_C const IID IID_IOPCServerList2;
 
 
 #define IOPCServerList2_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IOPCServerList2_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IOPCServerList2_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IOPCServerList2_EnumClassesOfCategories(This,cImplemented,rgcatidImpl,cRequired,rgcatidReq,ppenumClsid)	\
-    (This)->lpVtbl -> EnumClassesOfCategories(This,cImplemented,rgcatidImpl,cRequired,rgcatidReq,ppenumClsid)
+    ( (This)->lpVtbl -> EnumClassesOfCategories(This,cImplemented,rgcatidImpl,cRequired,rgcatidReq,ppenumClsid) ) 
 
 #define IOPCServerList2_GetClassDetails(This,clsid,ppszProgID,ppszUserType,ppszVerIndProgID)	\
-    (This)->lpVtbl -> GetClassDetails(This,clsid,ppszProgID,ppszUserType,ppszVerIndProgID)
+    ( (This)->lpVtbl -> GetClassDetails(This,clsid,ppszProgID,ppszUserType,ppszVerIndProgID) ) 
 
 #define IOPCServerList2_CLSIDFromProgID(This,szProgId,clsid)	\
-    (This)->lpVtbl -> CLSIDFromProgID(This,szProgId,clsid)
+    ( (This)->lpVtbl -> CLSIDFromProgID(This,szProgId,clsid) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-HRESULT STDMETHODCALLTYPE IOPCServerList2_EnumClassesOfCategories_Proxy( 
-    IOPCServerList2 * This,
-    /* [in] */ ULONG cImplemented,
-    /* [size_is][in] */ CATID rgcatidImpl[  ],
-    /* [in] */ ULONG cRequired,
-    /* [size_is][in] */ CATID rgcatidReq[  ],
-    /* [out] */ IOPCEnumGUID **ppenumClsid);
-
-
-void __RPC_STUB IOPCServerList2_EnumClassesOfCategories_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCServerList2_GetClassDetails_Proxy( 
-    IOPCServerList2 * This,
-    /* [in] */ REFCLSID clsid,
-    /* [out] */ LPOLESTR *ppszProgID,
-    /* [out] */ LPOLESTR *ppszUserType,
-    /* [out] */ LPOLESTR *ppszVerIndProgID);
-
-
-void __RPC_STUB IOPCServerList2_GetClassDetails_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE IOPCServerList2_CLSIDFromProgID_Proxy( 
-    IOPCServerList2 * This,
-    /* [in] */ LPCOLESTR szProgId,
-    /* [out] */ LPCLSID clsid);
-
-
-void __RPC_STUB IOPCServerList2_CLSIDFromProgID_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 

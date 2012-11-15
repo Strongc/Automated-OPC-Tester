@@ -18,6 +18,9 @@ target
 Debug
 Release
 ~AutoRecover.*.vcproj
+*.sdf
+*.opensdf
+*.vcxproj.filters
 
 # ignore VC++ test output
 test_detail.xml

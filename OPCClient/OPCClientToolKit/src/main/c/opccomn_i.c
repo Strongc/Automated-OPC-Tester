@@ -5,21 +5,18 @@
 /* link this file in with the server and any clients */
 
 
- /* File created by MIDL compiler version 6.00.0361 */
-/* at Thu Dec 02 08:28:02 2004
+ /* File created by MIDL compiler version 7.00.0500 */
+/* at Mon Jan 17 19:13:34 2011
  */
 /* Compiler settings for .\opccomn.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
-    protocol : dce , ms_ext, c_ext
+    Oicf, W1, Zp8, env=Win64 (32b run)
+    protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
 //@@MIDL_FILE_HEADING(  )
-
-#if !defined(_M_IA64) && !defined(_M_AMD64)
-
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
@@ -94,6 +91,4 @@ MIDL_DEFINE_GUID(IID, LIBID_OPCCOMN,0xB28EEDB1,0xAC6F,0x11d1,0x84,0xD5,0x00,0x60
 #endif
 
 
-
-#endif /* !defined(_M_IA64) && !defined(_M_AMD64)*/
 
