@@ -26,5 +26,5 @@ OPCClientToolKitWrapper (this is where the opc-dll-jna interface above meets the
 
 OPCClientToolKitWrapperTests (googletest project testing -some- of the OPCClientToolKitWrapper layer)
 
-Build these layers by opening OPCClient\OPCClient.sln in VC++ and rebuilding the solution. On a successful build a post-build script copies the resulting DLL to C:\WINNT\System32\AutomatedOpcTester.dll - this is the DLL the opc-dll-jna layer requires.
+Build these layers by opening OPCClient\OPCClient.sln in VC++ 2010 and rebuilding the solution. On a successful build a post-build script copies the resulting DLL to C:\WINNT\System32\AutomatedOpcTester.dll - this is the DLL the opc-dll-jna layer requires.
 
