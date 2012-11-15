@@ -38,6 +38,38 @@ class AssertAsyncEqualsRunResultTest
 	}
 	
 	@Test
+	void testCheckUpdateSetsStatusToPassedForDifferentStringTypes()
+	{
+		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', '23')
+		testee.checkUpdate('the.path', new java.lang.String("23"))
+		assertEquals(PASSED, testee.state)
+		
+		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', new java.lang.String("23"))
+		testee.checkUpdate('the.path', '23')
+		assertEquals(PASSED, testee.state)
+		
+		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', "${23}")
+		testee.checkUpdate('the.path', '23')
+		assertEquals(PASSED, testee.state)
+	}
+	
+	@Test
+	void testCheckUpdateHandlesNullActualValue()
+	{
+		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', 'expected_value')
+		testee.checkUpdate('the.path', null)
+		assertTrue(testee.state != PASSED)
+	}
+	
+	@Test
+	void testCheckUpdateHandlesNullExpectedValue()
+	{
+		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', null)
+		testee.checkUpdate('the.path', 'actual_value')
+		assertTrue(testee.state != PASSED)
+	}
+	
+	@Test
 	void testCheckUpdateDoesNotSetStatusToMatchedIfUpdateForDifferentItem()
 	{
 		testee.checkUpdate('different.item.path', EXPECTED_VALUE)

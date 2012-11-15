@@ -12,40 +12,63 @@ import static ch.cern.opc.dsl.common.async.AsyncState.*
 
 class AssertAsyncRunResultTest 
 {
-	def testee
+	AssertAsyncRunResult testee
+	
+	private final static String ITEM_PATH = 'this.is.the.item.path'
+	private final static String ITEM_VALUE = '42'
 	
 	@Before
 	void setup()
 	{
-		testee = new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path")
+		testee = new NonAbstractAssertAsyncRunResult(10, ITEM_PATH, ITEM_VALUE)
 	}
 	
 	@Test
 	void testIsItemPathMatch()
 	{
-		assertTrue(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
-			isItemPathMatch("this.is.the.item.path") )
+		assertTrue(testee.isItemPathMatch(ITEM_PATH))
 		
-		assertFalse(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
-			isItemPathMatch("this.is.NOT.the.item.path") )
+		assertFalse(testee.isItemPathMatch(ITEM_PATH+'NOT!') )
 		
-		assertFalse(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
-			isItemPathMatch("") )
+		assertFalse(testee.isItemPathMatch("") )
 		
-		assertFalse(new NonAbstractAssertAsyncRunResult(10, "this.is.the.item.path").
-			isItemPathMatch(null) )
+		assertFalse(testee.isItemPathMatch(null) )
 		
-		assertFalse(new NonAbstractAssertAsyncRunResult(10, "").
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, "", ITEM_VALUE).
 			isItemPathMatch("some.item.path") )
 		
-		assertFalse(new NonAbstractAssertAsyncRunResult(10, null).
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, null, ITEM_VALUE).
 			isItemPathMatch("some.item.path") )
 		
-		assertTrue(new NonAbstractAssertAsyncRunResult(10, "").
+		assertTrue(new NonAbstractAssertAsyncRunResult(10, "", ITEM_VALUE).
 			isItemPathMatch("") )
 		
-		assertTrue(new NonAbstractAssertAsyncRunResult(10, null).
+		assertTrue(new NonAbstractAssertAsyncRunResult(10, null, ITEM_VALUE).
 			isItemPathMatch(null) )
+	}
+	
+	@Test
+	void testIsItemValueMatch()
+	{
+		assertTrue(testee.isItemValueMatch(ITEM_VALUE))
+		
+		assertFalse(testee.isItemValueMatch(ITEM_VALUE+'NOT!') )
+		
+		assertFalse(testee.isItemValueMatch("") )
+		
+		assertFalse(testee.isItemValueMatch(null) )
+		
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, ITEM_PATH, "").
+			isItemValueMatch("some.item.path") )
+		
+		assertFalse(new NonAbstractAssertAsyncRunResult(10, ITEM_PATH, null).
+			isItemValueMatch("some.item.path") )
+		
+		assertTrue(new NonAbstractAssertAsyncRunResult(10, ITEM_PATH, "").
+			isItemValueMatch("") )
+		
+		assertTrue(new NonAbstractAssertAsyncRunResult(10, ITEM_PATH, null).
+			isItemValueMatch(null) )
 	}
 	
 	@Test
@@ -118,9 +141,9 @@ class AssertAsyncRunResultTest
 	{
 		public def isTimedOut = false
 		 
-		NonAbstractAssertAsyncRunResult(timeout, itemPath)
+		NonAbstractAssertAsyncRunResult(timeout, itemPath, itemValue)
 		{
-			super(timeout, itemPath)
+			super(timeout, itemPath, itemValue)
 		}
 		
 		@Override

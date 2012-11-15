@@ -11,14 +11,12 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 {
 	public static final def TITLE = 'assertAsyncEquals' 
 	
-	final def expectedValue
 	final def message
 	
 	def AssertAsyncEqualsRunResult(message, timeout, itemPath, expectedValue)
 	{
-		super(timeout, itemPath)
+		super(timeout, itemPath, expectedValue)
 		this.message = formatMessage(message)
-		this.expectedValue = expectedValue
 	}
 	
 	@Override
@@ -31,19 +29,19 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 			case PASSED:
 				element = xmlBuilder.testcase(name:"${TITLE} passed: ${message}")
 				{
-					success(message:"item [${itemPath}] obtained expected value [${expectedValue}] in [${elapsedWait}] seconds")
+					success(message:"item [${itemPath}] obtained expected value [${itemValue}] in [${elapsedWait}] seconds")
 				}
 				break;
 			case FAILED:
 				element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 				{
-					failure(message:"item [${itemPath}] failed to obtain expected value [${expectedValue}] in [${elapsedWait}] seconds")
+					failure(message:"item [${itemPath}] failed to obtain expected value [${itemValue}] in [${elapsedWait}] seconds")
 				}
 				break;
 			case WAITING:
 				element = xmlBuilder.testcase(name:"${TITLE} incomplete: ${message}")
 				{
-					incomplete(message:"item [${itemPath}] waiting to obtain expected value [${expectedValue}], elapsed wait [${elapsedWait}] seconds")
+					incomplete(message:"item [${itemPath}] waiting to obtain expected value [${itemValue}], elapsed wait [${elapsedWait}] seconds")
 				}
 				break;
 			default:
@@ -55,7 +53,7 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 	@Override
 	String toString()
 	{
-		return "AssertAsyncEqualsRunResult: item [${itemPath}] expected value [${expectedValue}]"	
+		return "AssertAsyncEqualsRunResult: item [${itemPath}] expected value [${itemValue}]"	
 	}
 	
 	@Override
@@ -69,12 +67,11 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 	{
 		if(isItemPathMatch(itemPath))
 		{
-			if(this.expectedValue.equals(actualValue))
+			if(isItemValueMatch(actualValue))
 			{
 				state = PASSED
 			}
 		}
-		println("AssertAsyncEqualsRunResult.checkUpdate - state [${state}] checked input [item:${itemPath} actual:${actualValue}] against this: ${this}")
 	}
 
 }

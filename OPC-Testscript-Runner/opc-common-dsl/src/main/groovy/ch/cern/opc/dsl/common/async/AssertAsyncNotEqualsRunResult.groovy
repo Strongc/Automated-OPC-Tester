@@ -11,14 +11,12 @@ import static ch.cern.opc.dsl.common.async.AsyncState.*
 class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 {
 	public static final def TITLE = 'assertAsyncNotEquals'
-	final def antiExpectedValue
 	final def message
 	
 	def AssertAsyncNotEqualsRunResult(message, timeout, itemPath, antiExpectedValue)
 	{
-		super(timeout, itemPath)
+		super(timeout, itemPath, antiExpectedValue)
 		this.message = formatMessage(message)
-		this.antiExpectedValue = antiExpectedValue
 	}
 	
 	@Override
@@ -31,19 +29,19 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 			case FAILED:
 				element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 				{
-					failure(message:"item [${itemPath}] matched anti-expected value [${antiExpectedValue}] in [${elapsedWait}] seconds")
+					failure(message:"item [${itemPath}] matched anti-expected value [${itemValue}] in [${elapsedWait}] seconds")
 				}
 				break;
 			case PASSED:
 				element = xmlBuilder.testcase(name:"${TITLE} success: ${message}")
 				{
-					success(message:"item [${itemPath}] did not match anti-expected value [${antiExpectedValue}] in [${elapsedWait}] seconds")
+					success(message:"item [${itemPath}] did not match anti-expected value [${itemValue}] in [${elapsedWait}] seconds")
 				}
 				break;
 			case WAITING:
 				element = xmlBuilder.testcase(name:"${TITLE} incomplete: ${message}")
 				{
-					incomplete(message:"item [${itemPath}] still waiting,  anti-expected value [${antiExpectedValue}], elapsed wait [${elapsedWait}] seconds")
+					incomplete(message:"item [${itemPath}] still waiting,  anti-expected value [${itemValue}], elapsed wait [${elapsedWait}] seconds")
 				}
 				break;
 			default:
@@ -63,7 +61,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 	{
 		if(isItemPathMatch(itemPath))
 		{
-			if(antiExpectedValue.equals(actualValue))
+			if(isItemValueMatch(actualValue))
 			{
 				state = FAILED
 			}
@@ -73,6 +71,6 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 	@Override
 	String toString()
 	{
-		return "AssertAsyncNotEqualsRunResult: item [${itemPath}] anti expected value [${antiExpectedValue}]"
+		return "AssertAsyncNotEqualsRunResult: item [${itemPath}] anti expected value [${itemValue}]"
 	}
 }
