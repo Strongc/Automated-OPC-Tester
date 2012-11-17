@@ -49,6 +49,11 @@ class RunResults extends Observable
 		add(new AssertEqualsRunResult(message, expected, actual, client))
 	}
 	
+	def assertQuality(message, expected, actual)
+	{
+		add(new AssertQualityRunResult(message, expected, actual, client))
+	}
+	
 	def addException(exception)
 	{
 		add(new ExceptionRunResult(exception))

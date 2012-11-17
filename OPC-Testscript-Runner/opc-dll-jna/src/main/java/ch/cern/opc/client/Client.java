@@ -117,7 +117,7 @@ class Client implements OPCDAClientApi
 	}
 
 	@Override
-	public String readItemSync(String groupName, String itemPath) 
+	public ItemValue readItemSync(String groupName, String itemPath) 
 	{
 		byte[] valBuff = new byte[1024];
 		byte[] tsBuff = new byte[1024];
@@ -126,12 +126,12 @@ class Client implements OPCDAClientApi
 		
 		if(INSTANCE.readItemSync(groupName, itemPath, 1024, ByteBuffer.wrap(valBuff), quality, type, ByteBuffer.wrap(tsBuff)))
 		{
-			return translateCppString(valBuff);
+			return new ItemValue(translateCppString(valBuff), quality.getValue(), translateCppString(tsBuff), type.getValue());
 		}
 		else
 		{
 			logError("item value was not read, group ["+groupName+"] item path ["+itemPath+"]");
-			return "ERROR - value was not read";
+			return ItemValue.ERROR_VALUE;
 		}
 	}
 

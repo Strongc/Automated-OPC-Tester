@@ -19,6 +19,8 @@ for(i in 1..3)
 		{
 			syncValue = "${i}"
 			assertEquals("check big float is written correctly", i, syncValue)
+			logInfo("And the quality is [${quality}]")
+			assertQuality("item [${path}] should have GOOD quality", GOOD);
 		}
 
 		item('testGroup.myBool').with		

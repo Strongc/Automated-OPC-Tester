@@ -12,11 +12,13 @@ import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 import groovy.mock.interceptor.StubFor
 import ch.cern.opc.dsl.common.client.GenericClient
-import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult;
-import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult;
-import ch.cern.opc.dsl.common.async.AsyncConditionManager;
-import ch.cern.opc.dsl.common.results.RunResult;
-import ch.cern.opc.dsl.common.results.RunResults;
+import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult
+import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult
+import ch.cern.opc.dsl.common.async.AsyncConditionManager
+import ch.cern.opc.dsl.common.results.RunResult
+import ch.cern.opc.dsl.common.results.RunResults
+import ch.cern.opc.common.Quality
+import static ch.cern.opc.common.Quality.State.*
 
 import static ch.cern.opc.dsl.common.results.RunResults.NULL_MSG
 import static ch.cern.opc.dsl.common.results.RunResults.EMPTY_MSG
@@ -91,6 +93,16 @@ class RunResultsTest
 		testee.assertEquals('should fail', 1.0, 2.0)
 		
 		assertEquals(7, testee.XML.getChildNodes().length)
+	}
+	
+	@Test
+	void testAssertQuality_AddsQualityNodes()
+	{
+		assertEquals(0, testee.XML.getChildNodes().length)
+		testee.assertQuality('I should pass', GOOD, new Quality(192))
+		assertEquals(1, testee.XML.getChildNodes().length)
+		testee.assertQuality('I should fail', BAD, new Quality(192))
+		assertEquals(2, testee.XML.getChildNodes().length)
 	}
 	
 	@Test

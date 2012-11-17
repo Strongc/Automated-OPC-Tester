@@ -6,6 +6,7 @@ import ch.cern.opc.client.OPCDAClientApi
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.da.dsl.ScriptContext;
 import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
+import ch.cern.opc.common.Quality;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -208,5 +209,14 @@ class ScriptContextTest
 		assertTrue(5 == testee.randomInt(5, 5))
 		assertTrue(0 == testee.randomInt(0, 0))
 		assertTrue(-100 == testee.randomInt(-100, -100))
+	}
+	
+	@Test
+	void testScriptContextHasQualityConstants()
+	{
+		assertSame(Quality.State.GOOD, testee.GOOD)
+		assertSame(Quality.State.BAD, testee.BAD)
+		assertSame(Quality.State.UNCERTAIN, testee.UNCERTAIN)
+		assertSame(Quality.State.NA, testee.NA)
 	}
 }

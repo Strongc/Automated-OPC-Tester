@@ -5,12 +5,12 @@ import ch.cern.opc.common.Log
 import ch.cern.opc.dsl.common.results.RunResults;
 import ch.cern.opc.da.dsl.client.OPCDAClient;
 
-@Mixin([RunResults, Log])
+@Mixin([RunResults, Log, ScriptConstants])
 class ScriptContext 
 {
 	private static def instance
 	private def randomGenerator
-	
+
 	def static getInstance()
 	{
 		if(null == instance)

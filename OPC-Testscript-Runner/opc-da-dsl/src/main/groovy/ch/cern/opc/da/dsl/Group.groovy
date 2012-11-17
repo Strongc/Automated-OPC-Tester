@@ -3,7 +3,6 @@ package ch.cern.opc.da.dsl
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.common.Log
 
-@Mixin(Log)
 class Group 
 {
 	private def name

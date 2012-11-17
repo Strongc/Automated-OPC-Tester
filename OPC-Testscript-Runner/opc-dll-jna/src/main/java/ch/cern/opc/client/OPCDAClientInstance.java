@@ -113,7 +113,7 @@ public class OPCDAClientInstance implements OPCDAClientApi
 	}
 
 	@Override
-	public String readItemSync(String groupName, String itemPath) 
+	public ItemValue readItemSync(String groupName, String itemPath) 
 	{
 		return client.readItemSync(groupName, itemPath);
 	}

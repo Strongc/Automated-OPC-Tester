@@ -6,6 +6,8 @@ import static ch.cern.opc.common.Log.logWarning;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import ch.cern.opc.common.Log;
+
 public class Main 
 {
 	private final static String GROUP_NM = "myGroup";
@@ -13,6 +15,8 @@ public class Main
 	
     public static void main(String[] args) throws InterruptedException 
     {
+    	Log.logLevel("debug");
+    	
     	logWarning("This is a TEST CLIENT only - for trying out the JNA/DLL interface");
     	OPCDAClientInstance.getInstance().init("", "Matrikon.OPC.Simulation");
     	
@@ -41,7 +45,7 @@ public class Main
     	new Thread(updatesHandler).start();
 		OPCDAClientInstance.getInstance().registerAsyncUpdate(callback);
     	
-		OPCDAClientInstance.getInstance().createGroup(GROUP_NM, 99);
+		OPCDAClientInstance.getInstance().createGroup(GROUP_NM, 50);
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myString");
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myShortInt");
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myLongInt");
@@ -75,7 +79,7 @@ public class Main
 		OPCDAClientApi opcClient = OPCDAClientInstance.getInstance();
 		
 		opcClient.addItem(GROUP_NM, itemName);
-    	String value = opcClient.readItemSync(GROUP_NM, itemName);
-    	logInfo("group ["+GROUP_NM+"] item ["+itemName+"] value ["+value+"]");
+    	ItemValue value = opcClient.readItemSync(GROUP_NM, itemName);
+    	logInfo("group ["+GROUP_NM+"] item ["+itemName+"] value ["+value.value+"] quality ["+value.quality+"] timestamp ["+value.timestamp+"] datatype ["+value.datatype+"]");
 	}
 }

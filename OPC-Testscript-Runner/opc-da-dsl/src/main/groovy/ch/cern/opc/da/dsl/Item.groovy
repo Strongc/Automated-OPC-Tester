@@ -3,7 +3,6 @@ package ch.cern.opc.da.dsl
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.common.Log
 
-@Mixin(Log)
 class Item 
 {
 	def groupName
@@ -23,12 +22,17 @@ class Item
 	
 	def getSyncValue()
 	{
-		return OPCDAClientInstance.instance.readItemSync(groupName, path)
+		return OPCDAClientInstance.instance.readItemSync(groupName, path).value
 	}
 	
 	def setSyncValue(value)
 	{
 		return OPCDAClientInstance.instance.writeItemSync(groupName, path, value)
+	}
+	
+	def getQuality()
+	{
+		return OPCDAClientInstance.instance.readItemSync(groupName, path).quality
 	}
 	
 	def setAsyncValue(value)
@@ -59,5 +63,10 @@ class Item
 	def assertAsyncNotEquals(message, timeout, antiExpectedValue)
 	{
 		ScriptContext.instance.assertAsyncNotEquals(message, timeout, antiExpectedValue, path)
+	}
+	
+	def assertQuality(message, expectedQuality)
+	{
+		ScriptContext.instance.assertQuality(message, expectedQuality, quality)		
 	}
 }

@@ -1,0 +1,25 @@
+assertTrue("intialisation test", true)
+
+init('', 'Matrikon.OPC.Simulation')
+
+group('test.group').with
+{
+	// a good quality item
+	def goodQualityItem = item('testGroup.myBigFloat')
+	logInfo("item [${goodQualityItem.path}] quality [${goodQualityItem.quality}]")
+	goodQualityItem.assertQuality("expected pass - should be GOOD", GOOD)
+	goodQualityItem.assertQuality("expected failure - comparing BAD with GOOD", BAD)
+	goodQualityItem.assertQuality("expected failure - comparing UNCERTAIN with GOOD", UNCERTAIN)
+	goodQualityItem.assertQuality("expected failure - comparing NA with GOOD", NA)
+	
+	// a bad quality item
+	def badQualityItem = item('Write Only.Int1')
+	logInfo("item [${badQualityItem.path}] quality [${badQualityItem.quality}]")
+	badQualityItem.assertQuality("should be BAD", BAD)
+	badQualityItem.assertQuality("expected failure - comparing GOOD with BAD", GOOD)
+	badQualityItem.assertQuality("expected failure - comparing UNCERTAIN with BAD", UNCERTAIN)
+	badQualityItem.assertQuality("expected failure - comparing NA with BAD", NA)	
+}
+
+logInfo('end of script')
+
