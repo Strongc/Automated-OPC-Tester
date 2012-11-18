@@ -4,6 +4,8 @@ import static org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
+import ch.cern.opc.common.ItemValue
+import static ch.cern.opc.dsl.common.async.AsyncUpdateTestUtils.*
 import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult
 import static ch.cern.opc.dsl.common.async.AsyncState.*
 import groovy.xml.DOMBuilder
@@ -14,6 +16,7 @@ class AssertAsyncEqualsRunResultTest
 	private static final def TIMEOUT = 10
 	private static final def ITEM_PATH = 'path.to.item'
 	private static final def EXPECTED_VALUE = 'expected value'
+	private static final def NOT_THE_EXPECTED_VALUE = 'not the expected value'
 	private static final def MESSAGE = 'assertion user message'
 	
 	def testee
@@ -33,7 +36,7 @@ class AssertAsyncEqualsRunResultTest
 	@Test
 	void testCheckUpdateSetsStatusToMatchedIfUpdateMatchesExpected()
 	{
-		testee.checkUpdate(ITEM_PATH, EXPECTED_VALUE)
+		testee.checkUpdate(ITEM_PATH, createUpdate(EXPECTED_VALUE))
 		assertEquals(PASSED, testee.state)
 	}
 	
@@ -41,15 +44,15 @@ class AssertAsyncEqualsRunResultTest
 	void testCheckUpdateSetsStatusToPassedForDifferentStringTypes()
 	{
 		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', '23')
-		testee.checkUpdate('the.path', new java.lang.String("23"))
+		testee.checkUpdate('the.path', createUpdate(new java.lang.String("23")))
 		assertEquals(PASSED, testee.state)
 		
 		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', new java.lang.String("23"))
-		testee.checkUpdate('the.path', '23')
+		testee.checkUpdate('the.path', createUpdate('23'))
 		assertEquals(PASSED, testee.state)
 		
 		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', "${23}")
-		testee.checkUpdate('the.path', '23')
+		testee.checkUpdate('the.path', createUpdate('23'))
 		assertEquals(PASSED, testee.state)
 	}
 	
@@ -65,21 +68,21 @@ class AssertAsyncEqualsRunResultTest
 	void testCheckUpdateHandlesNullExpectedValue()
 	{
 		testee = new AssertAsyncEqualsRunResult(null, null, 'the.path', null)
-		testee.checkUpdate('the.path', 'actual_value')
+		testee.checkUpdate('the.path', createUpdate(EXPECTED_VALUE))
 		assertTrue(testee.state != PASSED)
 	}
 	
 	@Test
 	void testCheckUpdateDoesNotSetStatusToMatchedIfUpdateForDifferentItem()
 	{
-		testee.checkUpdate('different.item.path', EXPECTED_VALUE)
+		testee.checkUpdate('different.item.path', createUpdate(EXPECTED_VALUE))
 		assertFalse(PASSED == testee.state)
 	}
 	
 	@Test
 	void testCheckUpdateDoesNotSetStausToMatchedIfUpdateHasNonExpectedValue()
 	{
-		testee.checkUpdate(ITEM_PATH, 'but not the expected value')
+		testee.checkUpdate(ITEM_PATH, createUpdate(NOT_THE_EXPECTED_VALUE))
 		assertFalse(PASSED == testee.state)
 	}
 	
@@ -97,7 +100,7 @@ class AssertAsyncEqualsRunResultTest
 		testee.state = PASSED
 
 		def testcaseElement = testee.toXml(xmlBuilder)
-		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement)
+		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement, AssertAsyncEqualsRunResult.TITLE, MESSAGE, 1)
 		
 		assertTrue(testcaseElement.'@name'.contains('passed'))
 		
@@ -112,7 +115,7 @@ class AssertAsyncEqualsRunResultTest
 		testee.state = FAILED
 		
 		def testcaseElement = testee.toXml(xmlBuilder)
-		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement)
+		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement, AssertAsyncEqualsRunResult.TITLE, MESSAGE, 1)
 		
 		assertTrue(testcaseElement.'@name'.contains('failed'))
 		
@@ -127,7 +130,7 @@ class AssertAsyncEqualsRunResultTest
 		testee.state = WAITING
 		
 		def testcaseElement = testee.toXml(xmlBuilder)
-		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement)
+		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement, AssertAsyncEqualsRunResult.TITLE, MESSAGE, 1)
 		
 		assertTrue(testcaseElement.'@name'.contains('incomplete'))
 		
@@ -141,20 +144,4 @@ class AssertAsyncEqualsRunResultTest
 		testee.state = CREATED
 		testee.toXml(xmlBuilder)
 	}
-	
-	private static def assertTestCaseElementPresentAndNameAttributeIsCorrect(xml)
-	{
-		assertEquals('testcase root element should be called -testcase-',
-			'testcase', xml.name)
-		
-		assertTrue('testcase root element name attribute should contain the test type',
-			xml.'@name'.contains(AssertAsyncEqualsRunResult.TITLE))
-		
-		assertTrue('testcase root element name attribute shoudl contain the user message',
-			xml.'@name'.contains(MESSAGE))
-		
-		assertEquals('Should be a single child element detailing the testcase outcome: pass/fail etc',
-			1, xml.size())
-	}
-	
 }

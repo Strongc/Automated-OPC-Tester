@@ -2,6 +2,8 @@ package ch.cern.opc.client;
 
 import java.util.List;
 
+import ch.cern.opc.common.ItemValue;
+
 public interface OPCDAClientApi 
 {
 	public enum State {UNINITIALISED, CREATED, DESTROYED}

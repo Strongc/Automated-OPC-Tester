@@ -6,6 +6,7 @@ import org.junit.Test
 
 import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult
 import static ch.cern.opc.dsl.common.async.AsyncState.*
+import static ch.cern.opc.dsl.common.async.AsyncUpdateTestUtils.*
 
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
@@ -31,21 +32,21 @@ class AssertAsyncNotEqualsRunResultTest
 	@Test
 	void testCheckUpdate_withActualValueNotMatchingAntiExpectedValue()
 	{
-		testee.checkUpdate(ITEM_PATH, ANTI_EXPECTED_VALUE + 'and then some')
+		testee.checkUpdate(ITEM_PATH, createUpdate(ANTI_EXPECTED_VALUE + 'and then some'))
 		assertFalse(FAILED == testee.state)
 	}
 	
 	@Test
 	void testCheckUpdate_withActualValueMatchingAntiExpectedValue()
 	{
-		testee.checkUpdate(ITEM_PATH, ANTI_EXPECTED_VALUE)
+		testee.checkUpdate(ITEM_PATH, createUpdate(ANTI_EXPECTED_VALUE))
 		assertEquals(FAILED, testee.state)
 	}
 	
 	@Test
 	void testCheckUpdate_withPathNotEqualToItemPath()
 	{
-		testee.checkUpdate(ITEM_PATH+'and.then.some', ANTI_EXPECTED_VALUE)
+		testee.checkUpdate(ITEM_PATH+'and.then.some', createUpdate(ANTI_EXPECTED_VALUE))
 		assertFalse(FAILED == testee.state)
 	}
 	
@@ -63,7 +64,7 @@ class AssertAsyncNotEqualsRunResultTest
 		testee.state = FAILED
 		
 		def result = testee.toXml(xmlBuilder)
-		assertTestCaseElementPresentAndNameAttributeIsCorrect(result)
+		assertTestCaseElementPresentAndNameAttributeIsCorrect(result, AssertAsyncNotEqualsRunResult.TITLE, MESSAGE, 1)
 		
 		assertTrue(result.'@name'.contains('failed'))
 
@@ -78,7 +79,7 @@ class AssertAsyncNotEqualsRunResultTest
 		testee.state = PASSED
 
 		def result = testee.toXml(xmlBuilder)
-		assertTestCaseElementPresentAndNameAttributeIsCorrect(result)
+		assertTestCaseElementPresentAndNameAttributeIsCorrect(result, AssertAsyncNotEqualsRunResult.TITLE, MESSAGE, 1)
 		
 		assertTrue(result.'@name'.contains('success'))
 
@@ -93,7 +94,7 @@ class AssertAsyncNotEqualsRunResultTest
 		testee.state = WAITING
 
 		def result = testee.toXml(xmlBuilder)
-		assertTestCaseElementPresentAndNameAttributeIsCorrect(result)
+		assertTestCaseElementPresentAndNameAttributeIsCorrect(result, AssertAsyncNotEqualsRunResult.TITLE, MESSAGE, 1)
 		
 		assertTrue(result.'@name'.contains('incomplete'))
 		
@@ -108,18 +109,18 @@ class AssertAsyncNotEqualsRunResultTest
 		testee.toXml(xmlBuilder)
 	}
 	
-	private static def assertTestCaseElementPresentAndNameAttributeIsCorrect(xml)
-	{
-		assertEquals('testcase root element should be called -testcase-',
-			'testcase', xml.name)
-		
-		assertTrue('testcase root element name attribute should contain the test type', 
-			xml.'@name'.contains(AssertAsyncNotEqualsRunResult.TITLE))
-		
-		assertTrue('testcase root element name attribute shoudl contain the user message',
-			xml.'@name'.contains(MESSAGE))
-		
-		assertEquals('Should be a single child element detailing the testcase outcome: pass/fail etc', 
-			1, xml.size())
-	}
+//	private static def assertTestCaseElementPresentAndNameAttributeIsCorrect(xml)
+//	{
+//		assertEquals('testcase root element should be called -testcase-',
+//			'testcase', xml.name)
+//		
+//		assertTrue('testcase root element name attribute should contain the test type', 
+//			xml.'@name'.contains(AssertAsyncNotEqualsRunResult.TITLE))
+//		
+//		assertTrue('testcase root element name attribute shoudl contain the user message',
+//			xml.'@name'.contains(MESSAGE))
+//		
+//		assertEquals('Should be a single child element detailing the testcase outcome: pass/fail etc', 
+//			1, xml.size())
+//	}
 }

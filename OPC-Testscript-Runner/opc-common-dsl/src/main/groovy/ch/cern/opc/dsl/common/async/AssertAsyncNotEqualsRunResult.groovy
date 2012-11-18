@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException
 
+import ch.cern.opc.common.ItemValue
 import ch.cern.opc.dsl.common.results.RunResult
 import static ch.cern.opc.dsl.common.results.RunResultUtil.formatMessage
 import static ch.cern.opc.dsl.common.async.AsyncState.*
@@ -57,13 +58,16 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 	}
 	
 	@Override
-	def checkUpdate(itemPath, actualValue)
+	def checkUpdate(itemPath, ItemValue actualValue)
 	{
 		if(isItemPathMatch(itemPath))
 		{
-			if(isItemValueMatch(actualValue))
+			if(actualValue != null)
 			{
-				state = FAILED
+				if(isItemValueMatch(actualValue.value))
+				{
+					state = FAILED
+				}
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test
 import org.junit.Before
 
+import ch.cern.opc.common.ItemValue
 import ch.cern.opc.dsl.common.async.AssertAsyncRunResult;
 import ch.cern.opc.dsl.common.async.AsyncConditionManager;
 import groovy.mock.interceptor.*
@@ -159,7 +160,7 @@ class AssertAsyncRunResultTest
 		}
 		
 		@Override
-		def checkUpdate(itemPath, actualValue)
+		def checkUpdate(itemPath, ItemValue actualValue)
 		{
 			throw NotImplementedException('checkUpdate called for test stub - no implementation')
 		}

@@ -46,7 +46,7 @@ class OPCDAUpdateHandler
 				def update = updatesQueue.pollFirst(UPDATE_Q_TIMEOUT_POLL, TimeUnit.MILLISECONDS)
 				if(update != null)
 				{
-					genericHandler.onUpdate(update.itemPath, null, update.value, update.quality, update.type, update.timestamp)
+					genericHandler.onUpdate(update.itemPath, null, update.value)
 				}
 			}
 			

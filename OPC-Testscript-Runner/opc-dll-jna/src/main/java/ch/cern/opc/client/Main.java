@@ -6,6 +6,7 @@ import static ch.cern.opc.common.Log.logWarning;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import ch.cern.opc.common.ItemValue;
 import ch.cern.opc.common.Log;
 
 public class Main 
@@ -32,7 +33,7 @@ public class Main
 					try 
 					{
 						UpdateValue update = Main.updatesQueue.takeFirst();
-						System.out.println("update recvd: item ["+update.itemPath+"] value ["+update.value+"] quality ["+update.quality+"] type ["+update.type+"] timestamp ["+update.timestamp+"]");
+						System.out.println("update recvd: item ["+update.itemPath+"] "+update.value.toString());
 					} 
 					catch (InterruptedException e) 
 					{

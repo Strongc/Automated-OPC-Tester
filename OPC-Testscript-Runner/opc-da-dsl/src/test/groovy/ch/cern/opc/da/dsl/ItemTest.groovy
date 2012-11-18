@@ -1,12 +1,12 @@
 package ch.cern.opc.da.dsl
 
-import ch.cern.opc.client.ItemValue
 import static ch.cern.opc.common.Quality.State.*;
 import ch.cern.opc.client.OPCDAClientApi
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.da.dsl.Item
 import ch.cern.opc.da.dsl.ScriptContext
 import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
+import ch.cern.opc.common.ItemValue;
 import ch.cern.opc.common.Log
 
 import static org.junit.Assert.*

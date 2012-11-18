@@ -4,6 +4,7 @@ import static org.junit.Assert.*
 
 
 import ch.cern.opc.client.UpdateValue
+import ch.cern.opc.common.ItemValue
 import ch.cern.opc.dsl.common.client.UpdateHandler
 import org.junit.*
 import static ch.cern.opc.common.Log.*
@@ -14,10 +15,7 @@ class OPCDAUpdateHandlerTest
 	{
 		String itemId
 		String attrId
-		String value
-		int quality
-		int type
-		String timestamp
+		ItemValue value
 	}
 
 	def rcvdUpdates = []
@@ -31,16 +29,13 @@ class OPCDAUpdateHandlerTest
 		
 		def updateHandler  = 
 		[
-			onUpdate:{itemId, attributeId, value, quality, type, timestamp->
-				System.out.println("item [${itemId}] att [${attributeId}] val [${value}] quality [${quality}] type [${type}] ts [${timestamp}]")
+			onUpdate:{itemId, attributeId, value->
+				System.out.println("item [${itemId}] att [${attributeId}] ${value}")
 				
 				def update = new RcvdUpdate()
 				update.itemId = itemId
 				update.attrId = attributeId
 				update.value = value
-				update.quality = quality
-				update.type = type
-				update.timestamp = timestamp
 				
 				rcvdUpdates.add(update)
 		}
@@ -81,7 +76,7 @@ class OPCDAUpdateHandlerTest
 		def update = rcvdUpdates[0]
 		
 		assertNull(update.itemId)
-		assertEquals("123", update.value)
+		assertEquals("123", update.value.value)
 	}
 	
 	@Test
@@ -94,7 +89,7 @@ class OPCDAUpdateHandlerTest
 		def update = rcvdUpdates[0]
 
 		assertEquals("item.path", update.itemId)
-		assertNull(update.value)
+		assertEquals("", update.value.value)
 	}
 	
 	@Test
@@ -107,7 +102,7 @@ class OPCDAUpdateHandlerTest
 		def update = rcvdUpdates[0]
 
 		assertEquals("item.path", update.itemId)
-		assertEquals("123", update.value)
+		assertEquals("123", update.value.value)
 	}
 	
 	private def waitForUpdates(def numberOfUpdates = 1)
@@ -127,7 +122,8 @@ class OPCDAUpdateHandlerTest
 	//"item.path", "123", 192, 8, "timestamp"
 	private def pushUpdate(path, value, quality, type, timestamp)
 	{
-		testee.updatesQueue.offerLast(new UpdateValue(path, '', value, quality, type, timestamp))
+		ItemValue itemValue = new ItemValue(value, quality, timestamp, type)
+		testee.updatesQueue.offerLast(new UpdateValue(path, '', itemValue))
 	}
 
 }

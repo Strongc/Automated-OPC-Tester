@@ -1,6 +1,8 @@
 package ch.cern.opc.client;
 
 import java.util.concurrent.BlockingDeque;
+
+import ch.cern.opc.common.ItemValue;
 import static ch.cern.opc.common.Log.*;
 
 /**
@@ -32,7 +34,7 @@ public class OPCDAAsyncUpdateCallback implements UpdateCallback
 		
 		for(int retry = 0; retry < MAX_UPDATE_QUEUE_RETRIES; retry++)
 		{
-			UpdateValue update = new UpdateValue(path, "", value, quality, type, timestamp);
+			UpdateValue update = new UpdateValue(path, "", new ItemValue(value, quality, timestamp, type));
 			
 			if(updateQueue.offerLast(update))
 			{

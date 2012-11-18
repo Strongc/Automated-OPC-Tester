@@ -1,6 +1,7 @@
 package ch.cern.opc.dsl.common.async
 
 import static ch.cern.opc.common.Log.*
+import ch.cern.opc.common.ItemValue
 import ch.cern.opc.dsl.common.client.UpdateHandler
 import static ch.cern.opc.dsl.common.async.AsyncState.*
 
@@ -78,7 +79,7 @@ class AsyncConditionManager implements UpdateHandler
 
 	
 	@Override
-	public void onUpdate(itemId, attributeId, value, quality, type, timestamp)
+	public void onUpdate(itemId, attributeId, ItemValue value)
 	{
 		if(itemId == null || value == null)
 		{
@@ -88,11 +89,7 @@ class AsyncConditionManager implements UpdateHandler
 		{
 			logDebug("onUpdate called")
 			logDebug("-item [${itemId}]")
-			logDebug("-value [${value}]")
-			logDebug("-quality [${quality}]")
-			logDebug("-type [${type}]")
-			logDebug("-timestamp [${timestamp}]")
-			logDebug("-thread [${Thread.currentThread().id}]")
+			logDebug("${value}")
 			
 			asyncUpdate(itemId, value)
 		}

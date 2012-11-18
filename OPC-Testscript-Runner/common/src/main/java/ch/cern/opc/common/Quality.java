@@ -17,6 +17,23 @@ public class Quality
 		{
 			return string;
 		}
+		
+		public int toInt()
+		{
+			switch(this)
+			{
+			case GOOD:
+				return 192;
+			case BAD:
+				return 0;
+			case UNCERTAIN:
+				return 64;
+			case NA:
+				return 128;
+			}
+			
+			throw new IllegalStateException("Unrecognised quality state ["+this+"]");
+		}
 	};
 	
 	private static final int QUALITY_BIT_LOW_POS = 6;

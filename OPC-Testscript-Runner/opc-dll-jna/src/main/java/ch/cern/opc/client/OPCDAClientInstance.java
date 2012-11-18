@@ -5,6 +5,8 @@ import static ch.cern.opc.common.Log.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.cern.opc.common.ItemValue;
+
 /**
  * A singleton that proxies the {@link ch.cern.opc.client.Client Client} class
  * 

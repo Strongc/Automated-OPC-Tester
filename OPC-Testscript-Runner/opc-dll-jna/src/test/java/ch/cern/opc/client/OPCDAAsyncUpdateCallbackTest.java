@@ -12,6 +12,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.cern.opc.common.Quality;
+
 public class OPCDAAsyncUpdateCallbackTest 
 {
 	private boolean stopUpdateHandlerThread;
@@ -47,14 +49,14 @@ public class OPCDAAsyncUpdateCallbackTest
 	@Test
 	public void testQueuedUpdateHasCorrectContent() throws InterruptedException
 	{
-		testee.onUpdate("some.test.item", "value", 2, 3, "timestamp");
+		testee.onUpdate("some.test.item", "value", 192, 3, "timestamp");
 
 		UpdateValue update = updateQueue.takeFirst();
 		assertEquals("some.test.item", update.itemPath);
-		assertEquals("value", update.value);
-		assertEquals(2, update.quality);
-		assertEquals(3, update.type);
-		assertEquals("timestamp", update.timestamp);
+		assertEquals("value", update.value.value);
+		assertEquals(Quality.State.GOOD, update.value.quality.state);
+		assertEquals(3, update.value.datatype);
+		assertEquals("timestamp", update.value.timestamp);
 	}
 	
 	@Test

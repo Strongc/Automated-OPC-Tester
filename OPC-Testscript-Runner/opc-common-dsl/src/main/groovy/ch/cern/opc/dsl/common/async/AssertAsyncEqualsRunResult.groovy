@@ -3,27 +3,28 @@ package ch.cern.opc.dsl.common.async
 import static ch.cern.opc.dsl.common.results.RunResultUtil.formatMessage
 import static ch.cern.opc.dsl.common.async.AsyncState.*
 
+import ch.cern.opc.common.ItemValue
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException
 
 class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 {
-	public static final def TITLE = 'assertAsyncEquals' 
-	
+	public static final def TITLE = 'assertAsyncEquals'
+
 	final def message
-	
+
 	def AssertAsyncEqualsRunResult(message, timeout, itemPath, expectedValue)
 	{
 		super(timeout, itemPath, expectedValue)
 		this.message = formatMessage(message)
 	}
-	
+
 	@Override
 	def toXml(xmlBuilder)
 	{
 		def element
-		
+
 		switch(state)
 		{
 			case PASSED:
@@ -49,27 +50,30 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 		}
 		return element
 	}
-	
+
 	@Override
 	String toString()
 	{
-		return "AssertAsyncEqualsRunResult: item [${itemPath}] expected value [${itemValue}]"	
+		return "AssertAsyncEqualsRunResult: item [${itemPath}] expected value [${itemValue}]"
 	}
-	
+
 	@Override
 	def timedOut()
 	{
 		state = FAILED
 	}
-	
+
 	@Override
-	def checkUpdate(itemPath, actualValue)
+	def checkUpdate(itemPath, ItemValue actualValue)
 	{
 		if(isItemPathMatch(itemPath))
 		{
-			if(isItemValueMatch(actualValue))
+			if(actualValue != null)
 			{
-				state = PASSED
+				if(isItemValueMatch(actualValue.value))
+				{
+					state = PASSED
+				}
 			}
 		}
 	}
