@@ -8,6 +8,8 @@ import ch.cern.opc.common.ItemValue
 import static ch.cern.opc.dsl.common.async.AsyncUpdateTestUtils.*
 import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult
 import static ch.cern.opc.dsl.common.async.AsyncState.*
+import static ch.cern.opc.common.Quality.State.*
+
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 
@@ -94,10 +96,23 @@ class AssertAsyncEqualsRunResultTest
 	}
 	
 	@Test
+	void testCheckUpdateStoresTheValueWhichCausedTheSuccess()
+	{
+		testee.checkUpdate(ITEM_PATH, createUpdate(EXPECTED_VALUE, GOOD, 'some_timestamp', 123))
+		assertEquals(PASSED, testee.state)
+		
+		assertEquals(EXPECTED_VALUE, testee.theSuccessfulUpdate.value)
+		assertEquals(GOOD, testee.theSuccessfulUpdate.quality.state)
+		assertEquals('some_timestamp', testee.theSuccessfulUpdate.timestamp)
+		assertEquals(123, testee.theSuccessfulUpdate.datatype)
+	}
+	
+	@Test
 	void testToXmlForPassed()
 	{
 		testee.elapsedWait = TIMEOUT - 1
 		testee.state = PASSED
+		testee.theSuccessfulUpdate = new ItemValue(EXPECTED_VALUE, GOOD, 'some_timestamp', 123)
 
 		def testcaseElement = testee.toXml(xmlBuilder)
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement, AssertAsyncEqualsRunResult.TITLE, MESSAGE, 1)
@@ -105,7 +120,7 @@ class AssertAsyncEqualsRunResultTest
 		assertTrue(testcaseElement.'@name'.contains('passed'))
 		
 		def successElement = testcaseElement.success[0]
-		assertEquals("item [${ITEM_PATH}] obtained expected value [${EXPECTED_VALUE}] in [${testee.elapsedWait}] seconds".toString(), successElement.'@message')
+		assertEquals("item [${ITEM_PATH}] obtained expected value [${EXPECTED_VALUE}] at [some_timestamp]. Elapsed wait [${testee.elapsedWait}] seconds".toString(), successElement.'@message')
 	}
 	
 	@Test

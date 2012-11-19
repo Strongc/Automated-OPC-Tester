@@ -13,6 +13,7 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 	public static final def TITLE = 'assertAsyncEquals'
 
 	final def message
+	private ItemValue theSuccessfulUpdate = null
 
 	def AssertAsyncEqualsRunResult(message, timeout, itemPath, expectedValue)
 	{
@@ -30,7 +31,7 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 			case PASSED:
 				element = xmlBuilder.testcase(name:"${TITLE} passed: ${message}")
 				{
-					success(message:"item [${itemPath}] obtained expected value [${itemValue}] in [${elapsedWait}] seconds")
+					success(message:"item [${itemPath}] obtained expected value [${itemValue}] at [${successTimestamp}]. Elapsed wait [${elapsedWait}] seconds")
 				}
 				break;
 			case FAILED:
@@ -72,10 +73,16 @@ class AssertAsyncEqualsRunResult extends AssertAsyncRunResult
 			{
 				if(isItemValueMatch(actualValue.value))
 				{
+					theSuccessfulUpdate = actualValue
 					state = PASSED
 				}
 			}
 		}
+	}
+	
+	private String getSuccessTimestamp()
+	{
+		return (theSuccessfulUpdate != null? theSuccessfulUpdate.timestamp.toString(): 'NULL TIMESTAMP')
 	}
 
 }
