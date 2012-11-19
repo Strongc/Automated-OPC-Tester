@@ -58,7 +58,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 	}
 	
 	@Override
-	def checkUpdate(itemPath, ItemValue actualValue)
+	def checkUpdate(itemPath, final ItemValue actualValue)
 	{
 		if(isItemPathMatch(itemPath))
 		{

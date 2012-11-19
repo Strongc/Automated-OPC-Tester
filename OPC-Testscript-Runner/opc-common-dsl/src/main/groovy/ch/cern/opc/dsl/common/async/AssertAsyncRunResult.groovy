@@ -22,7 +22,7 @@ abstract class AssertAsyncRunResult extends ObservableRunResult implements Async
 	 * concerns the 'significant' value for the condition, note that the value might be the 
 	 * expected value, or the anti-expected value (i.e. the condition is considered to have 
 	 * passed so long as the actual item value does not match this). The exact usage of the
-	 * item value depends on the concrete type extending this abstract base class 
+	 * item value depends on the concrete type extending this abstract base class.  
 	 */
 	protected final def itemValue
 	

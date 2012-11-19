@@ -160,7 +160,7 @@ class AssertAsyncRunResultTest
 		}
 		
 		@Override
-		def checkUpdate(itemPath, ItemValue actualValue)
+		def checkUpdate(itemPath, final ItemValue actualValue)
 		{
 			throw NotImplementedException('checkUpdate called for test stub - no implementation')
 		}

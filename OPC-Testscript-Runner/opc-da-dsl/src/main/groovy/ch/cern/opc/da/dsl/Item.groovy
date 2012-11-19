@@ -69,4 +69,9 @@ class Item
 	{
 		ScriptContext.instance.assertQuality(message, expectedQuality, quality)		
 	}
+	
+	def assertAsyncQuality(message, timeout, expectedQuality)
+	{
+		ScriptContext.instance.assertAsyncQuality(message, timeout, expectedQuality, path)
+	}
 }

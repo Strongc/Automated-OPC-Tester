@@ -14,9 +14,9 @@
     <name>opc-da-dsl</name>
     <version>0.1</version>
     <properties>
-        <gmaven.version>1.3</gmaven.version>
-        <groovy.major.version>1.7</groovy.major.version>
-        <groovy.minor.version>4</groovy.minor.version>
+        <gmaven.version>1.4</gmaven.version>
+        <groovy.major.version>1.8</groovy.major.version>
+        <groovy.minor.version>1</groovy.minor.version>
     </properties>
     <dependencies>
         <dependency>

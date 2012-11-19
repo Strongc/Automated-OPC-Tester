@@ -22,6 +22,18 @@ for(i in 1..3)
 			logInfo("And the quality is [${quality}]")
 			assertQuality("item [${path}] should have GOOD quality", GOOD);
 		}
+		
+		item('testGroup.myBigFloat').with
+		{
+			assertQuality("expect [${path}] is readable - quality must be GOOD", GOOD)
+			assertAsyncQuality("expect [${path}] to remain readable for [10s]", 10, GOOD)
+		}
+		
+		item('Write Only.Int1').with
+		{
+			assertQuality("expect [${path}] is write only - quality must be BAD", BAD)
+			assertAsyncQuality("expect [${path}] to remain non-readable for [10s]", 10, GOOD)
+		}
 
 		item('testGroup.myBool').with		
 		{

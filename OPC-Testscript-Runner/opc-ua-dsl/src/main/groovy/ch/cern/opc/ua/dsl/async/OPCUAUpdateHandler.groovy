@@ -1,5 +1,6 @@
 package ch.cern.opc.ua.dsl.async
 
+import ch.cern.opc.common.ItemValue
 import ch.cern.opc.dsl.common.client.UpdateHandler
 import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
 import ch.cern.opc.ua.clientlib.notification.SubscriptionNotification;
@@ -23,7 +24,8 @@ class OPCUAUpdateHandler implements OPCUAAsyncUpdateCallback
 		if(notification.value == null) return 0
 		
 		def valueAsString = notification.value.value.value.toString()
-		dslHandler.onUpdate(nodeId, attributeId, valueAsString, 0, 0, null)
+		ItemValue itemValue = new ItemValue(valueAsString, 0, "no timestamp", 0)
+		dslHandler.onUpdate(nodeId, attributeId, itemValue)
 		return 1;
 	}
 }

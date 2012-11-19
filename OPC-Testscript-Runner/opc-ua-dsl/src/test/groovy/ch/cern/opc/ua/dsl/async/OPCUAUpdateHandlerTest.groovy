@@ -46,14 +46,14 @@ class OPCUAUpdateHandlerTest
 		wasUpdateInvoked = false
 		
 		def result = [
-			onUpdate:{itemId, attributeId, value, quality, type, timestamp->
+			onUpdate:{itemId, attributeId, value->
 				wasUpdateInvoked = true
 				rcvdItemId = itemId
 				rcvdAttributeId = attributeId
-				rcvdValue = value
-				rcvdQuality = quality
-				rcvdType = type
-				rcvdTimestamp = timestamp}
+				rcvdValue = value.value
+				rcvdQuality = value.quality
+				rcvdType = value.datatype
+				rcvdTimestamp = value.timestamp}
 		] as UpdateHandler;
 	
 		return result

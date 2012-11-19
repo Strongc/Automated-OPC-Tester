@@ -7,6 +7,7 @@ import ch.cern.opc.dsl.common.client.GenericClient
 import ch.cern.opc.common.Log
 import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult;
 import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult;
+import ch.cern.opc.dsl.common.async.AssertAsyncQualityRunResult;
 import ch.cern.opc.dsl.common.async.AsyncConditionManager;
 
 import org.w3c.dom.*;
@@ -67,6 +68,11 @@ class RunResults extends Observable
 	def assertAsyncNotEquals(message, timeoutMs, antiExpected, itemPath)
 	{
 		addAsyncAssertion(new AssertAsyncNotEqualsRunResult(message, timeoutMs, itemPath, antiExpected))
+	}
+	
+	def assertAsyncQuality(message, timeoutMs, expectedQuality, itemPath)
+	{
+		addAsyncAssertion(new AssertAsyncQualityRunResult(message, timeoutMs, itemPath, expectedQuality))
 	}
 	
 	def setPingPeriodInSeconds(pingPeriod)

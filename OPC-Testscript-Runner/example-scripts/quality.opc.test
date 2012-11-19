@@ -12,6 +12,9 @@ group('test.group').with
 	goodQualityItem.assertQuality("expected failure - comparing UNCERTAIN with GOOD", UNCERTAIN)
 	goodQualityItem.assertQuality("expected failure - comparing NA with GOOD", NA)
 	
+	goodQualityItem.assertAsyncQuality("item [${goodQualityItem.path}] should quality should remain [GOOD]", 10, GOOD)
+	goodQualityItem.assertAsyncQuality("expected failure, item [${goodQualityItem.path}] should not have quality BAD", 10, BAD)
+	
 	// a bad quality item
 	def badQualityItem = item('Write Only.Int1')
 	logInfo("item [${badQualityItem.path}] quality [${badQualityItem.quality}]")
@@ -19,6 +22,8 @@ group('test.group').with
 	badQualityItem.assertQuality("expected failure - comparing GOOD with BAD", GOOD)
 	badQualityItem.assertQuality("expected failure - comparing UNCERTAIN with BAD", UNCERTAIN)
 	badQualityItem.assertQuality("expected failure - comparing NA with BAD", NA)	
+	
+	badQualityItem.assertAsyncQuality("item [${badQualityItem.path}] should quality should remain [BAD]", 10, BAD)
 }
 
 logInfo('end of script')

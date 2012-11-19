@@ -248,6 +248,16 @@ class ItemTest
 		returnedValue = new ItemValue('', 128/*QUALITY NOT APPLICABLE*/, '', 0)
 		assertTrue(testee.quality.equals(NA))
 	}
+	
+	@Test
+	void testAssertAsyncQuality_callsScriptContextWithCorrectParams()
+	{
+		testee.assertAsyncQuality(MESSAGE, ASYNC_TIMEOUT, GOOD)
+		assertEquals(MESSAGE, requestedAssertAsyncParameters.message)
+		assertEquals(ASYNC_TIMEOUT, requestedAssertAsyncParameters.timeout)
+		assertEquals(GOOD, requestedAssertAsyncParameters.value)
+		assertEquals(TESTEE_ITEM_PATH, requestedAssertAsyncParameters.path)
+	}
 
 	/**
 	 * ClientInstance stubbed with different method than ScriptContext.
@@ -290,24 +300,28 @@ class ItemTest
 	 */
 	private def stubScriptContext()
 	{
-		ScriptContext.metaClass.assertAsyncEquals = {message, timeout, value, path->
-			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, value, path)
+		ScriptContext.metaClass.assertAsyncEquals = {message, timeout, expectedValue, path->
+			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, expectedValue, path)
 		}
 
-		ScriptContext.metaClass.assertAsyncNotEquals{message, timeout, value, path->
-			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, value, path)
+		ScriptContext.metaClass.assertAsyncNotEquals{message, timeout, antiExpectedValue, path->
+			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, antiExpectedValue, path)
 		}
 
-		ScriptContext.metaClass.assertTrue{message, value ->
-			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, value)
+		ScriptContext.metaClass.assertTrue{message, actualValue ->
+			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, actualValue)
 		}
 
-		ScriptContext.metaClass.assertFalse{message, value ->
-			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, value)
+		ScriptContext.metaClass.assertFalse{message, actualValue ->
+			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, actualValue)
 		}
 		
-		ScriptContext.metaClass.assertQuality{message, expected, actual->
-			requestedAssertQualityValues = new AssertQualityValues(message, expected, actual)
+		ScriptContext.metaClass.assertQuality{message, expectedQuality, actualQuality->
+			requestedAssertQualityValues = new AssertQualityValues(message, expectedQuality, actualQuality)
+		}
+		
+		ScriptContext.metaClass.assertAsyncQuality{message, timeout, expectedQuality, path->
+			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, expectedQuality, path)
 		}
 		
 		// not really necessary but in case of init problems the test will fail here. Fail early

@@ -14,6 +14,7 @@ import groovy.mock.interceptor.StubFor
 import ch.cern.opc.dsl.common.client.GenericClient
 import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult
 import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult
+import ch.cern.opc.dsl.common.async.AssertAsyncQualityRunResult
 import ch.cern.opc.dsl.common.async.AsyncConditionManager
 import ch.cern.opc.dsl.common.results.RunResult
 import ch.cern.opc.dsl.common.results.RunResults
@@ -242,6 +243,33 @@ class RunResultsTest
 		
 		assertEquals(1, testee.results.size)
 	}
+	
+	@Test
+	void testAssertAsyncQuality_RegistersAsyncAssertObjectWithManager()
+	{
+		def isAsyncAssertQualityRegisteredWithAsyncManager = false
+		
+		def stubAsyncAssertQuality = new StubFor(AssertAsyncQualityRunResult)
+		stubAsyncAssertQuality.demand.registerWithManager {isAsyncAssertQualityRegisteredWithAsyncManager = true}
+		
+		stubAsyncAssertQuality.use
+		{
+			testee.assertAsyncQuality(null, null, null, null)
+		}
+		
+		assertTrue(isAsyncAssertQualityRegisteredWithAsyncManager)
+	}
+	
+	@Test
+	void testAssertAsyncQuality_AddsAsyncAssertObjectToResults()
+	{
+		assertEquals(0, testee.results.size)
+		
+		testee.assertAsyncQuality(null, null, null, null)
+		
+		assertEquals(1, testee.results.size)
+	}
+
 	
 	@Test
 	void testAddingAssertTrueUpdatesObserver()
