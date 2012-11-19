@@ -13,6 +13,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 {
 	public static final def TITLE = 'assertAsyncNotEquals'
 	final def message
+	private ItemValue theFailedUpdate = null
 	
 	def AssertAsyncNotEqualsRunResult(message, timeout, itemPath, antiExpectedValue)
 	{
@@ -30,7 +31,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 			case FAILED:
 				element = xmlBuilder.testcase(name:"${TITLE} failed: ${message}")
 				{
-					failure(message:"item [${itemPath}] matched anti-expected value [${itemValue}] in [${elapsedWait}] seconds")
+					failure(message:"item [${itemPath}] received anti-expected value [${itemValue}] at [${failureTimestamp}]. Elapsed wait [${elapsedWait}] seconds")
 				}
 				break;
 			case PASSED:
@@ -66,6 +67,7 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 			{
 				if(isItemValueMatch(actualValue.value))
 				{
+					theFailedUpdate = actualValue
 					state = FAILED
 				}
 			}
@@ -77,4 +79,10 @@ class AssertAsyncNotEqualsRunResult extends AssertAsyncRunResult
 	{
 		return "AssertAsyncNotEqualsRunResult: item [${itemPath}] anti expected value [${itemValue}]"
 	}
+	
+	private String getFailureTimestamp()
+	{
+		return (theFailedUpdate != null? theFailedUpdate.timestamp.toString(): 'NULL TIMESTAMP')
+	}
+
 }

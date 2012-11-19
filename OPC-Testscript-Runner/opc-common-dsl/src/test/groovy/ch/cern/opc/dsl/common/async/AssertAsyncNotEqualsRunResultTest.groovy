@@ -4,9 +4,11 @@ import static org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
+import ch.cern.opc.common.ItemValue
 import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult
 import static ch.cern.opc.dsl.common.async.AsyncState.*
 import static ch.cern.opc.dsl.common.async.AsyncUpdateTestUtils.*
+import static ch.cern.opc.common.Quality.State.*
 
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
@@ -58,10 +60,23 @@ class AssertAsyncNotEqualsRunResultTest
 	}
 	
 	@Test
+	void testCheckUpdateStoresTheValueWhichCausedTheFailure()
+	{
+		testee.checkUpdate(ITEM_PATH, createUpdate(ANTI_EXPECTED_VALUE, GOOD, 'some_timestamp', 123))
+		assertEquals(FAILED, testee.state)
+		
+		assertEquals(ANTI_EXPECTED_VALUE, testee.theFailedUpdate.value)
+		assertEquals(GOOD, testee.theFailedUpdate.quality.state)
+		assertEquals('some_timestamp', testee.theFailedUpdate.timestamp)
+		assertEquals(123, testee.theFailedUpdate.datatype)
+	}
+	
+	@Test
 	void testToXml_withStateFailed()
 	{
 		testee.elapsedWait = 100
 		testee.state = FAILED
+		testee.theFailedUpdate = new ItemValue(ANTI_EXPECTED_VALUE, GOOD, 'some_timestamp', 123)
 		
 		def result = testee.toXml(xmlBuilder)
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(result, AssertAsyncNotEqualsRunResult.TITLE, MESSAGE, 1)
@@ -69,7 +84,7 @@ class AssertAsyncNotEqualsRunResultTest
 		assertTrue(result.'@name'.contains('failed'))
 
 		def failureElement = result.failure[0]
-		assertEquals("item [${ITEM_PATH}] matched anti-expected value [${ANTI_EXPECTED_VALUE}] in [${testee.elapsedWait}] seconds".toString(), failureElement.'@message')
+		assertEquals("item [${ITEM_PATH}] received anti-expected value [${ANTI_EXPECTED_VALUE}] at [some_timestamp]. Elapsed wait [100] seconds".toString(), failureElement.'@message')
 	}
 	
 	@Test
