@@ -1,0 +1,25 @@
+init('', 'Matrikon.OPC.Simulation')
+
+group('data.type.test.group').with
+{
+	item('Bucket Brigade.Boolean').assertDatatype("should be VT_BOOL", VT_BOOL)
+	
+	item('Bucket Brigade.Time').assertDatatype("should be VT_DATE", VT_DATE)
+	
+	item('Bucket Brigade.String').assertDatatype("should be VT_BSTR", VT_BSTR)
+
+	item('Bucket Brigade.Int1').assertDatatype("should be VT_I1", VT_I1)
+	item('Bucket Brigade.Int2').assertDatatype("should be VT_I2", VT_I2)
+	item('Bucket Brigade.Int4').assertDatatype("should be VT_I4", VT_I4)
+	
+	item('Bucket Brigade.UInt1').assertDatatype("should be VT_UI1", VT_UI1)
+	item('Bucket Brigade.UInt2').assertDatatype("should be VT_UI2", VT_UI2)
+	item('Bucket Brigade.UInt4').assertDatatype("should be VT_UI4", VT_UI4)	
+	
+	item('Bucket Brigade.Real4').assertDatatype("should be VT_R4", VT_R4)
+	item('Bucket Brigade.Real8').assertDatatype("should be VT_R8", VT_R8)
+	
+	item('Write Only.Int1').assertDatatype("should be VT_I1", VT_I1)
+	
+	destroy()
+}

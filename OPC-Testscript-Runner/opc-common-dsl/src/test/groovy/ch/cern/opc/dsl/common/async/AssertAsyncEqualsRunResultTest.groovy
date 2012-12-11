@@ -5,6 +5,7 @@ import org.junit.Before
 import org.junit.Test
 
 import ch.cern.opc.common.ItemValue
+import ch.cern.opc.common.Timestamp
 import static ch.cern.opc.dsl.common.async.AsyncUpdateTestUtils.*
 import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult
 import static ch.cern.opc.dsl.common.async.AsyncState.*
@@ -20,6 +21,7 @@ class AssertAsyncEqualsRunResultTest
 	private static final def EXPECTED_VALUE = 'expected value'
 	private static final def NOT_THE_EXPECTED_VALUE = 'not the expected value'
 	private static final def MESSAGE = 'assertion user message'
+	private static final def TIMESTAMP = "2012/11/19-18:48:2.411";
 	
 	def testee
 	def xmlBuilder
@@ -98,13 +100,13 @@ class AssertAsyncEqualsRunResultTest
 	@Test
 	void testCheckUpdateStoresTheValueWhichCausedTheSuccess()
 	{
-		testee.checkUpdate(ITEM_PATH, createUpdate(EXPECTED_VALUE, GOOD, 'some_timestamp', 123))
+		testee.checkUpdate(ITEM_PATH, createUpdate(EXPECTED_VALUE, GOOD, TIMESTAMP, 2))
 		assertEquals(PASSED, testee.state)
 		
 		assertEquals(EXPECTED_VALUE, testee.theSuccessfulUpdate.value)
 		assertEquals(GOOD, testee.theSuccessfulUpdate.quality.state)
-		assertEquals('some_timestamp', testee.theSuccessfulUpdate.timestamp)
-		assertEquals(123, testee.theSuccessfulUpdate.datatype)
+		assertEquals(new Timestamp(TIMESTAMP), testee.theSuccessfulUpdate.timestamp)
+		assertEquals(2, testee.theSuccessfulUpdate.datatype.datatypeId)
 	}
 	
 	@Test
@@ -112,7 +114,7 @@ class AssertAsyncEqualsRunResultTest
 	{
 		testee.elapsedWait = TIMEOUT - 1
 		testee.state = PASSED
-		testee.theSuccessfulUpdate = new ItemValue(EXPECTED_VALUE, GOOD, 'some_timestamp', 123)
+		testee.theSuccessfulUpdate = new ItemValue(EXPECTED_VALUE, GOOD, TIMESTAMP, 123)
 
 		def testcaseElement = testee.toXml(xmlBuilder)
 		assertTestCaseElementPresentAndNameAttributeIsCorrect(testcaseElement, AssertAsyncEqualsRunResult.TITLE, MESSAGE, 1)
@@ -120,7 +122,7 @@ class AssertAsyncEqualsRunResultTest
 		assertTrue(testcaseElement.'@name'.contains('passed'))
 		
 		def successElement = testcaseElement.success[0]
-		assertEquals("item [${ITEM_PATH}] obtained expected value [${EXPECTED_VALUE}] at [some_timestamp]. Elapsed wait [${testee.elapsedWait}] seconds".toString(), successElement.'@message')
+		assertEquals("item [${ITEM_PATH}] obtained expected value [${EXPECTED_VALUE}] at [${TIMESTAMP}]. Elapsed wait [${testee.elapsedWait}] seconds".toString(), successElement.'@message')
 	}
 	
 	@Test

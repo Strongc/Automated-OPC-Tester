@@ -25,6 +25,11 @@ class Item
 		return OPCDAClientInstance.instance.readItemSync(groupName, path).value
 	}
 	
+	def getDatatype()
+	{
+		return OPCDAClientInstance.instance.readItemSync(groupName, path).datatype
+	}
+	
 	def setSyncValue(value)
 	{
 		return OPCDAClientInstance.instance.writeItemSync(groupName, path, value)
@@ -68,6 +73,11 @@ class Item
 	def assertQuality(message, expectedQuality)
 	{
 		ScriptContext.instance.assertQuality(message, expectedQuality, quality)		
+	}
+	
+	def assertDatatype(message, expectedDatatype)
+	{
+		ScriptContext.instance.assertDatatype(message, expectedDatatype, datatype)
 	}
 	
 	def assertAsyncQuality(message, timeout, expectedQuality)

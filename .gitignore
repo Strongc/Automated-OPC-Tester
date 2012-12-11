@@ -21,9 +21,13 @@ Release
 *.sdf
 *.opensdf
 *.vcxproj.filters
+**/ipch/
 
 # ignore VC++ test output
 test_detail.xml
 
 # ignore temporary certificate files
 *temporary*File.der
+
+# ignore build output
+*.dll

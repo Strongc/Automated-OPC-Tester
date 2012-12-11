@@ -1,12 +1,13 @@
 package ch.cern.opc.da.dsl
 
-import static ch.cern.opc.common.Quality.State.*;
+import static ch.cern.opc.common.Quality.State.*
+import static ch.cern.opc.common.Datatype.*
 import ch.cern.opc.client.OPCDAClientApi
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.da.dsl.Item
 import ch.cern.opc.da.dsl.ScriptContext
 import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
-import ch.cern.opc.common.ItemValue;
+import ch.cern.opc.common.ItemValue
 import ch.cern.opc.common.Log
 
 import static org.junit.Assert.*
@@ -44,6 +45,20 @@ class ItemTest
 		}
 	}
 
+	class ItemAssertionValues 
+	{
+		final def message
+		final def expected
+		final def actual
+
+		def ItemAssertionValues(message, expected, actual)
+		{
+			this.message = message
+			this.expected = expected
+			this.actual = actual
+		}
+	}
+	
 	class AssertAsyncValues
 	{
 		final def message
@@ -60,38 +75,15 @@ class ItemTest
 		}
 	}
 
-	class AssertTrueFalseValues
-	{
-		final def message
-		final def value
-
-		def AssertTrueFalseValues(message, value)
-		{
-			this.message = message
-			this.value = value
-		}
-	}
 	
-	class AssertQualityValues
-	{
-		final def message
-		final def expected
-		final def actual
-
-		def AssertQualityValues(message, expected, actual)
-		{
-			this.message = message
-			this.expected = expected
-			this.actual = actual
-		}
-	}
-
+	
 	def requestedSetSyncValueParameters
 	def requestedSetAsyncValueParameters
 	def requestedAssertAsyncParameters
 	def requestedAssertTrueFalseValues
 	def requestedAssertQualityValues
-
+	def requestedAssertDatatypeValues
+	
 	@Before
 	void setup()
 	{
@@ -211,7 +203,7 @@ class ItemTest
 		testee.assertTrue(MESSAGE)
 
 		assertEquals(MESSAGE, requestedAssertTrueFalseValues.message)
-		assertEquals(TESTEE_ITEM_VALUE.value, requestedAssertTrueFalseValues.value)
+		assertEquals(TESTEE_ITEM_VALUE.value, requestedAssertTrueFalseValues.actual)
 	}
 
 	@Test
@@ -230,7 +222,17 @@ class ItemTest
 		testee.assertFalse(MESSAGE)
 
 		assertEquals(MESSAGE, requestedAssertTrueFalseValues.message)
-		assertEquals(TESTEE_ITEM_VALUE.value, requestedAssertTrueFalseValues.value)
+		assertEquals(TESTEE_ITEM_VALUE.value, requestedAssertTrueFalseValues.actual)
+	}
+	
+	@Test
+	void testAssertDatatype_passesMessageAndValue()
+	{
+		testee.assertDatatype(MESSAGE, VT_BSTR)
+		
+		assertEquals(MESSAGE, requestedAssertDatatypeValues.message)
+		assertEquals(TESTEE_ITEM_VALUE.datatype, requestedAssertDatatypeValues.actual)
+		
 	}
 
 	@Test
@@ -250,6 +252,25 @@ class ItemTest
 	}
 	
 	@Test
+	void testGetDatatype()
+	{
+		returnedValue = new ItemValue('value', 192, '', 0)
+		assertTrue(testee.datatype.equals(VT_EMPTY))
+		
+		returnedValue = new ItemValue('value', 192, '', 2)
+		assertTrue(testee.datatype.equals(VT_I2))
+		
+		returnedValue = new ItemValue('value', 192, '', 8)
+		assertTrue(testee.datatype.equals(VT_BSTR))
+		
+		returnedValue = new ItemValue('value', 192, '', 11)
+		assertTrue(testee.datatype.equals(VT_BOOL))
+		
+		returnedValue = new ItemValue('value', 192, '', 2)
+		assertTrue(testee.datatype.equals(VT_I2))
+	}
+	
+	@Test
 	void testAssertAsyncQuality_callsScriptContextWithCorrectParams()
 	{
 		testee.assertAsyncQuality(MESSAGE, ASYNC_TIMEOUT, GOOD)
@@ -258,6 +279,7 @@ class ItemTest
 		assertEquals(GOOD, requestedAssertAsyncParameters.value)
 		assertEquals(TESTEE_ITEM_PATH, requestedAssertAsyncParameters.path)
 	}
+
 
 	/**
 	 * ClientInstance stubbed with different method than ScriptContext.
@@ -309,19 +331,23 @@ class ItemTest
 		}
 
 		ScriptContext.metaClass.assertTrue{message, actualValue ->
-			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, actualValue)
+			requestedAssertTrueFalseValues = new ItemAssertionValues(message, true, actualValue)
 		}
 
 		ScriptContext.metaClass.assertFalse{message, actualValue ->
-			requestedAssertTrueFalseValues = new AssertTrueFalseValues(message, actualValue)
+			requestedAssertTrueFalseValues = new ItemAssertionValues(message, false, actualValue)
 		}
 		
 		ScriptContext.metaClass.assertQuality{message, expectedQuality, actualQuality->
-			requestedAssertQualityValues = new AssertQualityValues(message, expectedQuality, actualQuality)
+			requestedAssertQualityValues = new ItemAssertionValues(message, expectedQuality, actualQuality)
 		}
 		
 		ScriptContext.metaClass.assertAsyncQuality{message, timeout, expectedQuality, path->
 			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, expectedQuality, path)
+		}
+		
+		ScriptContext.metaClass.assertDatatype{message, expectedDatatype, actualDatatype ->
+			requestedAssertDatatypeValues = new ItemAssertionValues(message, expectedDatatype, actualDatatype)
 		}
 		
 		// not really necessary but in case of init problems the test will fail here. Fail early

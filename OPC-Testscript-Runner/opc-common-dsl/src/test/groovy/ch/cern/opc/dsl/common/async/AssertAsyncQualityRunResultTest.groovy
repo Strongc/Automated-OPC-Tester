@@ -8,6 +8,7 @@ import static ch.cern.opc.dsl.common.async.AsyncState.*
 import static ch.cern.opc.common.Quality.State.*
 import static ch.cern.opc.dsl.common.async.AsyncUpdateTestUtils.*
 import ch.cern.opc.common.ItemValue
+import ch.cern.opc.common.Timestamp
 import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 
@@ -17,6 +18,7 @@ class AssertAsyncQualityRunResultTest
 	private static final def ITEM_PATH = 'path.to.item'
 	private static final def MESSAGE = 'assertion user message'
 	private static final def EXPECTED_QUALITY = GOOD
+	private static final def TIMESTAMP = "2012/11/19-18:48:2.411";
 	
 	
 	private AssertAsyncQualityRunResult testee
@@ -76,13 +78,13 @@ class AssertAsyncQualityRunResultTest
 	@Test
 	void testCheckUpdateStoresTheValueWhichCausedTheFailure()
 	{
-		testee.checkUpdate(ITEM_PATH, createUpdate('some_value', BAD, 'some_timestamp', 123))
+		testee.checkUpdate(ITEM_PATH, createUpdate('some_value', BAD, TIMESTAMP, 2))
 		assertEquals(FAILED, testee.state)
 		
 		assertEquals('some_value', testee.theFailedUpdate.value)
 		assertEquals(BAD, testee.theFailedUpdate.quality.state)
-		assertEquals('some_timestamp', testee.theFailedUpdate.timestamp)
-		assertEquals(123, testee.theFailedUpdate.datatype)
+		assertEquals(new Timestamp(TIMESTAMP), testee.theFailedUpdate.timestamp)
+		assertEquals(2, testee.theFailedUpdate.datatype.datatypeId)
 	}
 	
 	@Test
@@ -111,7 +113,7 @@ class AssertAsyncQualityRunResultTest
 	void testToXml_withStateFailed()
 	{
 		testee.elapsedWait = 100
-		testee.theFailedUpdate = new ItemValue('some_value', BAD, 'some_timestamp', 123)
+		testee.theFailedUpdate = new ItemValue('some_value', BAD, TIMESTAMP, 123)
 		testee.state = FAILED
 		
 		def result = testee.toXml(xmlBuilder)
@@ -120,7 +122,7 @@ class AssertAsyncQualityRunResultTest
 		assertTrue(result.'@name'.contains('failed'))
 
 		def failureElement = result.failure[0]
-		assertEquals("item [${ITEM_PATH}] expected quality was [${EXPECTED_QUALITY}] received unexpected quality [${BAD}] at [some_timestamp]. Elapsed wait [100] seconds".toString(), failureElement.'@message')
+		assertEquals("item [${ITEM_PATH}] expected quality was [${EXPECTED_QUALITY}] received unexpected quality [${BAD}] at [${TIMESTAMP}]. Elapsed wait [100] seconds".toString(), failureElement.'@message')
 	}
 	
 	@Test

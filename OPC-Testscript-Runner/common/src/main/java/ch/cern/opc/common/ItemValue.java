@@ -8,8 +8,8 @@ public class ItemValue
 {
 	public final String value;
 	public final Quality quality;
-	public final String timestamp;
-	public final int datatype;
+	public final Timestamp timestamp;
+	public final Datatype datatype;
 
 	public static final ItemValue ERROR_VALUE = new ItemValue("ERROR", 0, "ERROR", -1);
 
@@ -17,8 +17,8 @@ public class ItemValue
 	{
 		this.value = (value == null?"":value);
 		this.quality = new Quality(quality);
-		this.timestamp = (timestamp == null?"":timestamp);
-		this.datatype = datatype;
+		this.timestamp = new Timestamp(timestamp);
+		this.datatype = Datatype.getDatatypeById(datatype);
 	}
 	
 	public ItemValue(final String value, final Quality.State quality, final String timestamp, final int datatype)

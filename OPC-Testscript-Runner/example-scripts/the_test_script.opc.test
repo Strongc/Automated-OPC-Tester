@@ -21,6 +21,7 @@ for(i in 1..3)
 			assertEquals("check big float is written correctly", i, syncValue)
 			logInfo("And the quality is [${quality}]")
 			assertQuality("item [${path}] should have GOOD quality", GOOD);
+			assertDatatype("item [${path}] should be R8", VT_R8)
 		}
 		
 		item('testGroup.myBigFloat').with
@@ -33,6 +34,7 @@ for(i in 1..3)
 		{
 			assertQuality("expect [${path}] is write only - quality must be BAD", BAD)
 			assertAsyncQuality("expect [${path}] to remain non-readable for [10s]", 10, GOOD)
+			assertDatatype("item [${path}] should be VT_I1", VT_I1)
 		}
 
 		item('testGroup.myBool').with		

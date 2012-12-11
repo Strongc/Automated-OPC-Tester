@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.cern.opc.common.Quality;
+import ch.cern.opc.common.Timestamp;
 
 public class OPCDAAsyncUpdateCallbackTest 
 {
@@ -49,14 +50,14 @@ public class OPCDAAsyncUpdateCallbackTest
 	@Test
 	public void testQueuedUpdateHasCorrectContent() throws InterruptedException
 	{
-		testee.onUpdate("some.test.item", "value", 192, 3, "timestamp");
+		testee.onUpdate("some.test.item", "value", 192, 3, "2012/11/19-18:48:2.411");
 
 		UpdateValue update = updateQueue.takeFirst();
 		assertEquals("some.test.item", update.itemPath);
 		assertEquals("value", update.value.value);
 		assertEquals(Quality.State.GOOD, update.value.quality.state);
-		assertEquals(3, update.value.datatype);
-		assertEquals("timestamp", update.value.timestamp);
+		assertEquals(3, update.value.datatype.datatypeId);
+		assertEquals(new Timestamp("2012/11/19-18:48:2.411"), update.value.timestamp);
 	}
 	
 	@Test

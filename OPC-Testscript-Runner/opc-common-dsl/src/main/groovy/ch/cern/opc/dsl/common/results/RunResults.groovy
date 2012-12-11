@@ -55,6 +55,11 @@ class RunResults extends Observable
 		add(new AssertQualityRunResult(message, expected, actual, client))
 	}
 	
+	def assertDatatype(message, expected, actual)
+	{
+		add(new AssertDatatypeRunResult(message, expected, actual, client))
+	}
+	
 	def addException(exception)
 	{
 		add(new ExceptionRunResult(exception))

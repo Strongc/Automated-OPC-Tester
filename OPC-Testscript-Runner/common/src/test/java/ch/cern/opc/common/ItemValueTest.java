@@ -16,7 +16,7 @@ public class ItemValueTest
 	ItemValue testee;
 	
 	private static final String VALUE = "69";
-	private static final String TIMESTAMP = "Some timestamp";
+	private static final String TIMESTAMP = "2012/11/19-18:48:2.411";
 	private static final int QUALITY = 192;
 	private static final int DATATYPE = 0;  
 	
@@ -33,8 +33,8 @@ public class ItemValueTest
 		
 		assertEquals(VALUE, testee.value);
 		assertTrue(testee.quality.equals(Quality.State.GOOD));
-		assertEquals(TIMESTAMP, testee.timestamp);
-		assertEquals(DATATYPE, testee.datatype);
+		assertEquals(new Timestamp(TIMESTAMP), testee.timestamp);
+		assertEquals(DATATYPE, testee.datatype.datatypeId);
 	}
 	
 	@Test
@@ -62,6 +62,6 @@ public class ItemValueTest
 	public void testCtorHandlesNullTimestampParameter()
 	{
 		testee = new ItemValue(VALUE, QUALITY, null, DATATYPE);
-		assertEquals("", testee.timestamp);
+		assertEquals(Timestamp.INVALID_TIMESTAMP, testee.timestamp.toString());
 	}
 }
