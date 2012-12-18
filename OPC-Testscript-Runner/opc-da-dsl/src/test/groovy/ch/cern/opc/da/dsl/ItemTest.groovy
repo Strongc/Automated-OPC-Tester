@@ -2,6 +2,7 @@ package ch.cern.opc.da.dsl
 
 import static ch.cern.opc.common.Quality.State.*
 import static ch.cern.opc.common.Datatype.*
+import static ch.cern.opc.common.ItemAccessRight.*
 import ch.cern.opc.client.OPCDAClientApi
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.da.dsl.Item
@@ -20,7 +21,7 @@ class ItemTest
 	static final def TESTEE_GROUP_NAME = 'testee.group'
 	static final def TESTEE_ITEM_PATH = 'testee.item.path'
 	static final def TESTEE_ITEM_VALUE = new ItemValue('42', 192, 'some timestamp', 8)
-	
+
 	ItemValue returnedValue = TESTEE_ITEM_VALUE
 
 	static final def MESSAGE = 'user assertion message'
@@ -28,8 +29,9 @@ class ItemTest
 
 	def testee
 
-	def requestedReadItemSyncGroupName
-	def requestedReadItemSyncPath
+	def groupNamePassedToClientDll
+	def itemPathPassedToClientDll
+	def itemAccessRightsReturnedFromClientDll
 
 	class WriteItemValues
 	{
@@ -45,7 +47,7 @@ class ItemTest
 		}
 	}
 
-	class ItemAssertionValues 
+	class ItemAssertionValues
 	{
 		final def message
 		final def expected
@@ -58,7 +60,7 @@ class ItemTest
 			this.actual = actual
 		}
 	}
-	
+
 	class AssertAsyncValues
 	{
 		final def message
@@ -75,21 +77,22 @@ class ItemTest
 		}
 	}
 
-	
-	
+
+
 	def requestedSetSyncValueParameters
 	def requestedSetAsyncValueParameters
 	def requestedAssertAsyncParameters
 	def requestedAssertTrueFalseValues
 	def requestedAssertQualityValues
 	def requestedAssertDatatypeValues
-	
+
 	@Before
 	void setup()
 	{
-		requestedReadItemSyncGroupName = null
-		requestedReadItemSyncPath = null
+		groupNamePassedToClientDll = null
+		itemPathPassedToClientDll = null
 		requestedAssertAsyncParameters = null
+		itemAccessRightsReturnedFromClientDll = 0
 
 		Log.logLevel('trace')
 		stubClientInstance()
@@ -145,8 +148,8 @@ class ItemTest
 	{
 		testee.syncValue
 
-		assertEquals(TESTEE_GROUP_NAME, requestedReadItemSyncGroupName)
-		assertEquals(TESTEE_ITEM_PATH, requestedReadItemSyncPath)
+		assertEquals(TESTEE_GROUP_NAME, groupNamePassedToClientDll)
+		assertEquals(TESTEE_ITEM_PATH, itemPathPassedToClientDll)
 	}
 
 	@Test
@@ -210,12 +213,12 @@ class ItemTest
 	void testAssertQuality_passesMessageAndExpectedAndQuality()
 	{
 		testee.assertQuality(MESSAGE, GOOD)
-		
+
 		assertEquals(MESSAGE, requestedAssertQualityValues.message)
 		assertEquals(GOOD, requestedAssertQualityValues.expected)
 		assertEquals(TESTEE_ITEM_VALUE.quality, requestedAssertQualityValues.actual)
 	}
-	
+
 	@Test
 	void testAssertFalse_passesMessageAndValue()
 	{
@@ -224,15 +227,15 @@ class ItemTest
 		assertEquals(MESSAGE, requestedAssertTrueFalseValues.message)
 		assertEquals(TESTEE_ITEM_VALUE.value, requestedAssertTrueFalseValues.actual)
 	}
-	
+
 	@Test
 	void testAssertDatatype_passesMessageAndValue()
 	{
 		testee.assertDatatype(MESSAGE, VT_BSTR)
-		
+
 		assertEquals(MESSAGE, requestedAssertDatatypeValues.message)
 		assertEquals(TESTEE_ITEM_VALUE.datatype, requestedAssertDatatypeValues.actual)
-		
+
 	}
 
 	@Test
@@ -250,26 +253,26 @@ class ItemTest
 		returnedValue = new ItemValue('', 128/*QUALITY NOT APPLICABLE*/, '', 0)
 		assertTrue(testee.quality.equals(NA))
 	}
-	
+
 	@Test
 	void testGetDatatype()
 	{
 		returnedValue = new ItemValue('value', 192, '', 0)
 		assertTrue(testee.datatype.equals(VT_EMPTY))
-		
+
 		returnedValue = new ItemValue('value', 192, '', 2)
 		assertTrue(testee.datatype.equals(VT_I2))
-		
+
 		returnedValue = new ItemValue('value', 192, '', 8)
 		assertTrue(testee.datatype.equals(VT_BSTR))
-		
+
 		returnedValue = new ItemValue('value', 192, '', 11)
 		assertTrue(testee.datatype.equals(VT_BOOL))
-		
+
 		returnedValue = new ItemValue('value', 192, '', 2)
 		assertTrue(testee.datatype.equals(VT_I2))
 	}
-	
+
 	@Test
 	void testAssertAsyncQuality_callsScriptContextWithCorrectParams()
 	{
@@ -279,7 +282,22 @@ class ItemTest
 		assertEquals(GOOD, requestedAssertAsyncParameters.value)
 		assertEquals(TESTEE_ITEM_PATH, requestedAssertAsyncParameters.path)
 	}
+	
+	@Test
+	void testGetItemAccessRightsReturnsValueFromDll()
+	{
+		itemAccessRightsReturnedFromClientDll = UNKNOWN_ACCESS
+		assertEquals(UNKNOWN_ACCESS, testee.accessRights);
+		
+		itemAccessRightsReturnedFromClientDll = READ_ACCESS
+		assertEquals(READ_ACCESS, testee.accessRights);
 
+		itemAccessRightsReturnedFromClientDll = WRITE_ACCESS
+		assertEquals(WRITE_ACCESS, testee.accessRights);
+
+		itemAccessRightsReturnedFromClientDll = READ_WRITE_ACCESS 
+		assertEquals(READ_WRITE_ACCESS, testee.accessRights);
+	}
 
 	/**
 	 * ClientInstance stubbed with different method than ScriptContext.
@@ -291,8 +309,8 @@ class ItemTest
 	{
 		def theClientInstance = [
 					readItemSync: {groupName, path ->
-						requestedReadItemSyncGroupName = groupName
-						requestedReadItemSyncPath = path
+						groupNamePassedToClientDll = groupName
+						itemPathPassedToClientDll = path
 						return returnedValue
 					},
 					writeItemSync: {groupName, path, value ->
@@ -305,6 +323,11 @@ class ItemTest
 					},
 					registerAsyncUpdate: {callback ->
 						Log.logTrace("stub client: loading a callback update")
+					},
+					getItemAccessRights: {groupName, path->
+						groupNamePassedToClientDll = groupName
+						itemPathPassedToClientDll = path
+						return itemAccessRightsReturnedFromClientDll
 					}
 				] as OPCDAClientApi
 
@@ -337,19 +360,19 @@ class ItemTest
 		ScriptContext.metaClass.assertFalse{message, actualValue ->
 			requestedAssertTrueFalseValues = new ItemAssertionValues(message, false, actualValue)
 		}
-		
+
 		ScriptContext.metaClass.assertQuality{message, expectedQuality, actualQuality->
 			requestedAssertQualityValues = new ItemAssertionValues(message, expectedQuality, actualQuality)
 		}
-		
+
 		ScriptContext.metaClass.assertAsyncQuality{message, timeout, expectedQuality, path->
 			requestedAssertAsyncParameters = new AssertAsyncValues(message, timeout, expectedQuality, path)
 		}
-		
+
 		ScriptContext.metaClass.assertDatatype{message, expectedDatatype, actualDatatype ->
 			requestedAssertDatatypeValues = new ItemAssertionValues(message, expectedDatatype, actualDatatype)
 		}
-		
+
 		// not really necessary but in case of init problems the test will fail here. Fail early
 		ScriptContext.instance
 	}

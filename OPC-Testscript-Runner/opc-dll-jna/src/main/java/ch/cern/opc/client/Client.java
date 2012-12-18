@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.cern.opc.common.ItemAccessRight;
 import ch.cern.opc.common.ItemValue;
 
 import com.sun.jna.Native;
@@ -207,5 +208,11 @@ class Client implements OPCDAClientApi
 	public boolean readItemAsync(String groupName, String itemPath) 
 	{
 		return INSTANCE.readItemAsync(groupName, itemPath);
+	}
+
+	@Override
+	public ItemAccessRight getItemAccessRights(String groupName, String itemPath) 
+	{
+		return ItemAccessRight.fromId(INSTANCE.getItemAccessRights(groupName, itemPath));
 	}
 }

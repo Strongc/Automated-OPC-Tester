@@ -2,6 +2,7 @@ package ch.cern.opc.client;
 
 import java.util.List;
 
+import ch.cern.opc.common.ItemAccessRight;
 import ch.cern.opc.common.ItemValue;
 
 public interface OPCDAClientApi 
@@ -20,6 +21,7 @@ public interface OPCDAClientApi
 	public boolean writeItemSync(String groupName, String itemPath, String value);
 	public boolean writeItemAsync(String groupName, String itemPath, String value);
 	public void registerAsyncUpdate(OPCDAAsyncUpdateCallback callback);
+	public ItemAccessRight getItemAccessRights(String groupName, String itemPath);
 	public String getLastError();
 	
 	public State getState();

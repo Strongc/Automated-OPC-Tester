@@ -30,6 +30,11 @@ class Item
 		return OPCDAClientInstance.instance.readItemSync(groupName, path).datatype
 	}
 	
+	def getAccessRights()
+	{
+		return OPCDAClientInstance.instance.getItemAccessRights(groupName, path)
+	}
+	
 	def setSyncValue(value)
 	{
 		return OPCDAClientInstance.instance.writeItemSync(groupName, path, value)
