@@ -94,7 +94,7 @@ public:
 
 	bool ReadItemSync(const char* const pGroupName, const char* const pItemPath, OPCItemData& itemData)
 	{
-		log_NOTICE("ReadItemSync: called with group [", pGroupName,"] item [",pItemPath,"] called");
+		log_NOTICE("ReadItemSync: called with group [", pGroupName,"] item [",pItemPath,"]");
 
 		bool result = false;
 		GroupNode* pGroupNode = NULL;
@@ -112,6 +112,25 @@ public:
 		
 		return result;
 	};
+
+	const DWORD GetItemAccessRights(const char* const pGroupName, const char* const pItemPath)
+	{
+		log_NOTICE("GetItemAccessRights: called with group [", pGroupName,"] item [",pItemPath,"]");
+
+		DWORD result = 0;
+
+		GroupNode* pGroupNode = NULL;
+		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
+		{
+			result = pGroupNode->GetItemAccessRights(pItemPath);
+		}
+		else
+		{
+			RecordError("GetItemAccessRights: failed to find group [%s]", pGroupName);
+		}
+
+		return result;
+	}
 
 
 	bool WriteItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
@@ -168,7 +187,7 @@ public:
 
 	bool IsValidItem(const char* const pItemPath)
 	{
-		unsigned int nAddressSpaceSz = gsoOpcServerAddressSpace.GetCount();
+		size_t nAddressSpaceSz = gsoOpcServerAddressSpace.GetCount();
 
 		for(unsigned int i=0; i<nAddressSpaceSz; i++)
 		{

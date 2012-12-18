@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "DllWrapper.h"
 #include <iostream>
+#include <sstream>
 
 
 using namespace std;
@@ -23,6 +24,16 @@ int updateCallbackFn (const char* path, const char* value, const int quality, co
 	return 0;
 }
 
+const std::string accessRights(DllWrapper& dllWrapper, const string groupNm, const string itemPath)
+{
+	std::ostringstream result;
+
+	DWORD accessRights = dllWrapper.getItemAccessRights(groupNm.c_str(), itemPath.c_str());
+	
+	result << "group ["<<groupNm<<"] item ["<<itemPath<<"] access rights ["<<accessRights<<"]";
+
+	return result.str();
+}
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -33,7 +44,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	dllWrapper.getItemNames();
 
 	string baseGroupNm("testGroup");
-	for(int i=0; i<1000; i++)
+	for(int i=0; i<1; i++)
 	{
 		char buff[8];
 		_itoa_s(i, buff, 10);
@@ -56,7 +67,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		dllWrapper.addItem(groupNm.c_str(), "testGroup.mySmallFloat");
 		dllWrapper.addItem(groupNm.c_str(), "testGroup.myString");
 		cout << "added items" << endl;
-
+		
+		cout << accessRights(dllWrapper, groupNm, "testGroup.myBigFloat") << endl;
+		cout << accessRights(dllWrapper, groupNm, "I.do.not.exist") << endl;
+		
 		Sleep(120000);
 
 		dllWrapper.destroyGroup(groupNm.c_str());

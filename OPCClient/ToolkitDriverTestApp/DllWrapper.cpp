@@ -12,6 +12,7 @@ typedef const bool (__cdecl *DLL_DESTROY_GROUP_EXPORTED_METHOD)(const char* cons
 typedef const bool (__cdecl *DLL_ADD_ITEM_EXPORTED_METHOD)(const char* const pGroupName, const char* pItemPath);
 typedef const bool (__cdecl *DLL_GET_ITEM_NAMES_EXPORTED_METHOD)(char* itemsBuffer[], const int nElementLength, const int nNumElements, const int nOffSet);
 typedef const void (__cdecl *DLL_REGISTER_ASYNC_UPDATE_METHOD)(updateCallback cb);
+typedef DWORD (__cdecl *DLL_GET_ITEM_ACCESS_RIGHTS_EXPORTED_METHOD)(const char* const pGroupName, const char* const pItemPath);
 
 DllWrapper::DllWrapper(HINSTANCE hDllHandle)
 :m_hDllHandle(hDllHandle)
@@ -115,4 +116,15 @@ void DllWrapper::registerAsyncUpdate(updateCallback cb)
 	dllRegisterAsyncUpdate(cb);
 
 	cout << "DllWrapper::registerAsyncUpdate-" << endl;
+}
+
+DWORD DllWrapper::getItemAccessRights(const char* const pGroupName, const char* const pItemPath)
+{
+	cout << "DllWrapper::getItemAccessRights called group ["<<pGroupName<<"] item ["<<pItemPath<<"]" << endl;
+
+	DLL_GET_ITEM_ACCESS_RIGHTS_EXPORTED_METHOD dllGetItemAccessRightsMethod = (DLL_GET_ITEM_ACCESS_RIGHTS_EXPORTED_METHOD)GetDllMethod("getItemAccessRights");
+	const DWORD accessRights = dllGetItemAccessRightsMethod(pGroupName, pItemPath);
+
+	cout << "DllWrapper::getItemAccessRights complete" << endl;
+	return accessRights;
 }

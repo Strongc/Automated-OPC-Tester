@@ -17,6 +17,7 @@ public:
 	void addItem(const char* const pGroupName, const char* pItemPath);
 	void getItemNames();
 	void registerAsyncUpdate(updateCallback cb);
+	DWORD getItemAccessRights(const char* const pGroupName, const char* const pItemPath);
 
 private:
 	HINSTANCE m_hDllHandle;

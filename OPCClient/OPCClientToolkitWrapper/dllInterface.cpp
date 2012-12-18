@@ -37,11 +37,14 @@ std::string gstrLastError = "No errors reported";
 
 const char* const GetLogFilePath()
 {
-	time_t tmNow = time(NULL);
+	const time_t tmNow = time(NULL);
+
+	struct tm theTime;
+	localtime_s(&theTime, &tmNow);
 	
 	char cTmString[MAX_PATH];
 	memset(cTmString, MAX_PATH, 0);
-	strftime(cTmString, MAX_PATH, "%Y_%m_%d___%H_%M_%S", localtime(&tmNow));
+	strftime(cTmString, MAX_PATH, "%Y_%m_%d___%H_%M_%S", &theTime);
 
 	memset(gscLogFilePath, 0, MAX_PATH);
 	sprintf_s(gscLogFilePath, MAX_PATH, "C:\\TEMP\\%s___OPC-JNI-DLL.log", cTmString);
@@ -211,6 +214,16 @@ extern "C"
 		return result;
 	}
 
+	__declspec(dllexport) const DWORD __cdecl getItemAccessRights(const char* const pGroupName, const char* const pItemPath)
+	{
+		log_NOTICE("getItemAccessRights+, group [",pGroupName,"] item [",pItemPath,"]");
+		
+		DWORD result = gsoGroupManager.GetItemAccessRights(pGroupName, pItemPath);
+
+		log_NOTICE("getItemAccessRights-, group [",pGroupName,"] item [",pItemPath,"], result [", pantheios::integer(result),"]");
+		return result;
+	}
+
 	__declspec(dllexport) const bool __cdecl readItemAsync(const char* const pGroupName, const char* pItemPath)
 	{
 		log_NOTICE("readItemAsync+, group [",pGroupName,"] item [",pItemPath,"]");
@@ -284,7 +297,7 @@ extern "C"
 
 			log_NOTICE("item names retrived: there are [", pantheios::integer(gsoOpcServerAddressSpace.GetCount()),"] items");
 
-			for(unsigned int i=nOffSet; i<gsoOpcServerAddressSpace.GetCount() && i-nOffSet < nNumElements; i++)
+			for(int i=nOffSet; i<gsoOpcServerAddressSpace.GetCount() && i-nOffSet < nNumElements; i++)
 			{
 				strcpy_s(itemsBuffer[i-nOffSet], nElementLength, CStringA(gsoOpcServerAddressSpace[i]).GetString());
 				log_NOTICE("getItemNames: copying opc item to java buffer, index [", pantheios::integer(i),"] value [", CStringA(gsoOpcServerAddressSpace[i]).GetString(),"]");
