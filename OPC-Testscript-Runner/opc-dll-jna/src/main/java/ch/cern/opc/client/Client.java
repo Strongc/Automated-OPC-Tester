@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.cern.opc.common.Datatype;
 import ch.cern.opc.common.ItemAccessRight;
 import ch.cern.opc.common.ItemValue;
 
@@ -214,5 +215,11 @@ class Client implements OPCDAClientApi
 	public ItemAccessRight getItemAccessRights(String groupName, String itemPath) 
 	{
 		return ItemAccessRight.fromId(INSTANCE.getItemAccessRights(groupName, itemPath));
+	}
+
+	@Override
+	public Datatype getItemDatatype(String groupName, String itemPath) 
+	{
+		return Datatype.getDatatypeById(INSTANCE.getItemDatatype(groupName, itemPath));
 	}
 }

@@ -134,6 +134,21 @@ struct GroupNode
 			return 0;
 		}
 
+		const int GetItemDatatype(const char* const pItemName)
+		{
+			log_NOTICE("GetItemDatatype: GroupNode [", m_pGroupName,"] item [", pItemName,"] (total number of group items [",pantheios::integer(m_items.GetCount()),"])");
+			
+			COPCItem* pItem = NULL;
+			if(m_items.Lookup(CString(pItemName), pItem))
+			{
+				log_NOTICE("GetItemDatatype: GroupNode [", m_pGroupName,"] found item [", pItemName,"]");
+				return pItem->getDataType();
+			}
+
+			RecordError("GetItemDatatype: failed to find item [%s]", pItemName);
+			return 0;
+		}
+
 		bool ReadItemAsync(const char* const pItemName)
 		{
 			log_NOTICE("ReadItemAsync: GroupNode [", m_pGroupName,"] reading item [", pItemName,"]");

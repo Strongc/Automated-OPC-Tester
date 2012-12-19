@@ -27,7 +27,7 @@ class Item
 	
 	def getDatatype()
 	{
-		return OPCDAClientInstance.instance.readItemSync(groupName, path).datatype
+		return OPCDAClientInstance.instance.getItemDatatype(groupName, path)
 	}
 	
 	def getAccessRights()

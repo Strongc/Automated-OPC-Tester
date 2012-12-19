@@ -5,6 +5,7 @@ import static ch.cern.opc.common.Log.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.cern.opc.common.Datatype;
 import ch.cern.opc.common.ItemAccessRight;
 import ch.cern.opc.common.ItemValue;
 
@@ -156,6 +157,12 @@ public class OPCDAClientInstance implements OPCDAClientApi
 	public ItemAccessRight getItemAccessRights(String groupName, String itemPath) 
 	{
 		return client.getItemAccessRights(groupName, itemPath);
+	}
+
+	@Override
+	public Datatype getItemDatatype(String groupName, String itemPath) 
+	{
+		return client.getItemDatatype(groupName, itemPath);
 	}
 
 }

@@ -32,6 +32,7 @@ class ItemTest
 	def groupNamePassedToClientDll
 	def itemPathPassedToClientDll
 	def itemAccessRightsReturnedFromClientDll
+	def itemDatatypeReturnedFromClientDll
 
 	class WriteItemValues
 	{
@@ -94,6 +95,7 @@ class ItemTest
 		itemPathPassedToClientDll = null
 		requestedAssertAsyncParameters = null
 		itemAccessRightsReturnedFromClientDll = 0
+		itemDatatypeReturnedFromClientDll = 0
 
 		Log.logLevel('trace')
 		stubClientInstance()
@@ -232,19 +234,22 @@ class ItemTest
 	@Test
 	void testAssertDatatype_passesMessageAndValue()
 	{
+		itemDatatypeReturnedFromClientDll = VT_EMPTY
+		
 		testee.assertDatatype(MESSAGE, VT_BSTR)
 
 		assertEquals(MESSAGE, requestedAssertDatatypeValues.message)
-		assertEquals(TESTEE_ITEM_VALUE.datatype, requestedAssertDatatypeValues.actual)
+		assertEquals(VT_BSTR, requestedAssertDatatypeValues.expected)
+		assertEquals(VT_EMPTY, requestedAssertDatatypeValues.actual)
 	}
-	
+
 	@Test
 	void testAssertAccessRights()
 	{
 		itemAccessRightsReturnedFromClientDll = UNKNOWN_ACCESS
-		
+
 		testee.assertAccessRights(MESSAGE, READ_WRITE_ACCESS)
-		
+
 		assertEquals(MESSAGE, requestedAssertAccessRightsValues.message)
 		assertEquals(UNKNOWN_ACCESS, requestedAssertAccessRightsValues.actual)
 		assertEquals(READ_WRITE_ACCESS, requestedAssertAccessRightsValues.expected)
@@ -255,6 +260,9 @@ class ItemTest
 	{
 		returnedValue = new ItemValue('', 192/*QUALITY GOOD*/, '', 0)
 		assertTrue(testee.quality.equals(GOOD))
+		
+		assertEquals(testee.groupName, groupNamePassedToClientDll)
+		assertEquals(testee.path, itemPathPassedToClientDll)
 
 		returnedValue = new ItemValue('', 0/*QUALITY BAD*/, '', 0)
 		assertTrue(testee.quality.equals(BAD))
@@ -269,20 +277,23 @@ class ItemTest
 	@Test
 	void testGetDatatype()
 	{
-		returnedValue = new ItemValue('value', 192, '', 0)
+		itemDatatypeReturnedFromClientDll = VT_EMPTY
 		assertTrue(testee.datatype.equals(VT_EMPTY))
+		
+		assertEquals(testee.groupName, groupNamePassedToClientDll)
+		assertEquals(testee.path, itemPathPassedToClientDll)
 
-		returnedValue = new ItemValue('value', 192, '', 2)
+		itemDatatypeReturnedFromClientDll = VT_I2
 		assertTrue(testee.datatype.equals(VT_I2))
 
-		returnedValue = new ItemValue('value', 192, '', 8)
+		itemDatatypeReturnedFromClientDll = VT_BSTR
 		assertTrue(testee.datatype.equals(VT_BSTR))
 
-		returnedValue = new ItemValue('value', 192, '', 11)
+		itemDatatypeReturnedFromClientDll = VT_BOOL
 		assertTrue(testee.datatype.equals(VT_BOOL))
 
-		returnedValue = new ItemValue('value', 192, '', 2)
-		assertTrue(testee.datatype.equals(VT_I2))
+		itemDatatypeReturnedFromClientDll = VT_UNRECOGNISED
+		assertTrue(testee.datatype.equals(VT_UNRECOGNISED))
 	}
 
 	@Test
@@ -294,20 +305,20 @@ class ItemTest
 		assertEquals(GOOD, requestedAssertAsyncParameters.value)
 		assertEquals(TESTEE_ITEM_PATH, requestedAssertAsyncParameters.path)
 	}
-	
+
 	@Test
 	void testGetItemAccessRightsReturnsValueFromDll()
 	{
 		itemAccessRightsReturnedFromClientDll = UNKNOWN_ACCESS
 		assertEquals(UNKNOWN_ACCESS, testee.accessRights);
-		
+
 		itemAccessRightsReturnedFromClientDll = READ_ACCESS
 		assertEquals(READ_ACCESS, testee.accessRights);
 
 		itemAccessRightsReturnedFromClientDll = WRITE_ACCESS
 		assertEquals(WRITE_ACCESS, testee.accessRights);
 
-		itemAccessRightsReturnedFromClientDll = READ_WRITE_ACCESS 
+		itemAccessRightsReturnedFromClientDll = READ_WRITE_ACCESS
 		assertEquals(READ_WRITE_ACCESS, testee.accessRights);
 	}
 
@@ -335,6 +346,11 @@ class ItemTest
 					},
 					registerAsyncUpdate: {callback ->
 						Log.logTrace("stub client: loading a callback update")
+					},
+					getItemDatatype: {groupName, path->
+						groupNamePassedToClientDll = groupName
+						itemPathPassedToClientDll = path
+						return itemDatatypeReturnedFromClientDll
 					},
 					getItemAccessRights: {groupName, path->
 						groupNamePassedToClientDll = groupName
@@ -384,7 +400,7 @@ class ItemTest
 		ScriptContext.metaClass.assertDatatype{message, expectedDatatype, actualDatatype ->
 			requestedAssertDatatypeValues = new ItemAssertionValues(message, expectedDatatype, actualDatatype)
 		}
-		
+
 		ScriptContext.metaClass.assertAccessRights{message, expectedAccessRights, actualAccessRights ->
 			requestedAssertAccessRightsValues = new ItemAssertionValues(message, expectedAccessRights, actualAccessRights)
 		}

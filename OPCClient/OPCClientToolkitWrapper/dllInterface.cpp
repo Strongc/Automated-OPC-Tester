@@ -224,6 +224,16 @@ extern "C"
 		return result;
 	}
 
+	__declspec(dllexport) const int __cdecl getItemDatatype(const char* const pGroupName, const char* const pItemPath)
+	{
+		log_NOTICE("getItemDatatype+, group [",pGroupName,"] item [",pItemPath,"]");
+		
+		int result = gsoGroupManager.GetItemDatatype(pGroupName, pItemPath);
+
+		log_NOTICE("getItemDatatype-, group [",pGroupName,"] item [",pItemPath,"], result [", pantheios::integer(result),"]");
+		return result;
+	}
+
 	__declspec(dllexport) const bool __cdecl readItemAsync(const char* const pGroupName, const char* pItemPath)
 	{
 		log_NOTICE("readItemAsync+, group [",pGroupName,"] item [",pItemPath,"]");

@@ -35,6 +35,17 @@ const std::string accessRights(DllWrapper& dllWrapper, const string groupNm, con
 	return result.str();
 }
 
+const std::string datatype(DllWrapper& dllWrapper, const string groupNm, const string itemPath)
+{
+	std::ostringstream result;
+
+	DWORD datatype = dllWrapper.getItemDatatype(groupNm.c_str(), itemPath.c_str());
+	
+	result << "group ["<<groupNm<<"] item ["<<itemPath<<"] datatype ["<< datatype <<"]";
+
+	return result.str();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	wcout << "loading " << gsDllName << "..." << endl;
@@ -69,7 +80,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		cout << "added items" << endl;
 		
 		cout << accessRights(dllWrapper, groupNm, "testGroup.myBigFloat") << endl;
+		cout << datatype(dllWrapper, groupNm, "testGroup.myBigFloat") << endl;
+
 		cout << accessRights(dllWrapper, groupNm, "I.do.not.exist") << endl;
+		cout << datatype(dllWrapper, groupNm, "I.do.not.exist") << endl;
 		
 		Sleep(120000);
 

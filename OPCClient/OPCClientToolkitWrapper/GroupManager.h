@@ -132,6 +132,25 @@ public:
 		return result;
 	}
 
+	const int GetItemDatatype(const char* const pGroupName, const char* const pItemPath)
+	{
+		log_NOTICE("GetItemDatatype: called with group [", pGroupName,"] item [",pItemPath,"]");
+
+		int result = 0;
+
+		GroupNode* pGroupNode = NULL;
+		if(m_groups.Lookup(CString(pGroupName), pGroupNode))
+		{
+			result = pGroupNode->GetItemDatatype(pItemPath);
+		}
+		else
+		{
+			RecordError("GetItemDatatype: failed to find group [%s]", pGroupName);
+		}
+
+		return result;
+	}
+
 
 	bool WriteItemSync(const char* const pGroupName, const char* pItemPath, const char* const pValue)
 	{

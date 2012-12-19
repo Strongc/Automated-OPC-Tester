@@ -22,4 +22,5 @@ interface DllInterface extends Library
     public void getLastError(byte buffer[], int bufferSz);
     public void registerAsyncUpdate(OPCDAAsyncUpdateCallback cb);
     public int getItemAccessRights(String groupName, String itemPath);
+    public int getItemDatatype(String groupName, String itemPath);
 }

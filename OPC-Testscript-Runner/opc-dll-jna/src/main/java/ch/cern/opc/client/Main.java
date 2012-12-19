@@ -6,6 +6,8 @@ import static ch.cern.opc.common.Log.logWarning;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import ch.cern.opc.common.Datatype;
+import ch.cern.opc.common.ItemAccessRight;
 import ch.cern.opc.common.ItemValue;
 import ch.cern.opc.common.Log;
 
@@ -52,6 +54,10 @@ public class Main
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myLongInt");
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.myBigFloat");
     	OPCDAClientInstance.getInstance().addItem(GROUP_NM, "testGroup.mySmallFloat");
+    	
+    	ItemAccessRight accessRights = OPCDAClientInstance.getInstance().getItemAccessRights(GROUP_NM, "testGroup.myString");
+    	Datatype datatype = OPCDAClientInstance.getInstance().getItemDatatype(GROUP_NM, "testGroup.myString");
+    	logInfo("item ["+"testGroup.myString"+"] has datatype ["+datatype+"] access rights ["+accessRights+"]");
     	
     	// let main thread sleep - update handler thread deals with updates
     	Thread.sleep(240000);

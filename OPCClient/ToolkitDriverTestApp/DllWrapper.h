@@ -18,6 +18,7 @@ public:
 	void getItemNames();
 	void registerAsyncUpdate(updateCallback cb);
 	DWORD getItemAccessRights(const char* const pGroupName, const char* const pItemPath);
+	int getItemDatatype(const char* const pGroupName, const char* const pItemPath);
 
 private:
 	HINSTANCE m_hDllHandle;

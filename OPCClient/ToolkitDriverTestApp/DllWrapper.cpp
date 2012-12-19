@@ -13,6 +13,7 @@ typedef const bool (__cdecl *DLL_ADD_ITEM_EXPORTED_METHOD)(const char* const pGr
 typedef const bool (__cdecl *DLL_GET_ITEM_NAMES_EXPORTED_METHOD)(char* itemsBuffer[], const int nElementLength, const int nNumElements, const int nOffSet);
 typedef const void (__cdecl *DLL_REGISTER_ASYNC_UPDATE_METHOD)(updateCallback cb);
 typedef DWORD (__cdecl *DLL_GET_ITEM_ACCESS_RIGHTS_EXPORTED_METHOD)(const char* const pGroupName, const char* const pItemPath);
+typedef int (__cdecl *DLL_GET_ITEM_DATATYPE_EXPORTED_METHOD)(const char* const pGroupName, const char* const pItemPath);
 
 DllWrapper::DllWrapper(HINSTANCE hDllHandle)
 :m_hDllHandle(hDllHandle)
@@ -127,4 +128,15 @@ DWORD DllWrapper::getItemAccessRights(const char* const pGroupName, const char* 
 
 	cout << "DllWrapper::getItemAccessRights complete" << endl;
 	return accessRights;
+}
+
+int DllWrapper::getItemDatatype(const char* const pGroupName, const char* const pItemPath)
+{
+	cout << "DllWrapper::getItemDatatype called group ["<<pGroupName<<"] item ["<<pItemPath<<"]" << endl;
+	
+	DLL_GET_ITEM_DATATYPE_EXPORTED_METHOD dllGetItemDatatype = (DLL_GET_ITEM_DATATYPE_EXPORTED_METHOD)GetDllMethod("getItemDatatype");
+	const int datatype = dllGetItemDatatype(pGroupName, pItemPath);
+
+	cout << "DllWrapper::getItemDatatype complete" << endl;
+	return datatype;
 }
