@@ -5,12 +5,16 @@ import groovy.xml.DOMBuilder
 import groovy.xml.dom.DOMCategory
 import ch.cern.opc.dsl.common.client.GenericClient
 import ch.cern.opc.common.Log
-import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult;
-import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult;
-import ch.cern.opc.dsl.common.async.AssertAsyncQualityRunResult;
-import ch.cern.opc.dsl.common.async.AsyncConditionManager;
+import ch.cern.opc.dsl.common.async.AssertAsyncEqualsRunResult
+import ch.cern.opc.dsl.common.async.AssertAsyncNotEqualsRunResult
+import ch.cern.opc.dsl.common.async.AssertAsyncQualityRunResult
+import ch.cern.opc.dsl.common.async.AsyncConditionManager
+import ch.cern.opc.dsl.common.sync.SynchronousAssertion
 
-import org.w3c.dom.*;
+import static ch.cern.opc.dsl.common.results.RunResultUtil.toBoolean
+import static ch.cern.opc.dsl.common.results.RunResultUtil.AnalyzedBooleanType
+
+import org.w3c.dom.*
 import javax.xml.parsers.*
 
 @Mixin(Log)
@@ -35,29 +39,70 @@ class RunResults extends Observable
 		client.registerForAsyncUpdates(asyncManager);
 	}
 	
-	def assertTrue(message, value)
+	def assertTrue(userMessage, actualValue)
 	{
-		add(new AssertTrueRunResult(message, value))
+		def isPassed = AnalyzedBooleanType.TRUE == toBoolean(actualValue)
+		
+		def assertion = new SynchronousAssertion('assertTrue', isPassed, userMessage, 
+			isPassed? 'value was true': 'value was not true'
+		) 
+		 
+		add(assertion)
 	}
 	
-	def assertFalse(message, value)
+	def assertFalse(userMessage, actualValue)
 	{
-		add(new AssertFalseRunResult(message, value))
+		def isPassed = (AnalyzedBooleanType.FALSE == toBoolean(actualValue))
+		
+		def assertion = new SynchronousAssertion('assertFalse', isPassed, userMessage,
+			isPassed? 'value was false': 'value was not false'
+		) 
+		
+		add(assertion)
 	}
 	
-	def assertEquals(message, expected, actual)
+	def assertEquals(userMessage, expectedValue, actualValue)
 	{
-		add(new AssertEqualsRunResult(message, expected, actual, client))
+		def isPassed = expectedValue.toString().equals(actualValue.toString())
+		
+		def assertion = new SynchronousAssertion('assertEquals', isPassed, userMessage,
+			"expected [${expectedValue}] actual [${actualValue}]" + (isPassed?"": " last error from dll [${client.lastError}]")
+		) 
+		
+		add(assertion)
 	}
 	
-	def assertQuality(message, expected, actual)
+	def assertQuality(userMessage, expectedQuality, actualQuality)
 	{
-		add(new AssertQualityRunResult(message, expected, actual, client))
+		def isPassed = actualQuality.equals(expectedQuality)
+		
+		def assertion = new SynchronousAssertion('assertQuality', isPassed, userMessage,
+			"expected [${expectedQuality}] actual [${actualQuality}]" + (!isPassed?" last error from dll [${client.lastError}]":"")
+		) 
+		
+		add(assertion)
 	}
 	
-	def assertDatatype(message, expected, actual)
+	def assertDatatype(userMessage, expectedDatatype, actualDatatype)
 	{
-		add(new AssertDatatypeRunResult(message, expected, actual, client))
+		def isPassed = actualDatatype.equals(expectedDatatype)
+		
+		def assertion = new SynchronousAssertion('assertDatatype', isPassed, userMessage,
+			"expected [${expectedDatatype}] actual [${actualDatatype}]" + (!isPassed?" last error from dll [${client.lastError}]":"")
+		) 
+		
+		add(assertion)
+	}
+	
+	def assertAccessRights(userMessage, expectedRights, actualRights)
+	{
+		def isPassed = actualRights.equals(expectedRights)
+		
+		def assertion = new SynchronousAssertion('assertAccessRights', isPassed, userMessage,
+			"expected [${expectedRights}] actual [${actualRights}]" + (!isPassed?" last error from dll [${client.lastError}]":"")
+		)
+		
+		add(assertion)
 	}
 	
 	def addException(exception)

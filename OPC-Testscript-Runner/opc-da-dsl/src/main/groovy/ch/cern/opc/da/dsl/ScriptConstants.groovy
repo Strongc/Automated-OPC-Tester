@@ -2,6 +2,7 @@ package ch.cern.opc.da.dsl
 
 import ch.cern.opc.common.Quality
 import ch.cern.opc.common.Datatype
+import ch.cern.opc.common.ItemAccessRight
 
 class ScriptConstants 
 {
@@ -36,6 +37,13 @@ class ScriptConstants
 	public final static VT_I8 = Datatype.VT_I8
 	public final static VT_UI8 = Datatype.VT_UI8
 	public final static VT_INT = Datatype.VT_INT 
-
 	public final static VT_UNRECOGNISED = Datatype.VT_UNRECOGNISED
+	
+	/*
+	 * And more for item access rights, embarrasment rising...
+	 */
+	public final static UNKNOWN_ACCESS = ItemAccessRight.UNKNOWN_ACCESS
+	public final static READ_ACCESS = ItemAccessRight.READ_ACCESS
+	public final static WRITE_ACCESS = ItemAccessRight.WRITE_ACCESS
+	public final static READ_WRITE_ACCESS = ItemAccessRight.READ_WRITE_ACCESS
 }

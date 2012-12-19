@@ -23,7 +23,8 @@ for(i in 1..3)
 			assertQuality("item [${path}] should have GOOD quality", GOOD);
 			assertDatatype("item [${path}] should be R8", VT_R8)
 			
-			logInfo("item [${path}] has R/W access rights [${accessRights}]")
+			logInfo("item [${path}] has access rights [${accessRights}]")
+			assertAccessRights("item [${path}] is expected to be R+W", READ_WRITE_ACCESS)
 		}
 		
 		item('testGroup.myBigFloat').with
@@ -38,9 +39,10 @@ for(i in 1..3)
 			assertAsyncQuality("expect [${path}] to remain non-readable for [10s]", 10, GOOD)
 			assertDatatype("item [${path}] should be VT_I1", VT_I1)
 			
-			logInfo("item [${path}] has R/W access rights [${accessRights}]")
+			logInfo("item [${path}] has access rights [${accessRights}]")
+			assertAccessRights("item [${path}] is expected to be W only", WRITE_ACCESS)
 		}
-
+		
 		item('testGroup.myBool').with		
 		{
 			def togglingBool = (i.mod(2) == 0)

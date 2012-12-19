@@ -85,6 +85,11 @@ class Item
 		ScriptContext.instance.assertDatatype(message, expectedDatatype, datatype)
 	}
 	
+	def assertAccessRights(message, expectedAccessRights)
+	{
+		ScriptContext.instance.assertAccessRights(message, expectedAccessRights, accessRights)
+	}
+	
 	def assertAsyncQuality(message, timeout, expectedQuality)
 	{
 		ScriptContext.instance.assertAsyncQuality(message, timeout, expectedQuality, path)

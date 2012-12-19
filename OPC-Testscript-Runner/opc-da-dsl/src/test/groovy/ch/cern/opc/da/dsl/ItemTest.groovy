@@ -85,6 +85,7 @@ class ItemTest
 	def requestedAssertTrueFalseValues
 	def requestedAssertQualityValues
 	def requestedAssertDatatypeValues
+	def requestedAssertAccessRightsValues
 
 	@Before
 	void setup()
@@ -235,7 +236,18 @@ class ItemTest
 
 		assertEquals(MESSAGE, requestedAssertDatatypeValues.message)
 		assertEquals(TESTEE_ITEM_VALUE.datatype, requestedAssertDatatypeValues.actual)
-
+	}
+	
+	@Test
+	void testAssertAccessRights()
+	{
+		itemAccessRightsReturnedFromClientDll = UNKNOWN_ACCESS
+		
+		testee.assertAccessRights(MESSAGE, READ_WRITE_ACCESS)
+		
+		assertEquals(MESSAGE, requestedAssertAccessRightsValues.message)
+		assertEquals(UNKNOWN_ACCESS, requestedAssertAccessRightsValues.actual)
+		assertEquals(READ_WRITE_ACCESS, requestedAssertAccessRightsValues.expected)
 	}
 
 	@Test
@@ -371,6 +383,10 @@ class ItemTest
 
 		ScriptContext.metaClass.assertDatatype{message, expectedDatatype, actualDatatype ->
 			requestedAssertDatatypeValues = new ItemAssertionValues(message, expectedDatatype, actualDatatype)
+		}
+		
+		ScriptContext.metaClass.assertAccessRights{message, expectedAccessRights, actualAccessRights ->
+			requestedAssertAccessRightsValues = new ItemAssertionValues(message, expectedAccessRights, actualAccessRights)
 		}
 
 		// not really necessary but in case of init problems the test will fail here. Fail early

@@ -20,6 +20,8 @@ import ch.cern.opc.dsl.common.results.RunResult
 import ch.cern.opc.dsl.common.results.RunResults
 import ch.cern.opc.common.Quality
 import static ch.cern.opc.common.Quality.State.*
+import static ch.cern.opc.common.Datatype.*
+import static ch.cern.opc.common.ItemAccessRight.*
 
 import static ch.cern.opc.dsl.common.results.RunResults.NULL_MSG
 import static ch.cern.opc.dsl.common.results.RunResults.EMPTY_MSG
@@ -36,13 +38,15 @@ class RunResultsTest
 	def testee
 	def client
 	
+	static final def LAST_DLL_ERR = 'this is the last error from the DLL'
+	
 	@Before
 	void setup()
 	{
 		isCleanUpCalled = false
 		
 		client = [
-			getLastError:{return 'last error from DLL'},
+			getLastError:{return LAST_DLL_ERR},
 			registerForAsyncUpdates:{isUpdateHandlerRegistered = true},
 			cleanUp:{isCleanUpCalled = true}
 			] as GenericClient
@@ -80,7 +84,7 @@ class RunResultsTest
 	}	
 	
 	@Test
-	void testAddAssertTrue()
+	void testAssertingAddsAssertions()
 	{
 		testee.assertTrue('should pass', true)
 		testee.assertTrue('should fail', false)
@@ -300,4 +304,214 @@ class RunResultsTest
 		
 		assertSame(newRunResult, updateInfo)
 	}
+	
+	@Test
+	void testAssertTruePassing()
+	{
+		testee.assertTrue('should pass', true)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertEquals('assertTrue', assertion.title)
+		assertTrue(assertion.isPassed)
+		assertEquals('should pass', assertion.userMessage)
+		assertEquals('value was true', assertion.passFailMessage)
+	}
+	
+	@Test
+	void testAssertTrueFailing()
+	{
+		testee.assertTrue('should fail', false)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertFalse(assertion.isPassed)
+		assertEquals('value was not true', assertion.passFailMessage)
+	}
+	
+	@Test
+	void testAssertFalsePassing()
+	{
+		testee.assertFalse('should pass', false)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertEquals('assertFalse', assertion.title)
+		assertTrue(assertion.isPassed)
+		assertEquals('should pass', assertion.userMessage)
+		assertEquals('value was false', assertion.passFailMessage)
+	}
+
+	@Test
+	void testAssertFalseFailing()
+	{
+		testee.assertFalse('should fail', true)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertFalse(assertion.isPassed)
+		assertEquals('value was not false', assertion.passFailMessage)
+	}
+	
+	@Test
+	void testAssertEqualsPassing()
+	{
+		testee.assertEquals('should pass', 'some value', 'some value')
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertEquals('assertEquals', assertion.title)
+		assertTrue(assertion.isPassed)
+		assertEquals('should pass', assertion.userMessage)
+		assertEquals('expected [some value] actual [some value]'.toString(), assertion.passFailMessage)
+	}
+
+	@Test
+	void testAssertEqualsFailing()
+	{
+		testee.assertEquals('should fail', 'some value', 'different value')
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertFalse(assertion.isPassed)
+		assertEquals("expected [some value] actual [different value] last error from dll [${LAST_DLL_ERR}]".toString(), assertion.passFailMessage)
+	}
+	
+	@Test
+	void testAssertEqualsWithNullValues()
+	{
+		testee.assertEquals('should fail', 'expected value', null)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertEquals('should fail', null, 'actual value')
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertEquals('should pass', null, null)
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+	}
+	
+	@Test
+	void testAssertEqualsWithEmptyValues()
+	{
+		testee.assertEquals('should fail', 'expected value', '')
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertEquals('should fail', '', 'actual value')
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertEquals('should pass', '', "")
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+	}
+	
+	@Test
+	void testAssertQualityPassing()
+	{
+		testee.assertQuality('should pass', GOOD, GOOD)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertEquals('assertQuality', assertion.title)
+		assertTrue(assertion.isPassed)
+		assertEquals('should pass', assertion.userMessage)
+		assertEquals('expected [GOOD] actual [GOOD]'.toString(), assertion.passFailMessage)
+	}
+	
+	@Test
+	void testAssertQualityFailing()
+	{
+		testee.assertQuality('should fail', GOOD, BAD)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertFalse(assertion.isPassed)
+		assertEquals("expected [GOOD] actual [BAD] last error from dll [${LAST_DLL_ERR}]".toString(), assertion.passFailMessage)
+	}
+
+	@Test
+	void testAssertQualityWithNullValues()
+	{
+		testee.assertQuality('should fail', GOOD, null)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertQuality('should fail', null, GOOD)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertQuality('should pass', null, null)
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+	}
+	
+	@Test
+	void testAssertDatatypePassing()
+	{
+		testee.assertDatatype('should pass', VT_BOOL, VT_BOOL)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertEquals('assertDatatype', assertion.title)
+		assertTrue(assertion.isPassed)
+		assertEquals('should pass', assertion.userMessage)
+		assertEquals('expected [VT_BOOL] actual [VT_BOOL]'.toString(), assertion.passFailMessage)
+	}
+	
+	@Test
+	void testAssertDatatypeFailing()
+	{
+		testee.assertDatatype('should fail', VT_BOOL, VT_UNRECOGNISED)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertFalse(assertion.isPassed)
+		assertEquals("expected [VT_BOOL] actual [VT_UNRECOGNISED] last error from dll [${LAST_DLL_ERR}]".toString(), assertion.passFailMessage)
+	}
+
+	@Test
+	void testAssertDatatypeWithNullValues()
+	{
+		testee.assertDatatype('should fail', VT_BOOL, null)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertDatatype('should fail', null, VT_INT)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertDatatype('should pass', null, null)
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+	}
+	
+	@Test
+	void testAssertAccessRightsPassing()
+	{
+		testee.assertAccessRights('should pass', READ_WRITE_ACCESS, READ_WRITE_ACCESS)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertEquals('assertAccessRights', assertion.title)
+		assertTrue(assertion.isPassed)
+		assertEquals('should pass', assertion.userMessage)
+		assertEquals('expected [READ_WRITE_ACCESS] actual [READ_WRITE_ACCESS]', assertion.passFailMessage)
+	}	
+	
+	@Test
+	void testAssertAccessRightsFailing()
+	{
+		testee.assertAccessRights('should fail', READ_WRITE_ACCESS, READ_ACCESS)
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertFalse(assertion.isPassed)
+		assertEquals("expected [READ_WRITE_ACCESS] actual [READ_ACCESS] last error from dll [${LAST_DLL_ERR}]".toString(), assertion.passFailMessage)
+	}
+
+	@Test
+	void testAssertAccessRightsWithNullValues()
+	{
+		testee.assertAccessRights('should fail', WRITE_ACCESS, null)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertAccessRights('should fail', null, READ_ACCESS)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertAccessRights('should pass', null, null)
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+	}
+
 }
