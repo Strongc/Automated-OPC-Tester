@@ -93,14 +93,13 @@ void COPCServer::browseFlatNamespace(CAtlArray<CAtlString>* tmpOpcItemNames)
 
 std::string COPCServer::narrow(const WCHAR* utf8String) const
 {
-	std::wstring str(utf8String);
-	std::ostringstream stm ;    
-	const ctype<char>& ctfacet = use_facet< ctype<char> >( stm.getloc() ) ;    
-	for( size_t i=0 ; i<str.size() ; ++i )
-	{
-		stm << ctfacet.narrow( str[i], 0 );
-	}
-	return stm.str();
+	char buffer[1024];
+	memset(buffer, 0, 1024);
+
+	size_t numCharsConverted;
+	wcstombs_s(&numCharsConverted, buffer, 1024, utf8String, _TRUNCATE);
+
+	return string(buffer);
 }
 
 void COPCServer::browseLeaves(WCHAR* branchName, CAtlArray<CAtlString>* opcItemNames)

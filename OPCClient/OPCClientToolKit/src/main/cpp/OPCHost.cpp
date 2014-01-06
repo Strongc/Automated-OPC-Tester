@@ -21,6 +21,13 @@ Boston, MA  02111-1307, USA.
 #include "OPCHost.h"
 #include "OPCServer.h"
 #include "OpcEnum.h"
+#include <iostream>
+#include <sstream>
+#include <comdef.h> 
+#include <pantheios/pantheios.hpp>
+#include <pantheios/inserters/integer.hpp>
+
+using namespace pantheios;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -36,7 +43,27 @@ COPCHost::~COPCHost()
 
 }
 
+void clsidIdToString(const IID& clsid, std::string& theString)
+{
+	OLECHAR *bstrGuid;
+	
+	if(!FAILED(::StringFromCLSID(clsid, &bstrGuid)))
+	{
+		char buffer[1024];
+		memset(buffer, 0, 1024);
 
+		size_t numCharsConverted;
+		wcstombs_s(&numCharsConverted, buffer, 1024, bstrGuid, _TRUNCATE);
+
+		theString = buffer;
+	}
+	else
+	{
+		theString = "Failed to get string from CLSID";
+	}
+
+	CoTaskMemFree(bstrGuid);
+}
 
 
 
@@ -83,10 +110,17 @@ void CRemoteHost::makeRemoteObject(const IID requestedClass, const IID requested
 
 	HRESULT result = CoCreateInstanceEx(requestedClass,NULL, CLSCTX_REMOTE_SERVER, 
 					   &remoteServerInfo, 1, &reqInterface);	
-	
+
+	std::string clsidString;
+	clsidIdToString(requestedClass, clsidString);
+
 	if (FAILED(result)){
-		printf("Error %x\n", result);
+		log_ERROR("Failed to get remote interface, CoCreateInstanceEx returned error code [",(pantheios::integer)result,"] for requested class [",clsidString,"]");
 		throw OPCException("Failed to get remote interface");
+	}
+	else
+	{
+		log_NOTICE("CoCreateInstanceEx successful for requested class [",clsidString,"]");
 	}
 	
 	*interfacePtr = reqInterface.pItf; // avoid ref counter getting incremented again
@@ -142,9 +176,18 @@ COPCServer * CRemoteHost::connectDAServer(const CLSID & serverClassID){
 
 	ATL::CComPtr<IOPCServer> iOpcServer;
 	HRESULT result = iUnknown->QueryInterface(IID_IOPCServer, (void**)&iOpcServer);
+
+	std::string clsidString;
+	clsidIdToString(serverClassID, clsidString);
+
 	if (FAILED(result))
 	{
+		log_ERROR("Failed to find COM interface, QueryInterface returned error code [",(pantheios::integer)result,"] for class ID [",clsidString,"]");
 		throw OPCException("Failed obtain IID_IOPCServer interface from server");
+	}
+	else
+	{
+		log_NOTICE("QueryInterface found COM interface [",clsidString,"]");
 	}
 
 	return new COPCServer(iOpcServer);
@@ -211,13 +254,19 @@ COPCServer * CLocalHost::connectDAServer(const CString & serverProgID){
 	USES_CONVERSION;
 	WCHAR* wideName = T2OLE(serverProgID);
 
+	log_NOTICE("connectDAServer: Connecting to server with progID [", serverProgID,"]");
+
 	CLSID clsid;
 	HRESULT result = CLSIDFromProgID(wideName, &clsid);
 	if(FAILED(result))
 	{
+		log_ERROR("connectDAServer: Failed to translate progID [", serverProgID,"] to CLSID");
 		throw OPCException("Failed to convert progID to class ID");
 	}
 
+	std::string clsidString;
+	clsidIdToString(IID_IOPCServer, clsidString);
+	log_NOTICE("connectDAServer: progID [", serverProgID,"] translated to CLSID [", clsidString,"]");
 
 	ATL::CComPtr<IClassFactory> iClassFactory;
 	result = CoGetClassObject(clsid, CLSCTX_LOCAL_SERVER, NULL, IID_IClassFactory, (void**)&iClassFactory);
@@ -235,9 +284,17 @@ COPCServer * CLocalHost::connectDAServer(const CString & serverProgID){
 
 	ATL::CComPtr<IOPCServer> iOpcServer;
 	result = iUnknown->QueryInterface(IID_IOPCServer, (void**)&iOpcServer);
+
 	if (FAILED(result))
 	{
+		log_ERROR("connectDAServer: Failed to find IID_IOPCServer interface for CLSID [",clsidString,"] QueryInterface returned [",(pantheios::integer)result,"]");
+		log_ERROR("connectDAServer: HRESULT returned from failed QueryInterface [",_com_error(result).ErrorMessage(),"]");
+
 		throw OPCException("Failed obtain IID_IOPCServer interface from server");
+	}
+	else
+	{
+		log_NOTICE("connectDAServer: QueryInterface found IID_IOPCServer interface [",clsidString,"]");
 	}
 
 	return new COPCServer(iOpcServer);
