@@ -2,7 +2,7 @@ package ch.cern.opc.dsl.common.results
 
 import org.apache.commons.lang.BooleanUtils
 
-protected class RunResultUtil 
+public class RunResultUtil 
 {
 	final static def NULL_MSG = "null assertion message"
 	final static def EMPTY_MSG = "empty assertion message"
