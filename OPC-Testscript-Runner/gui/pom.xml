@@ -14,8 +14,8 @@
 
     <properties>
         <gmaven.version>1.4</gmaven.version>
-        <groovy.major.version>1.8</groovy.major.version>
-        <groovy.minor.version>1</groovy.minor.version>
+        <groovy.major.version>2.0</groovy.major.version>
+        <groovy.minor.version>8</groovy.minor.version>
     </properties>
 
 	<dependencies>

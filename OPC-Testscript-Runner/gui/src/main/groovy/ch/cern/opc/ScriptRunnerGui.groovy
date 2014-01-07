@@ -63,7 +63,7 @@ class ScriptRunnerGui implements OnCompleteCallback
 			}
 			menu(text: 'About', mnemonic:'A')
 			{
-				menuItem(text:'v2.0')
+				menuItem(text:'v2.TRUNK')
 			}
 		}
 	}
