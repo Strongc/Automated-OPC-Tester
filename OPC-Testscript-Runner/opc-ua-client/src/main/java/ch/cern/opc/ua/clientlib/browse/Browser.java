@@ -1,5 +1,7 @@
 package ch.cern.opc.ua.clientlib.browse;
 
+import static ch.cern.opc.common.Log.logInfo;
+import static ch.cern.opc.common.Log.logTrace;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 
 import java.util.ArrayList;
@@ -55,7 +57,7 @@ public class Browser
 
 	public String[] browseNamespace()
 	{
-		System.out.println("Retrieving namespace array for server");
+		logInfo("Retrieving namespace array for server");
 
 		try 
 		{
@@ -140,7 +142,7 @@ public class Browser
 			visited.add(node.getNodeId());
 		}
 		
-		System.out.println("adding child nodes to node ["+node.getBrowseName()+"] id ["+node.getNodeId()+"] visited ["+visited.size()+"]");
+		logTrace("adding child nodes to node ["+node.getBrowseName()+"] id ["+node.getNodeId()+"] visited ["+visited.size()+"]");
 		node.addChildren(getNodeChildren(node.getNodeId()));
 		
 		for(NodeDescription childNode : node.getChildren())
@@ -192,7 +194,7 @@ public class Browser
 			return false;
 		}		
 			 
-		System.out.println("Read datatypes for node ["+node.getBrowseName()+"] - ["+ArrayUtils.toString(node.getDataTypes())+"]");
+		logTrace("Read datatypes for node ["+node.getBrowseName()+"] - ["+ArrayUtils.toString(node.getDataTypes())+"]");
 		return isNotEmpty(node.getDataTypes());
 	}
 

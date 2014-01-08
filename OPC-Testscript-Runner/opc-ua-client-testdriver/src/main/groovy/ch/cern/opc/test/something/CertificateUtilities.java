@@ -31,6 +31,8 @@ public abstract class CertificateUtilities
 				fout.write(buffer);
 			}
 			
+			fout.close();
+			
 			System.out.println("Loaded file from resource URL ["+resourceURI+"] to temporay file ["+result.getAbsolutePath()+"] size ["+result.length()+"]");
 			return result;
 		} 

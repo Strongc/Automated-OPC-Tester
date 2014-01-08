@@ -10,9 +10,9 @@ import org.junit.Before
 class SubscriptionTest 
 {
 	static final def SUBSCRIPTION_NAME = "subscription name"
-	static final def NODE_ONE_ID = "node_one_id"
-	static final def NODE_TWO_ID = "node_two_id"
-	static final def NODE_THREE_ID = "node_three_id"
+	static final Node NODE_ONE = new Node('ns=1;s=counter1')
+	static final def NODE_TWO = new Node('ns=1;s=counter2')
+	static final def NODE_THREE = new Node('ns=1;s=counter3')
 	
 	private def startSubscriptionReturnValue = true
 	private def monitorNodeValuesSubscription
@@ -61,33 +61,24 @@ class SubscriptionTest
 	@Test
 	void testMonitorCallsMonitorClientFunction()
 	{
-		testee.monitor(
-			new Node(NODE_ONE_ID),
-			new Node(NODE_TWO_ID),
-			new Node(NODE_THREE_ID))
+		testee.monitor(NODE_ONE, NODE_TWO, NODE_THREE)
 		
 		assertEquals(SUBSCRIPTION_NAME, monitorNodeValuesSubscription)
 		
 		assertEquals(3, monitorNodeValuesNodeIds.size())
-		assertTrue(monitorNodeValuesNodeIds.contains(NODE_ONE_ID))
-		assertTrue(monitorNodeValuesNodeIds.contains(NODE_TWO_ID))
-		assertTrue(monitorNodeValuesNodeIds.contains(NODE_THREE_ID))
+		assertTrue(monitorNodeValuesNodeIds.contains(NODE_ONE.uaId))
+		assertTrue(monitorNodeValuesNodeIds.contains(NODE_TWO.uaId))
+		assertTrue(monitorNodeValuesNodeIds.contains(NODE_THREE.uaId))
 	}
 	
 	@Test
 	void testMonitorCallsMonitorClientFunctionOnlyForUnmonitoredNodes()
 	{
-		testee.monitor(
-			new Node(NODE_ONE_ID),
-			new Node(NODE_ONE_ID),
-			new Node(NODE_ONE_ID))
+		testee.monitor(NODE_ONE, NODE_ONE, NODE_ONE)
 		
 		assertEquals(SUBSCRIPTION_NAME, monitorNodeValuesSubscription)
 		
 		assertEquals(1, monitorNodeValuesNodeIds.size())
-		assertTrue(monitorNodeValuesNodeIds.contains(NODE_ONE_ID))
+		assertTrue(monitorNodeValuesNodeIds.contains(NODE_ONE.uaId))
 	}
-
-	
-	
 }

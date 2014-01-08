@@ -2,6 +2,7 @@ package ch.cern.opc.ua.clientlib.session;
 
 import static ch.cern.opc.ua.clientlib.session.SessionState.ERROR;
 import static ch.cern.opc.ua.clientlib.session.SessionState.READY;
+import static ch.cern.opc.common.Log.logError;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -12,13 +13,13 @@ class ToReadyState implements StateChanger
 	{
 		if(ArrayUtils.isEmpty(session.getNamespace()))
 		{
-			System.err.println("Failed to read server namespace");
+			logError("Failed to read server namespace");
 			return ERROR;
 		}
 		
 		if(!(session.getAddressspace().getNodeCount() > 1))
 		{
-			System.err.println("Failed to read server addressspace");
+			logError("Failed to read server addressspace");
 			return ERROR;
 		}
 		return READY;

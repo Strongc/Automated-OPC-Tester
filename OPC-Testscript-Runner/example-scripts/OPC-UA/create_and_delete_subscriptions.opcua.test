@@ -1,28 +1,21 @@
 logInfo('script started...')
 
-init('opc.tcp://pcen33068:4841')
+init('opc.tcp://lapen33747:4841')
 
-logLevel('trace')
+logLevel('info')
 
 logInfo('OPC testbench connected to target OPC Server')
 
 logInfo('creating subscription')
-subscription('firstSubscription').with
-{
-	monitor(node('ns=2;i=260'), node('ns=2;i=257'))
-	
-	node('ns=2;i=257').assertAsyncEquals("expect [ns=2;i=257] to have value [true] in 25s", 25, 'true')
-	node('ns=2;i=257').assertAsyncEquals("expect [ns=2;i=257] to have value [true] in 25s", 25, 'false')
-	node('ns=2;i=257').assertAsyncEquals("expect [ns=2;i=257] to have value [true] in 25s", 25, 'pie shop')
-}
+subscription('firstSubscription').monitor(node('ns=2;i=260'), node('ns=2;i=257'))
 
 logInfo('created subscription, sleeping')
-sleep(5000)
+sleep(2000)
 
 logInfo('deleting subscription')
 subscription('firstSubscription').delete()
 
 logInfo('deleted subscription, sleeping')
-sleep(1000)
+sleep(2000)
 
 logInfo('end of script')

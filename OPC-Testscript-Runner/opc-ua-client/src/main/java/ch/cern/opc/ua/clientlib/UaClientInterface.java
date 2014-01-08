@@ -7,6 +7,7 @@ import org.opcfoundation.ua.builtintypes.DataValue;
 
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.notification.OPCUAAsyncUpdateCallback;
+import org.opcfoundation.ua.builtintypes.NodeId;
 
 public interface UaClientInterface 
 {
@@ -22,13 +23,13 @@ public interface UaClientInterface
 
 	public abstract AddressSpace browseAddressspace();
 
-	public abstract DataValue[] readNodeValue(final String nodeId);
+	public abstract DataValue[] readNodeValue(final NodeId nodeId);
 
-	public abstract Class<?>[] readNodeDataTypes(final String nodeId);
+	public abstract Class<?>[] readNodeDataTypes(final NodeId nodeId);
 
-	public abstract boolean writeNodeValueSync(final String nodeId, String... values);
+	public abstract boolean writeNodeValueSync(final NodeId nodeId, String... values);
 	
-	public abstract boolean writeNodeValueAsync(final String nodeId, String... values);
+	public abstract boolean writeNodeValueAsync(final NodeId nodeId, String... values);
 	
 	public abstract boolean startSubscription(final String subscriptionName);
 	
@@ -36,7 +37,7 @@ public interface UaClientInterface
 	
 	public abstract boolean hasSubscription(final String subscriptionName);
 
-	public abstract boolean monitorNodeValues(final String subscriptionName, final String... nodeIds);
+	public abstract boolean monitorNodeValues(final String subscriptionName, final NodeId... nodeIds);
 
 	public abstract String getLastError();
 	

@@ -1,30 +1,47 @@
+def sleep3s = {->
+  logInfo('sleeping for 3 seconds...')
+  sleep(3000)
+  logInfo('woken up!')
+}
+
 logInfo('script started...')
 
-init('opc.tcp://pcen33068:4841')
+init('opc.tcp://LAPEN33747:4841')
 
 logLevel('info')
 
 logInfo('OPC testbench connected to target OPC Server')
 
+def firstExpectedValue = '123'
+def secondExpectedValue = '999'
+def timeout = 10
+
+def node1 = node('ns=4;s=MyDemoObject.Test1')
+def node2 = node('ns=4;s=MyDemoObject.Test2')
+
 logInfo('creating subscription...')
-subscription('firstSubscription').with
-{
-	monitor(node('ns=4;s=MyDemoObject.Test1'), node('ns=4;s=MyDemoObject.Test2'))
-	
-	node('ns=4;s=MyDemoObject.Test1').assertAsyncEquals("expect [Test1] to have value [10] within 30s", 30, '10')
-	node('ns=4;s=MyDemoObject.Test2').assertAsyncEquals("expect [Test2] to have value [10] within 30s", 30, '10')
-}
+subscription('firstSubscription').monitor(node1, node2)
 
-logInfo('sleeping for 5 seconds')
-sleep(5000)
+// async assertions on first value	
+node1.assertAsyncEquals("expect [${node1.id}] to have value [${firstExpectedValue}] within [${timeout}]s", timeout, firstExpectedValue)
+node1.assertAsyncNotEquals("SHOULD FAIL: expect [${node1.id}] not to have value [${firstExpectedValue}] within [${timeout}]s", timeout, firstExpectedValue)
+node2.assertAsyncEquals("expect [${node2.id}] to have value [${firstExpectedValue}] within [${timeout}]s", timeout, firstExpectedValue)
+node2.assertAsyncNotEquals("SHOULD FAIL: expect [${node2.id}] not to have value [${firstExpectedValue}] within [${timeout}]s", timeout, firstExpectedValue)
 
-logInfo('woken up, setting value for [Test1] to 0')
-node('ns=4;s=MyDemoObject.Test1').asyncValue = '0'
+// async assertions on second value
+node1.assertAsyncEquals("expect [${node1.id}] to have value [${secondExpectedValue}] within [${timeout}]s", timeout, secondExpectedValue)
+node1.assertAsyncNotEquals("SHOULD FAIL: expect [${node1.id}] not to have value [${secondExpectedValue}] within [${timeout}]s", timeout, secondExpectedValue)
+node2.assertAsyncEquals("expect [${node2.id}] to have value [${secondExpectedValue}] within [${timeout}]s", timeout, secondExpectedValue)
+node2.assertAsyncNotEquals("SHOULD FAIL: expect [${node2.id}] not to have value [${secondExpectedValue}] within [${timeout}]s", timeout, secondExpectedValue)
 
-logInfo('sleeping for 5 seconds')
-sleep(5000)
+sleep3s()
+logInfo('setting first expected value')
+node1.asyncValue = firstExpectedValue
+node2.asyncValue = firstExpectedValue
 
-logInfo('woken up, setting value for [Test2] to 0')
-node('ns=4;s=MyDemoObject.Test2').asyncValue = '0'
+sleep3s()
+logInfo('setting second expected value')
+node1.asyncValue = secondExpectedValue
+node2.asyncValue = secondExpectedValue
 
 logInfo('end of script')

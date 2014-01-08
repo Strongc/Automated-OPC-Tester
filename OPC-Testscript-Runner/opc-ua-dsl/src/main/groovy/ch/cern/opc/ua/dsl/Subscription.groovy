@@ -2,6 +2,7 @@ package ch.cern.opc.ua.dsl
 
 import ch.cern.opc.ua.clientlib.UaClient
 import static ch.cern.opc.common.Log.*
+import org.opcfoundation.ua.builtintypes.NodeId;
 
 /**
  * Class wraps a real UA client subscription for the DSL. Note it doesn't
@@ -54,11 +55,11 @@ class Subscription
 	def monitor(Node... nodes)
 	{
 		def nodeIds = []
-		nodes.each{nodeIds << it.id}
+		nodes.each{nodeIds << it.uaId}
 		
 		def uniqueNodeIds = nodeIds as Set
 		
-		UaClient.instance().monitorNodeValues(name, uniqueNodeIds as String[])
+		UaClient.instance().monitorNodeValues(name, uniqueNodeIds as NodeId[])
 	}
 	
 }

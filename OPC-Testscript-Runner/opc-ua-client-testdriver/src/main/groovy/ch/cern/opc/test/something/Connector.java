@@ -11,6 +11,7 @@ import java.util.Scanner;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.opcfoundation.ua.builtintypes.DataValue;
+import org.opcfoundation.ua.builtintypes.NodeId;
 
 import ch.cern.opc.ua.clientlib.EndpointSummary;
 import ch.cern.opc.ua.clientlib.UaClient;
@@ -123,36 +124,36 @@ public class Connector
 		System.out.println(addressSpace);
 	}
 	
-	private static void readVariableType(final String variableName)
+	private static void readVariableType(final String nodeId)
 	{
-		System.out.println("Attempting to read type of variable ["+variableName+"]");
-		final Class<?>[] types = UaClient.instance().readNodeDataTypes(variableName);
+		System.out.println("Attempting to read type of variable ["+nodeId+"]");
+		final Class<?>[] types = UaClient.instance().readNodeDataTypes(NodeId.decode(nodeId));
 		
-		System.out.println("variable ["+variableName+"] has types...");
+		System.out.println("variable ["+nodeId+"] has types...");
 		for(Class<?> type: types)
 		{
 			System.out.println("\ttype ["+type.getSimpleName()+"]");
 		}
 	}
 	
-	private static void readVariableValue(final String variableName) 
+	private static void readVariableValue(final String nodeId) 
 	{
-		System.out.println("Attempting to read value of variable ["+variableName+"]");
-		DataValue[] values = UaClient.instance().readNodeValue(variableName);
+		System.out.println("Attempting to read value of variable ["+nodeId+"]");
+		DataValue[] values = UaClient.instance().readNodeValue(NodeId.decode(nodeId));
 		
-		System.out.println("variable ["+variableName+"] has values...");
+		System.out.println("variable ["+nodeId+"] has values...");
 		for(DataValue value : values)
 		{
 			System.out.println("\tvalue ["+value.getValue().toString()+"]");
 		}
 	}
 	
-	private static void writeVariableValue(final String variableName, String value) 
+	private static void writeVariableValue(final String nodeId, String value) 
 	{
-		System.out.println("Attempting to write value ["+value+"] to variable ["+variableName+"]");
-		final boolean isWritten = UaClient.instance().writeNodeValueSync(variableName, value);
+		System.out.println("Attempting to write value ["+value+"] to variable ["+nodeId+"]");
+		final boolean isWritten = UaClient.instance().writeNodeValueSync(NodeId.decode(nodeId), value);
 		
-		System.out.println("Attempted write to variable ["+variableName+"] returned ["+isWritten+"]");
+		System.out.println("Attempted write to variable ["+nodeId+"] returned ["+isWritten+"]");
 		
 	}
 
@@ -170,11 +171,11 @@ public class Connector
 		}
 	}
 	
-	private static void monitorNodeValues(final String subscriptionName, final String... nodes)
+	private static void monitorNodeValues(final String subscriptionName, final String nodeId)
 	{
-		System.out.println("Monitoring nodes ["+ArrayUtils.toString(nodes)+"]");
+		System.out.println("Monitoring node ["+nodeId+"]");
 		
-		UaClient.instance().monitorNodeValues(subscriptionName, nodes);
+		UaClient.instance().monitorNodeValues(subscriptionName, NodeId.decode(nodeId));
 	}
 	
 	private static boolean loadLog4jProperties()

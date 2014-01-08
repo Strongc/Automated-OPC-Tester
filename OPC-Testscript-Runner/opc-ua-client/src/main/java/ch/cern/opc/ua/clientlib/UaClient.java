@@ -14,6 +14,7 @@ import java.net.URI;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opcfoundation.ua.application.Client;
 import org.opcfoundation.ua.builtintypes.DataValue;
+import org.opcfoundation.ua.builtintypes.NodeId;
 import org.opcfoundation.ua.common.ServiceFaultException;
 import org.opcfoundation.ua.common.ServiceResultException;
 import org.opcfoundation.ua.core.EndpointDescription;
@@ -181,7 +182,7 @@ public class UaClient implements UaClientInterface
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#readNodeValue(java.lang.String)
 	 */
 	@Override
-	public DataValue[] readNodeValue(final String nodeId)
+	public DataValue[] readNodeValue(final NodeId nodeId)
 	{
 		if(session != null)
 		{
@@ -197,7 +198,7 @@ public class UaClient implements UaClientInterface
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#readNodeDataTypes(java.lang.String)
 	 */
 	@Override
-	public Class<?>[] readNodeDataTypes(final String nodeId)
+	public Class<?>[] readNodeDataTypes(final NodeId nodeId)
 	{
 		if(session == null)
 		{
@@ -225,7 +226,7 @@ public class UaClient implements UaClientInterface
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#writeNodeValue(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public boolean writeNodeValueSync(final String nodeId, String... values)
+	public boolean writeNodeValueSync(final NodeId nodeId, String... values)
 	{
 		logDebug("Writing synchronously  to node ["+nodeId+"], values: "+ArrayUtils.toString(values));
 		
@@ -241,7 +242,7 @@ public class UaClient implements UaClientInterface
 	}
 	
 	@Override
-	public boolean writeNodeValueAsync(String nodeId, String... values) 
+	public boolean writeNodeValueAsync(NodeId nodeId, String... values) 
 	{
 		logDebug("Writing asynchronously  to node ["+nodeId+"], values: "+ArrayUtils.toString(values));
 		
@@ -289,25 +290,25 @@ public class UaClient implements UaClientInterface
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#monitorNodeValues(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public boolean monitorNodeValues(final String subscriptionName, final String... nodeIds)
+	public boolean monitorNodeValues(final String subscriptionName, final NodeId... nodeIds)
 	{
 		final Subscription subscription = session.getSubscription(subscriptionName);
 		
 		if(subscription == null)
 		{
-			System.err.println("No subscription found with name ["+subscriptionName+"], unable to monitor nodes ["+ArrayUtils.toString(nodeIds)+"]");
+			logError("No subscription found with name ["+subscriptionName+"], unable to monitor ["+nodeIds.length+"] nodes");
 			return false;
 		}
 		
 		if(!subscription.isActive())
 		{
-			System.err.println("Subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"] was not correctly established with the server, unable to monitor nodes ["+ArrayUtils.toString(nodeIds)+"]");
+			logError("Subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"] was not correctly established with the server, unable to monitor ["+nodeIds.length+"] nodes");
 			return false;
 		}
 		
-		System.out.println("Adding nodes ["+ArrayUtils.toString(nodeIds)+"] to subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"]");
+		logDebug("Adding ["+nodeIds.length+"] nodes to subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"]");
 		boolean result = subscription.addMonitoredItems(session.getAddressspace().findNodesById(nodeIds));
-		System.out.println("Added ["+nodeIds.length+"] items to subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"], result ["+result+"]");
+		logDebug("Added ["+nodeIds.length+"] nodes to subscription name ["+subscriptionName+"] id ["+subscription.getSubscriptionId()+"], result ["+result+"]");
 		
 		return result;
 	}

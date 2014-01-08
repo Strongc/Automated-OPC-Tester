@@ -1,8 +1,8 @@
 logInfo('script started...')
 
-init('opc.tcp://pcen33068:4841')
+init('opc.tcp://lapen33747:4841')
 
-logLevel('trace')
+logLevel('info')
 
 logInfo('OPC testbench connected to target OPC Server')
 
