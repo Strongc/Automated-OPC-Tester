@@ -49,4 +49,9 @@ class Node
 	{
 		ScriptContext.instance.assertAsyncNotEquals(message, timeout, antiExpectedValue, id)
 	}
+	
+	def assertEquals(message, expectedValue)
+	{
+		ScriptContext.instance.assertEquals(message, expectedValue, syncValue.value)
+	}
 }

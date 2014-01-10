@@ -13,13 +13,14 @@ import org.junit.Before
 class NodeTest
 {
 	private final static def NODE_ID = 'ns=1;s=testnode'
-	private final static def NODE_VALUES = createDataValues('testnode_value')
+	private def currentNodeValue // individual tests to set this as required
 
 	private final static def SRC_TIME = new DateTime()
 	private final static def SVR_TIME = new DateTime()
 
 	private def rcvdWriteNodeValueParameters = [:]
 	private def rcvdAsyncAssertParameters = [:]
+	private def rcvdSyncAssertion
 
 	private def testee
 
@@ -28,11 +29,12 @@ class NodeTest
 	{
 		rcvdWriteNodeValueParameters = [:]
 		rcvdAsyncAssertParameters = [:]
+		rcvdSyncAssertion = null
 
 		def theClientInstance = [
 			readNodeValue:
 			{id->
-				return NODE_VALUES
+				return currentNodeValue
 			},
 			writeNodeValueSync:
 			{id, values->
@@ -51,6 +53,10 @@ class NodeTest
 			registerAsyncUpdate:
 			{callback->
 				println 'registerAsyncUpdate called'
+			},
+			getLastError:
+			{
+				return 'last client error'
 			}
 			] as UaClientInterface
 		
@@ -71,7 +77,11 @@ class NodeTest
 			rcvdAsyncAssertParameters['expectedValue']=expectedValue
 			rcvdAsyncAssertParameters['id']=id
 		}
-
+		
+		ScriptContext.instance.metaClass.add =
+		{syncAssertion->
+			rcvdSyncAssertion = syncAssertion
+		}
 		
 		testee = new Node(NODE_ID)
 	}
@@ -101,11 +111,92 @@ class NodeTest
 	}
 
 	@Test
-	void testGetSyncValue()
+	void testGetSyncValue_ScalarPrimitives()
 	{
-		def expected = new ValueWrapper(NODE_VALUES[0])
-		assertEquals(expected.value, testee.syncValue.value)
+		// prime mock with expected value and return as wrapped value.
+		def setupExpectedValue = {rawValue ->
+			currentNodeValue = createDataValues(rawValue)
+			return new ValueWrapper(currentNodeValue[0])	
+		}
+		
+		assertEquals(setupExpectedValue('string.value').value, testee.syncValue.value)
+		
+		assertEquals(setupExpectedValue(true).value, testee.syncValue.value)
+		assertEquals(setupExpectedValue(false).value, testee.syncValue.value)
+		
+		assertEquals(setupExpectedValue(-123 as Short).value, testee.syncValue.value)
+		assertEquals(setupExpectedValue(new UnsignedShort(123)).value, testee.syncValue.value)
+
+		assertEquals(setupExpectedValue(-123 as Integer).value, testee.syncValue.value)
+		assertEquals(setupExpectedValue(new UnsignedInteger(123)).value, testee.syncValue.value)
+		
+		assertEquals(setupExpectedValue(-123 as Long).value, testee.syncValue.value)
+		assertEquals(setupExpectedValue(new UnsignedLong(321)).value, testee.syncValue.value)
+		
+		assertEquals(setupExpectedValue(1.23 as Float).value, testee.syncValue.value)
+		assertEquals(setupExpectedValue(1.23 as Double).value, testee.syncValue.value)
+		
+		assertEquals(setupExpectedValue('a'.bytes[0] as byte).value, testee.syncValue.value)
+		assertEquals(setupExpectedValue(new UnsignedByte('b'.bytes[0])).value, testee.syncValue.value)
 	}
+	
+	@Test
+	void testAssertEquals_PassingForScalarPrimitives()
+	{
+		def setupPassingAssertion = {expectedValue ->
+			currentNodeValue = createDataValues(expectedValue) // prime the mock interface
+			testee.assertEquals('user message', expectedValue) // run the assertion
+		}
+
+		setupPassingAssertion('expected.value')
+		assertTrue(rcvdSyncAssertion.isPassed)
+		
+		setupPassingAssertion(true)
+		assertTrue(rcvdSyncAssertion.isPassed)
+		
+		setupPassingAssertion(false)
+		assertTrue(rcvdSyncAssertion.isPassed)
+
+		setupPassingAssertion(123)
+		assertTrue(rcvdSyncAssertion.isPassed)
+
+		setupPassingAssertion(1.23 as Float)
+		assertTrue(rcvdSyncAssertion.isPassed)
+		
+		setupPassingAssertion(1.23 as Double)
+		assertTrue(rcvdSyncAssertion.isPassed)
+		
+		setupPassingAssertion('a'.bytes[0] as byte)
+		assertTrue(rcvdSyncAssertion.isPassed)
+	}
+	
+	@Test
+	void testAssertEquals_FailingForScalarPrimitives()
+	{
+		def setupFailingAssertion = {expectedValue, actualValue ->
+			currentNodeValue = createDataValues(actualValue) // prime the mock interface
+			testee.assertEquals('user message', expectedValue) // run the assertion
+		}
+		
+		setupFailingAssertion('expected.value', 'actual.value')
+		assertFalse(rcvdSyncAssertion.isPassed)
+		
+		setupFailingAssertion(true, false)
+		assertFalse(rcvdSyncAssertion.isPassed)
+		
+		setupFailingAssertion(123, 321)
+		assertFalse(rcvdSyncAssertion.isPassed)
+		
+		setupFailingAssertion(1.23 as Float, 3.21 as Float)
+		assertFalse(rcvdSyncAssertion.isPassed)
+
+		setupFailingAssertion(1.23 as Double, 3.21 as Double)
+		assertFalse(rcvdSyncAssertion.isPassed)
+
+		setupFailingAssertion('a'.bytes[0] as byte, 'z'.bytes[0] as byte)
+		assertFalse(rcvdSyncAssertion.isPassed)
+	}
+
 	
 	@Test
 	void testWriteSyncValueArray()
