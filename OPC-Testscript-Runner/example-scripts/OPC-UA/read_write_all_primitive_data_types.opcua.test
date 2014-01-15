@@ -24,4 +24,60 @@ def boolUpdater = {node, initialValue ->
 }
 readAndUpdateNode(boolNode, boolUpdater)
 
+def int16Node = node('ns=4;s=AllDataTypesStatic/StaticInt16')
+def integerUpdater = {node, initialValue ->
+  def initialIntegerValue = new Integer(initialValue.value)
+  def updatedIntegerValue = initialIntegerValue+1
+  node.syncValue = updatedIntegerValue.toString()
+  return updatedIntegerValue
+}
+readAndUpdateNode(int16Node, integerUpdater)
+
+def int32Node = node('ns=4;s=AllDataTypesStatic/StaticInt32')
+readAndUpdateNode(int32Node, integerUpdater)
+
+def int64Node = node('ns=4;s=AllDataTypesStatic/StaticInt64')
+readAndUpdateNode(int64Node, integerUpdater)
+
+def uint16Node = node('ns=4;s=AllDataTypesStatic/StaticUInt16')
+readAndUpdateNode(uint16Node, integerUpdater)
+
+def uint32Node = node('ns=4;s=AllDataTypesStatic/StaticUInt32')
+readAndUpdateNode(uint32Node, integerUpdater)
+
+def uint64Node = node('ns=4;s=AllDataTypesStatic/StaticUInt64')
+readAndUpdateNode(uint64Node, integerUpdater)
+
+def byteNode = node('ns=4;s=AllDataTypesStatic/StaticByte')
+readAndUpdateNode(byteNode, integerUpdater)
+
+
+def stringNode = node('ns=4;s=AllDataTypesStatic/StaticString')
+def stringUpdater = {node, initialValue ->
+  def updatedStringValue = initialValue.value.equals('hello')? 'world': 'hello'
+  node.syncValue = updatedStringValue
+  return updatedStringValue
+}
+readAndUpdateNode(stringNode, stringUpdater)
+
+def floatNode = node('ns=4;s=AllDataTypesStatic/StaticFloat')
+def floatUpdater = {node, initialValue ->
+  def initialFloatValue = new Float(initialValue.value)
+  def updatedFloatValue = initialFloatValue+0.1
+  node.syncValue = updatedFloatValue.toString()
+  return updatedFloatValue
+}
+readAndUpdateNode(floatNode, floatUpdater)
+
+def doubleNode = node('ns=4;s=AllDataTypesStatic/StaticDouble')
+def doubleUpdater = {node, initialValue ->
+  def initialDoubleValue = new Double(initialValue.value)
+  def updatedDoubleValue = initialDoubleValue+0.1
+  node.syncValue = updatedDoubleValue.toString()
+  return updatedDoubleValue
+}
+readAndUpdateNode(doubleNode, doubleUpdater)
+
+
+
 logInfo('end of script')

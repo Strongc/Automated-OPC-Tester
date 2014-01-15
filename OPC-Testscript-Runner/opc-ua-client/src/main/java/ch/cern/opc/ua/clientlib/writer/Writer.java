@@ -196,23 +196,23 @@ public class Writer
 		if (clazz.equals(Boolean.class))
 			return Boolean.valueOf(value);
 		if (clazz.equals(Byte.class))
-			return null;
+			return Byte.valueOf(value);
 		if (clazz.equals(UnsignedByte.class) && !clazz.isArray())
-			return null;
+			return UnsignedByte.parseUnsignedByte(value);
 		if (clazz.equals(Short.class))
-			return null;
+			return Short.valueOf(value);
 		if (clazz.equals(UnsignedShort.class))
-			return null;
+			return UnsignedShort.valueOf(Integer.valueOf(value));
 		if (clazz.equals(Integer.class))
 			return Integer.valueOf(value);
 		if (clazz.equals(UnsignedInteger.class))
 			return UnsignedInteger.parseUnsignedInteger(value);
 		if (clazz.equals(Long.class))
-			return null;
+			return Long.valueOf(value);
 		if (clazz.equals(UnsignedLong.class))
-			return null;
+			return UnsignedLong.parseUnsignedLong(value);
 		if (clazz.equals(Float.class))
-			return null;
+			return Float.valueOf(value);
 		if (clazz.equals(Double.class))
 			return Double.valueOf(value);
 		if (clazz.equals(String.class))
