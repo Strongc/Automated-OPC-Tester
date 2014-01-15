@@ -1,0 +1,27 @@
+logLevel('info')
+logInfo('script started...')
+
+init('opc.tcp://LAPEN33747:4841')
+logInfo('OPC testbench connected to target OPC Server')
+
+def toggleBoolean = {initialValue ->
+  def initialBooleanValue = Boolean.valueOf(initialValue.value)
+  return !initialBooleanValue
+}
+
+def readAndUpdateNode = {targetNode, valueUpdater ->
+  def initialValue = targetNode.syncValue
+  logInfo("node [${targetNode.id}] data type [${initialValue.type}] has initial value [${initialValue.value}], changing value...")
+  def updatedValue = valueUpdater(targetNode, initialValue)
+  targetNode.assertEquals("expected [${targetNode.id}] updated to value [${updatedValue}]", updatedValue)
+}
+
+def boolNode = node('ns=4;s=AllDataTypesStatic/StaticBool')
+def boolUpdater = {node, initialValue -> 
+  def updatedBooleanValue = toggleBoolean(initialValue)
+  node.syncValue = Boolean.valueOf((updatedBooleanValue)).toString()
+  return updatedBooleanValue
+}
+readAndUpdateNode(boolNode, boolUpdater)
+
+logInfo('end of script')
