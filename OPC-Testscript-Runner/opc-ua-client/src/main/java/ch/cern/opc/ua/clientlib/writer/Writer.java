@@ -2,6 +2,7 @@ package ch.cern.opc.ua.clientlib.writer;
 
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 
+import java.text.ParseException;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -31,6 +32,7 @@ import org.opcfoundation.ua.core.WriteValue;
 import org.opcfoundation.ua.transport.AsyncResult;
 import org.opcfoundation.ua.transport.AsyncResult.AsyncResultStatus;
 
+import ch.cern.opc.common.Log;
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
 import ch.cern.opc.ua.clientlib.browse.Browser;
 
@@ -218,7 +220,16 @@ public class Writer
 		if (clazz.equals(String.class))
 			return value;
 		if (clazz.equals(DateTime.class))
-			return null;
+			try 
+			{
+				return DateTime.parseDateTime(value);
+			} 
+			catch (ParseException e) 
+			{
+				Log.logError("Failed to parse string ["+value+"] to DateTime");
+				e.printStackTrace();
+				return null;
+			}
 		if (clazz.equals(UUID.class))
 			return null;
 		if (clazz.equals(XmlElement.class))

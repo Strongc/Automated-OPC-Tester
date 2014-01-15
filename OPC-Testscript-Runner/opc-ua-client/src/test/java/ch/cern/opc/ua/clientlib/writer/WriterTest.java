@@ -2,12 +2,14 @@ package ch.cern.opc.ua.clientlib.writer;
 
 import static org.junit.Assert.*;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opcfoundation.ua.application.SessionChannel;
+import org.opcfoundation.ua.builtintypes.DateTime;
 import org.opcfoundation.ua.builtintypes.NodeId;
 import org.opcfoundation.ua.builtintypes.StatusCode;
 import org.opcfoundation.ua.builtintypes.UnsignedByte;
@@ -163,6 +165,18 @@ public class WriterTest
 		testee.writeNodeValueSync(nodeDescription, values);
 		
 		assertLastWrittenValue(new Variant(new Double(1.23)), mockSessionChannel);
+	}
+	
+	@Test
+	public void testWriteNodeValueSync_DateTime() throws ParseException
+	{
+		nodeDescription.addDataTypes(DateTime.class);
+		String expected = "2014-01-15T17:52:50.290Z"; 
+		
+		String values[] = {expected};
+		testee.writeNodeValueSync(nodeDescription, values);
+		
+		assertLastWrittenValue(new Variant(DateTime.parseDateTime(expected)), mockSessionChannel);
 	}
 	
 	
