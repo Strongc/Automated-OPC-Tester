@@ -129,6 +129,11 @@ class RunResults extends Observable
 	{
 		this.pingPeriod = pingPeriod
 	}
+	
+	def fail(message)
+	{
+		add(new SynchronousAssertion('fail', false, message, 'explicit failure'))
+	}
 
 	private def addAsyncAssertion(def asyncAssertion)
 	{

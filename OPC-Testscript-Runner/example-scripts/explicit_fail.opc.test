@@ -1,0 +1,1 @@
+fail('this should produce a fail in the test result tree')

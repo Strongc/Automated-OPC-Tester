@@ -513,5 +513,18 @@ class RunResultsTest
 		testee.assertAccessRights('should pass', null, null)
 		assertTrue(testee.results[testee.results.size-1].isPassed)
 	}
+	
+	@Test
+	void testFail()
+	{
+		assertEquals(0, testee.results.size)
+		testee.fail('user message')
+		
+		def testResult = testee.results[0]
+		assertEquals('fail', testResult.title)
+		assertFalse(testResult.isPassed)
+		assertEquals('user message', testResult.userMessage)
+		assertEquals('explicit failure', testResult.passFailMessage)
+	}
 
 }

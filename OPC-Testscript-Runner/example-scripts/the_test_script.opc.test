@@ -103,4 +103,7 @@ group('group.2').with
 }
 
 assertTrue('deliberate fail', false)
+
+fail('explicit fail')
+
 throw new Exception('deliberate exception')
