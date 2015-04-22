@@ -7,6 +7,7 @@ import static ch.cern.opc.common.Log.logWarning;
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 
 import org.opcfoundation.ua.application.SessionChannel;
+import org.opcfoundation.ua.builtintypes.ExpandedNodeId;
 import org.opcfoundation.ua.builtintypes.ExtensionObject;
 import org.opcfoundation.ua.builtintypes.NodeId;
 import org.opcfoundation.ua.builtintypes.UnsignedInteger;
@@ -157,7 +158,7 @@ class PublicationThread implements Runnable
 		for(ExtensionObject notificationObject : notifications)
 		{
 			if(notificationObject == null) continue;
-			final NodeId objectTypeId = notificationObject.getTypeId();
+			final ExpandedNodeId objectTypeId = notificationObject.getTypeId();
 			
 			if(objectTypeId.equals(DataChangeNotification.BINARY) || objectTypeId.equals(DataChangeNotification.XML))
 			{
@@ -173,7 +174,9 @@ class PublicationThread implements Runnable
 	private void sendNotification(final UnsignedInteger subscriptionId, final ExtensionObject object) {
 		try 
 		{
-			DataChangeNotification notification = object.decode();
+			// changed for upgrade to latest UA stack - probably broken
+			DataChangeNotification notification = object.decode(null);
+			
 			MonitoredItemNotification[] items = notification.getMonitoredItems();
 			for(MonitoredItemNotification item : items)
 			{

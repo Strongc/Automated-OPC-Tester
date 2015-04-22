@@ -10,7 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opcfoundation.ua.application.Client;
 import org.opcfoundation.ua.builtintypes.DataValue;
@@ -21,6 +26,8 @@ import org.opcfoundation.ua.core.EndpointDescription;
 import org.opcfoundation.ua.transport.security.Cert;
 import org.opcfoundation.ua.transport.security.KeyPair;
 import org.opcfoundation.ua.transport.security.PrivKey;
+
+import com.sun.org.apache.xml.internal.utils.UnImplNode;
 
 import ch.cern.opc.ua.clientlib.addressspace.AddressSpace;
 import ch.cern.opc.ua.clientlib.addressspace.NodeDescription;
@@ -64,13 +71,30 @@ public class UaClient implements UaClientInterface
 			PrivKey privateKey = PrivKey.loadFromKeyStore(privateKeyFile.toURI().toURL(), password);
 			if(privateKey == null) throw new IllegalArgumentException("faield to load private key");
 
-			client = new Client(new KeyPair(publicKey, privateKey));
+			client = new Client(null);
+			//client = new Client(new KeyPair(publicKey, privateKey));
 		} 
 		catch (MalformedURLException e) 
 		{
 			e.printStackTrace();
 		} 
 		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (CertificateException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (UnrecoverableKeyException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (KeyStoreException e) 
 		{
 			e.printStackTrace();
 		}
@@ -80,7 +104,7 @@ public class UaClient implements UaClientInterface
 	 * @see ch.cern.opc.ua.clientlib.UaClientInterface#getEndpoints(java.net.URI)
 	 */
 	@Override
-	public EndpointSummary[] getEndpoints(URI serverURI) throws IllegalStateException
+	public EndpointSummary[] getEndpoints(final String serverURI) throws IllegalStateException
 	{
 		endpoints = new EndpointDescription[]{};
 		try 
@@ -93,6 +117,10 @@ public class UaClient implements UaClientInterface
 			e.printStackTrace();
 		} 
 		catch (ServiceResultException e) 
+		{
+			e.printStackTrace();
+		}
+		catch(NullPointerException e)
 		{
 			e.printStackTrace();
 		}

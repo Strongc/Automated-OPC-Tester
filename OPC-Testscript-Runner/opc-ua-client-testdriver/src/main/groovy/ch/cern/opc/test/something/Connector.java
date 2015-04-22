@@ -34,7 +34,7 @@ public class Connector
 		System.out.println("Creating client instance, with certificates, logging initialized ["+LOG_SETTINGS_LOADED+"]");
 		UaClient.instance().setCertificate(PUBLIC_CERTIFICATE, PRIVATE_KEY, PASSWORD);
 		
-		EndpointSummary[] endpoints = getEndpoints(new URI(SERVER_URI));
+		EndpointSummary[] endpoints = getEndpoints(SERVER_URI);
 		
 		startSession(endpoints[0]);
 		
@@ -91,7 +91,7 @@ public class Connector
 		System.out.println("user input received, continuing...");
 	}	
 
-	private static EndpointSummary[] getEndpoints(URI serverUri)
+	private static EndpointSummary[] getEndpoints(final String serverUri)
 	{
 		System.out.println("Discovering server endpoints");
 		EndpointSummary[] endpoints = UaClient.instance().getEndpoints(serverUri);

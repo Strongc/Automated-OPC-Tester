@@ -44,7 +44,7 @@ class Item
 	{
 		return OPCDAClientInstance.instance.readItemSync(groupName, path).quality
 	}
-	
+		
 	def setAsyncValue(value)
 	{
 		return OPCDAClientInstance.instance.writeItemAsync(groupName, path, value)

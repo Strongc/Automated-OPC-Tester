@@ -13,7 +13,7 @@ public interface UaClientInterface
 {
 	public abstract void setCertificate(final File publicKeyFile, final File privateKeyFile, final String password);
 
-	public abstract EndpointSummary[] getEndpoints(URI serverURI) throws IllegalStateException;
+	public abstract EndpointSummary[] getEndpoints(final String serverURI) throws IllegalStateException;
 
 	public abstract void startSession(final EndpointSummary endpoint);
 

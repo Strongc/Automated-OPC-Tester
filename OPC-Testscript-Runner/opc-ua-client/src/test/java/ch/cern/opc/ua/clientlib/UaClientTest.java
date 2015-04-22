@@ -77,7 +77,7 @@ public class UaClientTest
 	{
 		testee.setCertificate(PUBLIC_CERTIFICATE, PRIVATE_KEY, password);
 		
-		assertNotNull(testee.getEndpoints(new URI("opc.tcp://I_do_no_exist:69/")));
+		assertNotNull(testee.getEndpoints("opc.tcp://I_do_no_exist:69/"));
 	}
 	
 	@Test

@@ -1,0 +1,11 @@
+assertTrue("intialisation test", true)
+
+init('', 'Matrikon.OPC.Simulation')
+
+group('test.group').with
+{
+	logInfo('I ain\'t got nobody')
+}
+
+logInfo('end of script')
+
