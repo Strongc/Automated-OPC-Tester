@@ -9,6 +9,7 @@ target
 
 # ignore log output
 *.log
+**/logging-bailout.txt
 
 # ignore VC++ intermediate files
 *.ncb
