@@ -1,6 +1,6 @@
 package ch.cern.opc.client;
 
-import static ch.cern.opc.common.Log.*;
+import static ch.cern.opc.common.Log.logInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,5 +164,4 @@ public class OPCDAClientInstance implements OPCDAClientApi
 	{
 		return client.getItemDatatype(groupName, itemPath);
 	}
-
 }

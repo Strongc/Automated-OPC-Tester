@@ -10,6 +10,7 @@ import ch.cern.opc.da.dsl.ScriptContext
 import static ch.cern.opc.da.dsl.TestingUtilities.setSingletonStubInstance
 import ch.cern.opc.common.ItemValue
 import ch.cern.opc.common.Log
+import ch.cern.opc.common.Timestamp
 
 import static org.junit.Assert.*
 import org.junit.Test
@@ -20,7 +21,7 @@ class ItemTest
 {
 	static final def TESTEE_GROUP_NAME = 'testee.group'
 	static final def TESTEE_ITEM_PATH = 'testee.item.path'
-	static final def TESTEE_ITEM_VALUE = new ItemValue('42', 192, 'some timestamp', 8)
+	static final def TESTEE_ITEM_VALUE = new ItemValue('42', 192, '2015/05/06-01:02:3.456', 8)
 
 	ItemValue returnedValue = TESTEE_ITEM_VALUE
 
@@ -294,6 +295,16 @@ class ItemTest
 
 		itemDatatypeReturnedFromClientDll = VT_UNRECOGNISED
 		assertTrue(testee.datatype.equals(VT_UNRECOGNISED))
+	}
+	
+	@Test
+	void testGetTimestamp()
+	{
+		returnedValue = new ItemValue('', 192/*QUALITY GOOD*/, 'some invalid timestamp', 0)
+		assertTrue(testee.timestamp.equals(new Timestamp('some invalid timestamp')))
+		
+		returnedValue = new ItemValue('', 192/*QUALITY GOOD*/, '2015/05/06-01:02:3.456', 0)
+		assertTrue(testee.timestamp.equals(new Timestamp('2015/05/06-01:02:3.456')))
 	}
 
 	@Test

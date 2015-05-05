@@ -2,9 +2,9 @@ package ch.cern.opc.client;
 
 import java.util.List;
 
+import ch.cern.opc.common.Datatype;
 import ch.cern.opc.common.ItemAccessRight;
 import ch.cern.opc.common.ItemValue;
-import ch.cern.opc.common.Datatype;
 
 public interface OPCDAClientApi 
 {

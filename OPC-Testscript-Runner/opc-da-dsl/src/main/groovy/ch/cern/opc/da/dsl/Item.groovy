@@ -2,6 +2,7 @@ package ch.cern.opc.da.dsl
 
 import ch.cern.opc.client.OPCDAClientInstance
 import ch.cern.opc.common.Log
+import ch.cern.opc.common.Timestamp;
 
 class Item 
 {
@@ -28,6 +29,11 @@ class Item
 	def getDatatype()
 	{
 		return OPCDAClientInstance.instance.getItemDatatype(groupName, path)
+	}
+	
+	def getTimestamp()
+	{
+		return OPCDAClientInstance.instance.readItemSync(groupName, path).timestamp
 	}
 	
 	def getAccessRights()
