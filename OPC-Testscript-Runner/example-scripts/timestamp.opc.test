@@ -4,14 +4,25 @@ init('', 'Matrikon.OPC.Simulation')
 
 group('test.group').with
 {
-	logInfo('I ain\'t got nobody')
-
 	def theItem = item('testGroup.myLongInt')
-	logInfo("item [${theItem.path}] timestamp [${theItem.timestamp}]")
+	theItem.syncValue = '0'
 
-	logInfo('sleeping for 2s before re-querying timestamp')
-	sleep(2)
-	logInfo("item [${theItem.path}] timestamp [${theItem.timestamp}]")
+	def firstTimestamp = theItem.timestamp
+	logInfo("item [${theItem.path}] timestamp [${firstTimestamp}]")
+
+	sleep(1)
+
+	def secondTimestamp = theItem.timestamp
+	logInfo("item [${theItem.path}] timestamp [${secondTimestamp}]")
+
+	assertEquals("timestamps should be equal - the server value has not been updated", firstTimestamp, secondTimestamp)
+
+	sleep(1)
+
+	theItem.syncValue = '1'
+	def thirdTimestamp = theItem.timestamp
+
+	assertNotEquals("timestamps should be different - the server value was updated", secondTimestamp, thirdTimestamp)
 }
 
 logInfo('end of script')

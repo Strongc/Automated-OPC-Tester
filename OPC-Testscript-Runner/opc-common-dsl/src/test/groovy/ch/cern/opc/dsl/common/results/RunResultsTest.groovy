@@ -363,7 +363,7 @@ class RunResultsTest
 		assertEquals('assertEquals', assertion.title)
 		assertTrue(assertion.isPassed)
 		assertEquals('should pass', assertion.userMessage)
-		assertEquals('expected [some value] actual [some value]'.toString(), assertion.passFailMessage)
+		assertEquals('expected [some value] to equal actual [some value]'.toString(), assertion.passFailMessage)
 	}
 
 	@Test
@@ -374,7 +374,7 @@ class RunResultsTest
 		def assertion = testee.results[testee.results.size-1]
 		
 		assertFalse(assertion.isPassed)
-		assertEquals("expected [some value] actual [different value] last error from dll [${LAST_DLL_ERR}]".toString(), assertion.passFailMessage)
+		assertEquals("expected [some value] to equal actual [different value] last error from dll [${LAST_DLL_ERR}]".toString(), assertion.passFailMessage)
 	}
 	
 	@Test
@@ -401,6 +401,56 @@ class RunResultsTest
 		
 		testee.assertEquals('should pass', '', "")
 		assertTrue(testee.results[testee.results.size-1].isPassed)
+	}
+	
+	@Test
+	void testAssertNotEqualsPassing()
+	{
+		testee.assertNotEquals('should pass', 'some value', 'different value')
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertEquals('assertNotEquals', assertion.title)
+		assertTrue(assertion.isPassed)
+		assertEquals('should pass', assertion.userMessage)
+		assertEquals('expected [some value] to not equal actual [different value]'.toString(), assertion.passFailMessage)
+	}
+
+	@Test
+	void testAssertNotEqualsFailing()
+	{
+		testee.assertNotEquals('should fail', 'some value', 'some value')
+		
+		def assertion = testee.results[testee.results.size-1]
+		
+		assertFalse(assertion.isPassed)
+		assertEquals("expected [some value] to not equal actual [some value] last error from dll [${LAST_DLL_ERR}]".toString(), assertion.passFailMessage)
+	}
+	
+	@Test
+	void testAssertNotEqualsWithNullValues()
+	{
+		testee.assertNotEquals('should pass', 'expected value', null)
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertNotEquals('should pass', null, 'expected value')
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertNotEquals('should fail', null, null)
+		assertFalse(testee.results[testee.results.size-1].isPassed)
+	}
+	
+	@Test
+	void testAssertNotEqualsWithEmptyValues()
+	{
+		testee.assertNotEquals('should pass', 'expected value', '')
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertNotEquals('should pass', '', 'expected value')
+		assertTrue(testee.results[testee.results.size-1].isPassed)
+		
+		testee.assertNotEquals('should fail', '', '')
+		assertFalse(testee.results[testee.results.size-1].isPassed)
 	}
 	
 	@Test

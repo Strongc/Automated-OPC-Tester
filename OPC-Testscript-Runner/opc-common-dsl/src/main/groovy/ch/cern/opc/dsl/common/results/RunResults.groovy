@@ -66,8 +66,19 @@ class RunResults extends Observable
 		def isPassed = expectedValue.toString().equals(actualValue.toString())
 		
 		def assertion = new SynchronousAssertion('assertEquals', isPassed, userMessage,
-			"expected [${expectedValue}] actual [${actualValue}]" + (isPassed?"": " last error from dll [${client.lastError}]")
+			"expected [${expectedValue}] to equal actual [${actualValue}]" + (isPassed?"": " last error from dll [${client.lastError}]")
 		) 
+		
+		add(assertion)
+	}
+	
+	def assertNotEquals(userMessage, expectedValue, actualValue)
+	{
+		def isPassed = !(expectedValue.toString().equals(actualValue.toString()))
+		
+		def assertion = new SynchronousAssertion('assertNotEquals', isPassed, userMessage,
+			"expected [${expectedValue}] to not equal actual [${actualValue}]" + (isPassed?"": " last error from dll [${client.lastError}]")
+		)
 		
 		add(assertion)
 	}
